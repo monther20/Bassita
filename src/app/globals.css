@@ -6,75 +6,139 @@
   --color-background-secondary: #24253a;
   --color-background-tertiary: #2e2f48;
   --color-background-floating: #16171f;
-  
+
   --color-spotlight-purple: #7c3aed;
   --color-spotlight-pink: #ec4899;
   --color-spotlight-blue: #3b82f6;
   --color-spotlight-green: #10b981;
   --color-spotlight-yellow: #f59e0b;
   --color-spotlight-red: #ef4444;
-  
+
   --color-text-primary: #ffffff;
   --color-text-secondary: #9ca3af;
   --color-text-tertiary: #6b7280;
-  
-  /* Fonts - using Next.js font variables */
-  --font-family-display: var(--font-display);
-  --font-family-body: var(--font-body);
-  --font-family-mono: var(--font-mono);
-  --font-family-handwritten: var(--font-handwritten);
-  
+
   /* Shadows */
   --shadow-glow-purple: 0 0 20px rgb(124 58 237 / 0.4);
   --shadow-glow-pink: 0 0 20px rgb(236 72 153 / 0.4);
 }
 
-body {
-  background: var(--color-background-primary);
-  color: var(--color-text-primary);
-  font-family: var(--font-family-body);
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
+@layer base {
+  body {
+    background: var(--color-background-primary);
+    color: var(--color-text-primary);
+    font-family: var(--font-body);
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
+/* Font utilities - Direct CSS classes since Tailwind v4 handles fonts differently */
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
 
-::-webkit-scrollbar-track {
-  background: var(--color-background-secondary);
-}
+  .font-body {
+    font-family: var(--font-body);
+  }
 
-::-webkit-scrollbar-thumb {
-  background: var(--color-spotlight-purple);
-  border-radius: 4px;
-}
+  .font-mono {
+    font-family: var(--font-mono);
+  }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-spotlight-pink);
-}
+  .font-handwritten {
+    font-family: var(--font-handwritten);
+  }
 
-/* Card rotation utilities */
-.rotate-slight {
-  transform: rotate(-1deg);
-}
+  /* Color utilities */
+  .bg-background-primary {
+    background-color: var(--color-background-primary);
+  }
 
-.rotate-slight-reverse {
-  transform: rotate(1deg);
-}
+  .bg-background-secondary {
+    background-color: var(--color-background-secondary);
+  }
 
-/* Glow effects */
-.glow-purple {
-  box-shadow: var(--shadow-glow-purple);
-}
+  .bg-background-tertiary {
+    background-color: var(--color-background-tertiary);
+  }
 
-.glow-pink {
-  box-shadow: var(--shadow-glow-pink);
-}
+  .bg-background-floating {
+    background-color: var(--color-background-floating);
+  }
 
-/* Neon text effect */
-.neon-text {
-  text-shadow: 0 0 10px currentColor;
+  .text-text-primary {
+    color: var(--color-text-primary);
+  }
+
+  .text-text-secondary {
+    color: var(--color-text-secondary);
+  }
+
+  .text-text-tertiary {
+    color: var(--color-text-tertiary);
+  }
+
+  .text-spotlight-purple {
+    color: var(--color-spotlight-purple);
+  }
+
+  .text-spotlight-pink {
+    color: var(--color-spotlight-pink);
+  }
+
+  .from-spotlight-purple {
+    --tw-gradient-from: var(--color-spotlight-purple);
+  }
+
+  .to-spotlight-pink {
+    --tw-gradient-to: var(--color-spotlight-pink);
+  }
+
+  .hover\:shadow-glow-purple:hover {
+    box-shadow: var(--shadow-glow-purple);
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-background-secondary);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-spotlight-purple);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-spotlight-pink);
+  }
+
+  /* Card rotation utilities */
+  .rotate-slight {
+    transform: rotate(-1deg);
+  }
+
+  .rotate-slight-reverse {
+    transform: rotate(1deg);
+  }
+
+  /* Glow effects */
+  .glow-purple {
+    box-shadow: var(--shadow-glow-purple);
+  }
+
+  .glow-pink {
+    box-shadow: var(--shadow-glow-pink);
+  }
+
+  /* Neon text effect */
+  .neon-text {
+    text-shadow: 0 0 10px currentColor;
+  }
 }
