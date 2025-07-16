@@ -34,14 +34,6 @@ src/
 └── styles/          # Global styles and theme
 ```
 
-## 🎨 Design System
-
-The project follows the "Task Dance Floor" design philosophy:
-- **Colors**: Dark mode with purple/pink gradient accents
-- **Typography**: Fredoka One for headings, Inter for body text
-- **Animations**: Subtle card rotations and hover effects
-- **Theme**: Based on the Bassita brand guidelines
-
 ## 🚦 Getting Started
 
 1. **Install dependencies**:
