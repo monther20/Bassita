@@ -3,10 +3,13 @@
 import { Button } from "@/components/buttoon";
 import { FaDiscord, FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+  const router = useRouter();
+
   return (
-    <div className="bg-background-tertiary rounded-2xl w-full h-full flex flex-col gap-4 lg:gap-6 items-center">
+    <>
       <div className="flex flex-col gap-6 lg:gap-10 items-center pt-6 lg:pt-10 w-full px-4 lg:px-0 lg:w-[75%] max-w-md">
         <div className="flex flex-col items-start gap-2 justify-center w-full">
           <span className="text-text-primary font-display text-2xl lg:text-4xl">
@@ -77,7 +80,7 @@ export default function LoginPage() {
           <Button
             label="Continue with Email"
             onclick={() => {
-              console.log("Login");
+              router.push("/login/email");
             }}
             backgroundColor="bg-gradient-to-r from-spotlight-purple to-spotlight-pink"
             hover="hover:shadow-glow-purple"
@@ -89,7 +92,20 @@ export default function LoginPage() {
             height="50px"
           />
         </div>
+
+        {/* Sign Up Link */}
+        <div className="text-center">
+          <span className="text-gray-400 text-sm">
+            Don&apos;t have an account?{" "}
+          </span>
+          <button
+            onClick={() => router.push("/signup/email")}
+            className="text-spotlight-purple hover:text-spotlight-pink transition-colors text-sm font-medium"
+          >
+            Sign up
+          </button>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

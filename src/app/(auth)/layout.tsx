@@ -50,8 +50,10 @@ export default function AuthLayout({
         </div>
 
         <div className="relative flex items-center justify-center w-full lg:w-auto">
-          <div className="relative z-10 bg-gradient-to-br from-spotlight-purple to-spotlight-pink rounded-2xl p-0.5 w-full max-w-md lg:w-[480px] lg:h-[600px] min-h-[500px]">
-            {children}
+          <div className="relative z-10 bg-gradient-to-br from-spotlight-purple to-spotlight-pink rounded-2xl p-0.5 w-full max-w-md lg:w-[480px] lg:h-[650px] min-h-[500px] overflow-y-auto">
+            <div className="bg-background-tertiary rounded-2xl w-full h-full flex flex-col justify-center items-center overflow-y-auto">
+              {children}
+            </div>
           </div>
           <div
             className="absolute w-[400px] h-[600px] lg:w-[600px] lg:h-[800px] bg-gradient-to-br from-spotlight-purple to-spotlight-pink shadow-glow-purple opacity-10 z-1"
