@@ -33,7 +33,15 @@ export default function AnimatedBackground() {
           fpsLimit: 60,
           fullScreen: { enable: true, zIndex: -1 },
           background: { color: "transparent" },
-          interactivity: {},
+          interactivity: {
+            events: {
+              onClick: { enable: true, mode: "push" },
+              resize: { enable: true },
+            },
+            modes: {
+              push: { quantity: 4 },
+            },
+          },
           particles: {
             color: {
               value: [
@@ -46,13 +54,14 @@ export default function AnimatedBackground() {
               ],
             },
             move: {
-              direction: "none",
+              direction: "right",
               enable: true,
               outModes: "out",
               random: false,
-              speed: 0.5,
+              speed: 0.3,
               straight: false,
             },
+
             number: {
               density: {
                 enable: true,

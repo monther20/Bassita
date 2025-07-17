@@ -9,10 +9,10 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative flex items-center h-screen pr-22 bg-background-primary">
-      <div className="flex flex-row justify-between w-full px-22 items-center z-1">
-        <div className="flex flex-col gap-10 items-center z-1">
-          <div className="flex flex-col gap-10">
+    <div className="relative flex items-center min-h-screen bg-background-primary">
+      <div className="flex flex-col lg:flex-row justify-between w-full px-4 md:px-8 lg:px-22 py-4 lg:py-0 items-center z-1">
+        <div className="hidden lg:flex flex-col gap-6 lg:gap-10 items-center z-1">
+          <div className="flex flex-col gap-6 lg:gap-10">
             <Card
               width="200"
               height="120"
@@ -24,7 +24,7 @@ export default function AuthLayout({
             <Card
               width="200"
               height="120"
-              title="<🎯 Login Flow"
+              title="🎯 Login Flow"
               description="Simple and secure"
               className="rotate-slight card-left"
               members={["🔥"]}
@@ -38,17 +38,23 @@ export default function AuthLayout({
               members={["→"]}
             />
           </div>
-          <div className="flex flex-col gap-10">
-            <Image src="/logo.png" alt="logo" width={350} height={85} />
+          <div className="flex flex-col gap-6 lg:gap-10">
+            <Image
+              src="/logo.png"
+              alt="logo"
+              width={280}
+              height={68}
+              className="lg:w-[350px] lg:h-[85px]"
+            />
           </div>
         </div>
 
-        <div className="relative flex items-center justify-center">
-          <div className="relative z-10 bg-gradient-to-br from-spotlight-purple to-spotlight-pink rounded-2xl p-0.5 w-[480px] h-[600px]">
+        <div className="relative flex items-center justify-center w-full lg:w-auto">
+          <div className="relative z-10 bg-gradient-to-br from-spotlight-purple to-spotlight-pink rounded-2xl p-0.5 w-full max-w-md lg:w-[480px] lg:h-[600px] min-h-[500px]">
             {children}
           </div>
           <div
-            className="absolute w-[600px] h-[800px] bg-gradient-to-br from-spotlight-purple to-spotlight-pink shadow-glow-purple opacity-10 z-1"
+            className="absolute w-[400px] h-[600px] lg:w-[600px] lg:h-[800px] bg-gradient-to-br from-spotlight-purple to-spotlight-pink shadow-glow-purple opacity-10 z-1"
             style={{
               borderRadius: "50% 50% 50% 50% / 55% 55% 45% 45%",
             }}
