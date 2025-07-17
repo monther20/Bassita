@@ -1,0 +1,50 @@
+---
+globs: *.ts,*.tsx
+---
+
+# TypeScript & React Development Rules
+
+## Code Style
+
+- Always use semicolons
+- Use proper TypeScript types, avoid `any`
+- Use interface for props and object types
+- Use type for unions and primitive types
+- Prefer explicit function return types for better clarity
+
+## React Components
+
+- Use functional components with hooks
+- Use `React.FC` or explicit props interface
+- Always destructure props in function signature
+- Use `const` for component declarations
+- Export components as default when it's the main component
+
+## Import Organization
+
+1. React imports first
+2. External library imports
+3. Internal imports using `@/*` path mapping
+4. Relative imports last
+
+Example:
+```typescript
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import './Component.css';
+```
+
+## TypeScript Best Practices
+
+- Use proper types for events: `React.MouseEvent`, `React.FormEvent`
+- Use `React.ReactNode` for children props
+- Use `React.ComponentProps` for extending component props
+- Always type state in `useState<Type>()`
+- Use `React.useCallback` and `React.useMemo` with proper dependencies
+
+## Error Handling
+
+- Use proper error boundaries
+- Type error states appropriately
+- Handle loading states with proper UI feedback

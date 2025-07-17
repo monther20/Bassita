@@ -6,10 +6,11 @@
   --color-background-secondary: #24253a;
   --color-background-tertiary: #2e2f48;
   --color-background-floating: #16171f;
+  --color-background-member: #404258;
 
   --color-spotlight-purple: #7c3aed;
   --color-spotlight-pink: #ec4899;
-  --color-spotlight-blue: #3b82f6;
+  --color-spotlight-blue: #5865F2;
   --color-spotlight-green: #10b981;
   --color-spotlight-yellow: #f59e0b;
   --color-spotlight-red: #ef4444;
@@ -17,10 +18,14 @@
   --color-text-primary: #ffffff;
   --color-text-secondary: #9ca3af;
   --color-text-tertiary: #6b7280;
+  --color-text-dark: #1F2937;
 
   /* Shadows */
   --shadow-glow-purple: 0 0 20px rgb(124 58 237 / 0.4);
   --shadow-glow-pink: 0 0 20px rgb(236 72 153 / 0.4);
+  --shadow-glow-blue: 0 0 20px rgb(88 101 242 / 0.4);
+  --shadow-glow-white: 0 0 20px rgb(255 255 255 / 0.4);
+  --shadow-glow-black: 0 0 20px rgb(0 0 0 / 0.4);
 }
 
 @layer base {
@@ -69,6 +74,34 @@
     background-color: var(--color-background-floating);
   }
 
+  .bg-background-member {
+    background-color: var(--color-background-member);
+  }
+
+  .bg-spotlight-purple {
+    background-color: var(--color-spotlight-purple);
+  }
+
+  .bg-spotlight-pink {
+    background-color: var(--color-spotlight-pink);
+  }
+
+  .bg-spotlight-blue {
+    background-color: var(--color-spotlight-blue);
+  }
+
+  .bg-spotlight-green {
+    background-color: var(--color-spotlight-green);
+  }
+
+  .bg-spotlight-yellow {
+    background-color: var(--color-spotlight-yellow);
+  }
+
+  .bg-spotlight-red {
+    background-color: var(--color-spotlight-red);
+  }
+
   .text-text-primary {
     color: var(--color-text-primary);
   }
@@ -79,6 +112,10 @@
 
   .text-text-tertiary {
     color: var(--color-text-tertiary);
+  }
+
+  .text-text-dark {
+    color: var(--color-text-dark);
   }
 
   .text-spotlight-purple {
@@ -97,9 +134,58 @@
     --tw-gradient-to: var(--color-spotlight-pink);
   }
 
+  .from-spotlight-blue {
+    --tw-gradient-from: var(--color-spotlight-blue);
+  }
+
+  .to-spotlight-blue {
+    --tw-gradient-to: var(--color-spotlight-blue);
+  }
+
+  .from-spotlight-green {
+    --tw-gradient-from: var(--color-spotlight-green);
+  }
+
+  .to-spotlight-green {
+    --tw-gradient-to: var(--color-spotlight-green);
+  }
+
+  .from-spotlight-yellow {
+    --tw-gradient-from: var(--color-spotlight-yellow);
+  }
+
+  .to-spotlight-yellow {
+    --tw-gradient-to: var(--color-spotlight-yellow);
+  }
+
+  .from-spotlight-red {
+    --tw-gradient-from: var(--color-spotlight-red);
+  }
+
+  .to-spotlight-red {
+    --tw-gradient-to: var(--color-spotlight-red);
+  }
+
   .hover\:shadow-glow-purple:hover {
     box-shadow: var(--shadow-glow-purple);
   }
+
+  .hover\:shadow-glow-pink:hover {
+    box-shadow: var(--shadow-glow-pink);
+  }
+
+  .hover\:shadow-glow-blue:hover {
+    box-shadow: var(--shadow-glow-blue);
+  }
+
+  .hover\:shadow-glow-white:hover {
+    box-shadow: var(--shadow-glow-white);
+  }
+
+  .hover\:shadow-glow-black:hover {
+    box-shadow: var(--shadow-glow-black);
+  }
+
 
   /* Custom scrollbar */
   ::-webkit-scrollbar {
@@ -121,11 +207,11 @@
 
   /* Card rotation utilities */
   .rotate-slight {
-    transform: rotate(-1deg);
+    transform: rotate(-2deg);
   }
 
   .rotate-slight-reverse {
-    transform: rotate(1deg);
+    transform: rotate(2deg);
   }
 
   /* Glow effects */
@@ -140,5 +226,16 @@
   /* Neon text effect */
   .neon-text {
     text-shadow: 0 0 10px currentColor;
+  }
+
+  /* Card alignment utilities */
+  .card-left {
+    align-self: flex-start;
+    margin-right: 100px;
+  }
+
+  .card-right {
+    align-self: flex-end;
+    margin-left: 100px;
   }
 }

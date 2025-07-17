@@ -1,0 +1,111 @@
+---
+description: Authentication development patterns and security best practices
+---
+
+# Authentication Development Guidelines
+
+## Authentication Flow
+
+The authentication system is built around the `src/app/(auth)/` route group:
+
+- **Auth Layout**: [src/app/(auth)/layout.tsx](mdc:src/app/(auth)/layout.tsx)
+- **Login Page**: [src/app/(auth)/login/page.tsx](mdc:src/app/(auth)/login/page.tsx)
+- **Auth Components**: [src/components/auth/](mdc:src/components/auth/)
+
+## Security Best Practices
+
+### Input Validation
+- Always validate user inputs on both client and server
+- Use proper email validation patterns
+- Implement password strength requirements
+- Sanitize all user inputs before processing
+
+### Token Management
+- Store authentication tokens securely
+- Implement proper token expiration handling
+- Use httpOnly cookies for sensitive tokens when possible
+- Implement token refresh mechanisms
+
+### Error Handling
+- Never expose sensitive information in error messages
+- Use generic error messages for failed login attempts
+- Log security events for monitoring
+- Implement rate limiting for authentication attempts
+
+## Authentication State Management
+
+Use React Query for authentication state:
+
+```typescript
+// Example authentication hook
+const useAuth = () => {
+  const { data: user, isLoading } = useQuery({
+    queryKey: ['auth', 'user'],
+    queryFn: fetchCurrentUser,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: false,
+  });
+
+  return {
+    user,
+    isLoading,
+    isAuthenticated: !!user,
+  };
+};
+```
+
+## Route Protection
+
+Implement proper route protection patterns:
+
+```typescript
+// Example protected route component
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAuthenticated, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/auth/login" replace />;
+  }
+  
+  return <>{children}</>;
+};
+```
+
+## Form Handling
+
+- Use proper form validation
+- Implement loading states during submission
+- Handle network errors gracefully
+- Provide clear user feedback
+
+## UI/UX Considerations
+
+- Use the animated background component from [src/components/auth/AnimatedBackground.tsx](mdc:src/components/auth/AnimatedBackground.tsx)
+- Implement proper loading states
+- Provide clear error messages
+- Use consistent styling with the rest of the application
+- Consider accessibility requirements
+
+## Socket.io Integration
+
+If using real-time features, ensure proper authentication:
+
+```typescript
+// Example socket authentication
+const socket = io(SERVER_URL, {
+  auth: {
+    token: getAuthToken(),
+  },
+});
+```
+
+## Testing Authentication
+
+- Test both successful and failed authentication scenarios
+- Mock authentication state in tests
+- Test route protection mechanisms
+- Verify token handling and expiration

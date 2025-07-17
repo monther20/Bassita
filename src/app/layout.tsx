@@ -4,7 +4,7 @@ import { Providers } from "@/lib/providers";
 import "./globals.css";
 
 const fredokaOne = Fredoka({
-  weight: "400",
+  weight: ["300", "400", "500", "600", "700"],
   subsets: ["latin"],
   variable: "--font-display",
 });
