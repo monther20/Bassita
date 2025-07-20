@@ -5,8 +5,14 @@ import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Link from "next/link";
 import InputField from "@/components/inputField";
+import { useAuth } from "@/hooks";
+import { useRouter } from "next/navigation";
+import { GuestGuard } from "@/components";
 
 export default function EmailLoginPage() {
+  const router = useRouter();
+  const { login, error, isLoading: authLoading } = useAuth();
+  
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -14,7 +20,6 @@ export default function EmailLoginPage() {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isLoading, setIsLoading] = useState(false);
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
@@ -39,12 +44,13 @@ export default function EmailLoginPage() {
     e.preventDefault();
     if (!validateForm()) return;
 
-    setIsLoading(true);
-    // TODO: Implement actual login logic
-    setTimeout(() => {
-      console.log("Login attempt:", formData);
-      setIsLoading(false);
-    }, 1000);
+    try {
+      await login(formData.email, formData.password);
+      const redirectTo = new URLSearchParams(window.location.search).get('redirect') || '/dashboard';
+      router.push(redirectTo);
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,7 +67,7 @@ export default function EmailLoginPage() {
   };
 
   return (
-    <>
+    <GuestGuard>
       <div className="flex flex-col gap-6 lg:gap-8 items-center py-6 lg:py-8 w-full px-6 lg:px-0 lg:w-[75%] max-w-xs lg:max-w-md">
         <div className="flex flex-col items-start gap-2 justify-center w-full">
           <span className="text-text-primary font-display text-2xl lg:text-4xl">
@@ -71,6 +77,12 @@ export default function EmailLoginPage() {
             Sign in to your account
           </span>
         </div>
+
+        {error && (
+          <div className="w-full p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+            <p className="text-red-500 text-sm">{error}</p>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="w-full space-y-4">
           {/* Email Input */}
@@ -119,8 +131,8 @@ export default function EmailLoginPage() {
 
           {/* Login Button */}
           <Button
-            label={isLoading ? "Signing In..." : "Sign In"}
-            onclick={() => handleSubmit(e)}
+            label={authLoading ? "Signing In..." : "Sign In"}
+            onclick={handleSubmit}
             backgroundColor="bg-gradient-to-r from-spotlight-purple to-spotlight-pink"
             hover="hover:shadow-glow-purple"
             borderColor="border-background-primary"
@@ -129,7 +141,7 @@ export default function EmailLoginPage() {
             className="w-full h-full"
             width="100%"
             height="50px"
-            disabled={isLoading}
+            disabled={authLoading}
           />
         </form>
 
@@ -154,6 +166,6 @@ export default function EmailLoginPage() {
           </Link>
         </div>
       </div>
-    </>
+    </GuestGuard>
   );
 }

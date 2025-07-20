@@ -1,15 +1,18 @@
 "use client";
 
 import { Button } from "@/components/buttoon";
-import { FaDiscord, FaGithub } from "react-icons/fa";
+import { FaMicrosoft, FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks";
+import { GuestGuard } from "@/components";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { loginWithGoogle, loginWithGithub, loginWithMicrosoft, isLoading } = useAuth();
 
   return (
-    <>
+    <GuestGuard>
       <div className="flex flex-col gap-6 lg:gap-10 items-center pt-6 lg:pt-10 w-full px-4 lg:px-0 lg:w-[75%] max-w-md">
         <div className="flex flex-col items-start gap-2 justify-center w-full">
           <span className="text-text-primary font-display text-2xl lg:text-4xl">
@@ -22,8 +25,16 @@ export default function LoginPage() {
         <div className="flex flex-col gap-3 lg:gap-4 w-full">
           <Button
             label="Continue with Google"
-            onclick={() => {
-              console.log("Login");
+            onclick={async () => {
+              try {
+                await loginWithGoogle();
+                const redirectTo =
+                  new URLSearchParams(window.location.search).get("redirect") ||
+                  "/dashboard";
+                router.push(redirectTo);
+              } catch (error) {
+                console.error("Google login failed:", error);
+              }
             }}
             backgroundColor="bg-white"
             borderColor="border-white"
@@ -37,32 +48,48 @@ export default function LoginPage() {
           />
 
           <Button
-            label="Continue with Discord"
-            onclick={() => {
-              console.log("Login");
+            label="Continue with GitHub"
+            onclick={async () => {
+              try {
+                await loginWithGithub();
+                const redirectTo =
+                  new URLSearchParams(window.location.search).get("redirect") ||
+                  "/dashboard";
+                router.push(redirectTo);
+              } catch (error) {
+                console.error("GitHub login failed:", error);
+              }
             }}
             backgroundColor="bg-spotlight-blue"
             hover="hover:shadow-glow-blue"
             borderColor="border-background-primary"
             textColor="text-text-primary"
             textSize="text-sm lg:text-lg"
-            icon={<FaDiscord size={20} className="lg:w-[25px] lg:h-[25px]" />}
+            icon={<FaGithub size={20} className="lg:w-[25px] lg:h-[25px]" />}
             className="w-full h-full"
             width="100%"
             height="50px"
           />
 
           <Button
-            label="Continue with Github"
-            onclick={() => {
-              console.log("Login");
+            label="Continue with Microsoft"
+            onclick={async () => {
+              try {
+                await loginWithMicrosoft();
+                const redirectTo =
+                  new URLSearchParams(window.location.search).get("redirect") ||
+                  "/dashboard";
+                router.push(redirectTo);
+              } catch (error) {
+                console.error("Microsoft login failed:", error);
+              }
             }}
             backgroundColor="bg-background-primary"
             borderColor="border-background-primary"
             textColor="text-text-primary"
-            hover="hover:shadow-glow-black"
+            hover="hover:shadow-glow-white"
             textSize="text-sm lg:text-lg"
-            icon={<FaGithub size={20} className="lg:w-[25px] lg:h-[25px]" />}
+            icon={<FaMicrosoft size={20} className="lg:w-[25px] lg:h-[25px]" />}
             className="w-full h-full"
             width="100%"
             height="50px"
@@ -106,6 +133,6 @@ export default function LoginPage() {
           </button>
         </div>
       </div>
-    </>
+    </GuestGuard>
   );
 }

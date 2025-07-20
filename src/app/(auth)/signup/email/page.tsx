@@ -5,8 +5,14 @@ import { useState } from "react";
 import { FaEye, FaEyeSlash, FaCheck, FaTimes } from "react-icons/fa";
 import Link from "next/link";
 import InputField from "@/components/inputField";
+import { useAuth } from "@/hooks";
+import { useRouter } from "next/navigation";
+import { GuestGuard } from "@/components";
 
 export default function EmailSignupPage() {
+  const router = useRouter();
+  const { signUp, error, isLoading: authLoading } = useAuth();
+  
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -17,7 +23,6 @@ export default function EmailSignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isLoading, setIsLoading] = useState(false);
 
   const getPasswordStrength = (password: string) => {
     let strength = 0;
@@ -86,12 +91,13 @@ export default function EmailSignupPage() {
     e.preventDefault();
     if (!validateForm()) return;
 
-    setIsLoading(true);
-    // TODO: Implement actual signup logic
-    setTimeout(() => {
-      console.log("Signup attempt:", formData);
-      setIsLoading(false);
-    }, 1000);
+    try {
+      await signUp(formData.email, formData.password, formData.fullName);
+      const redirectTo = new URLSearchParams(window.location.search).get('redirect') || '/dashboard';
+      router.push(redirectTo);
+    } catch (error) {
+      console.error('Sign up failed:', error);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -111,7 +117,7 @@ export default function EmailSignupPage() {
   const passwordStrengthInfo = getPasswordStrengthText(passwordStrength);
 
   return (
-    <>
+    <GuestGuard>
       <div className="flex flex-col gap-4 lg:gap-6 items-center py-6 lg:py-8 w-full px-6 lg:px-0 lg:w-[75%] max-w-xs lg:max-w-md">
         <div className="flex flex-col items-start gap-2 justify-center w-full">
           <span className="text-text-primary font-display text-2xl lg:text-4xl">
@@ -121,6 +127,12 @@ export default function EmailSignupPage() {
             Create your account to get started
           </span>
         </div>
+
+        {error && (
+          <div className="w-full p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+            <p className="text-red-500 text-sm">{error}</p>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="w-full space-y-4">
           {/* Full Name Input */}
@@ -260,8 +272,8 @@ export default function EmailSignupPage() {
 
           {/* Sign Up Button */}
           <Button
-            label={isLoading ? "Creating Account..." : "Create Account"}
-            onclick={() => handleSubmit(e)}
+            label={authLoading ? "Creating Account..." : "Create Account"}
+            onclick={handleSubmit}
             backgroundColor="bg-gradient-to-r from-spotlight-purple to-spotlight-pink"
             hover="hover:shadow-glow-purple"
             borderColor="border-background-primary"
@@ -270,6 +282,7 @@ export default function EmailSignupPage() {
             className="w-full h-full"
             width="100%"
             height="50px"
+            disabled={authLoading}
           />
         </form>
 
@@ -296,6 +309,6 @@ export default function EmailSignupPage() {
           </Link>
         </div>
       </div>
-    </>
+    </GuestGuard>
   );
 }
