@@ -12,7 +12,7 @@ import { GuestGuard } from "@/components";
 export default function EmailLoginPage() {
   const router = useRouter();
   const { login, error, isLoading: authLoading } = useAuth();
-  
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -93,9 +93,8 @@ export default function EmailLoginPage() {
               placeholder="Email address"
               value={formData.email}
               onChange={handleInputChange}
-              className={`w-full h-12 px-4 bg-background-primary border ${
-                errors.email ? "border-red-500" : "border-gray-600"
-              } text-text-primary placeholder-gray-400 focus:outline-none focus:border-spotlight-purple transition-colors`}
+              className={`w-full h-12 px-4 bg-background-primary border ${errors.email ? "border-red-500" : "border-gray-600"
+                } text-text-primary placeholder-gray-400 focus:outline-none focus:border-spotlight-purple transition-colors`}
             />
             {errors.email && (
               <p className="text-red-500 text-xs mt-1">{errors.email}</p>
@@ -110,9 +109,8 @@ export default function EmailLoginPage() {
               placeholder="Password"
               value={formData.password}
               onChange={handleInputChange}
-              className={`w-full h-12 px-4 pr-12 bg-background-primary border ${
-                errors.password ? "border-red-500" : "border-gray-600"
-              } text-text-primary placeholder-gray-400 focus:outline-none focus:border-spotlight-purple transition-colors`}
+              className={`w-full h-12 px-4 pr-12 bg-background-primary border ${errors.password ? "border-red-500" : "border-gray-600"
+                } text-text-primary placeholder-gray-400 focus:outline-none focus:border-spotlight-purple transition-colors`}
             />
             {errors.password && (
               <p className="text-red-500 text-xs mt-1">{errors.password}</p>
@@ -136,8 +134,7 @@ export default function EmailLoginPage() {
             backgroundColor="bg-gradient-to-r from-spotlight-purple to-spotlight-pink"
             hover="hover:shadow-glow-purple"
             borderColor="border-background-primary"
-            textColor="text-text-primary"
-            textSize="text-sm lg:text-lg"
+            textStyle="text-text-primary text-sm lg:text-lg"
             className="w-full h-full"
             width="100%"
             height="50px"

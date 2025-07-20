@@ -155,8 +155,7 @@ export default function ResetPasswordPage() {
             backgroundColor="bg-gradient-to-r from-spotlight-purple to-spotlight-pink"
             hover="hover:shadow-glow-purple"
             borderColor="border-background-primary"
-            textColor="text-text-primary"
-            textSize="text-sm lg:text-lg"
+            textStyle="text-text-primary text-sm lg:text-lg"
             className="w-full h-full"
             width="100%"
             height="50px"
@@ -187,9 +186,8 @@ export default function ResetPasswordPage() {
               placeholder="New password"
               value={formData.password}
               onChange={handleInputChange}
-              className={`w-full h-12 px-4 pr-12 rounded-lg bg-background-primary border ${
-                errors.password ? "border-red-500" : "border-gray-600"
-              } text-text-primary placeholder-gray-400 focus:outline-none focus:border-spotlight-purple transition-colors`}
+              className={`w-full h-12 px-4 pr-12 rounded-lg bg-background-primary border ${errors.password ? "border-red-500" : "border-gray-600"
+                } text-text-primary placeholder-gray-400 focus:outline-none focus:border-spotlight-purple transition-colors`}
             />
             <button
               type="button"
@@ -206,13 +204,12 @@ export default function ResetPasswordPage() {
                 <div className="flex items-center gap-2">
                   <div className="flex-1 h-1 bg-gray-600 rounded-full overflow-hidden">
                     <div
-                      className={`h-full transition-all duration-300 ${
-                        passwordStrength >= 3
+                      className={`h-full transition-all duration-300 ${passwordStrength >= 3
                           ? "bg-green-500"
                           : passwordStrength >= 2
-                          ? "bg-yellow-500"
-                          : "bg-red-500"
-                      }`}
+                            ? "bg-yellow-500"
+                            : "bg-red-500"
+                        }`}
                       style={{ width: `${(passwordStrength / 5) * 100}%` }}
                     />
                   </div>
@@ -232,9 +229,8 @@ export default function ResetPasswordPage() {
               placeholder="Confirm new password"
               value={formData.confirmPassword}
               onChange={handleInputChange}
-              className={`w-full h-12 px-4 pr-12 rounded-lg bg-background-primary border ${
-                errors.confirmPassword ? "border-red-500" : "border-gray-600"
-              } text-text-primary placeholder-gray-400 focus:outline-none focus:border-spotlight-purple transition-colors`}
+              className={`w-full h-12 px-4 pr-12 rounded-lg bg-background-primary border ${errors.confirmPassword ? "border-red-500" : "border-gray-600"
+                } text-text-primary placeholder-gray-400 focus:outline-none focus:border-spotlight-purple transition-colors`}
             />
             <button
               type="button"
@@ -250,7 +246,7 @@ export default function ResetPasswordPage() {
             {formData.confirmPassword && (
               <div className="absolute right-12 top-1/2 transform -translate-y-1/2">
                 {formData.password === formData.confirmPassword &&
-                formData.confirmPassword ? (
+                  formData.confirmPassword ? (
                   <FaCheck className="text-green-500" size={16} />
                 ) : formData.confirmPassword ? (
                   <div className="w-4 h-4 border-2 border-red-500 rounded-full flex items-center justify-center">
@@ -273,8 +269,7 @@ export default function ResetPasswordPage() {
             backgroundColor="bg-gradient-to-r from-spotlight-purple to-spotlight-pink"
             hover="hover:shadow-glow-purple"
             borderColor="border-background-primary"
-            textColor="text-text-primary"
-            textSize="text-sm lg:text-lg"
+            textStyle="text-text-primary text-sm lg:text-lg"
             className="w-full h-full"
             width="100%"
             height="50px"

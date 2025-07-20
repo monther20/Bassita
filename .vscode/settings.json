@@ -1,0 +1,18 @@
+{
+    "piny.project_settings": {
+        "open-pages": [
+            "pinyfakepage.html"
+        ],
+        "urls": {
+            "pinyfakepage.html": {
+                "open-page-views": [
+                    {
+                        "w": 1044,
+                        "h": 0
+                    }
+                ]
+            }
+        }
+    },
+    "github.copilot.nextEditSuggestions.enabled": true
+}

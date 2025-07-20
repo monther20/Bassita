@@ -12,7 +12,7 @@ import { GuestGuard } from "@/components";
 export default function EmailSignupPage() {
   const router = useRouter();
   const { signUp, error, isLoading: authLoading } = useAuth();
-  
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -143,9 +143,8 @@ export default function EmailSignupPage() {
               placeholder="Full name"
               value={formData.fullName}
               onChange={handleInputChange}
-              className={`w-full h-12 px-4 bg-background-primary border ${
-                errors.fullName ? "border-red-500" : "border-gray-600"
-              } text-text-primary placeholder-gray-400 focus:outline-none focus:border-spotlight-purple transition-colors`}
+              className={`w-full h-12 px-4 bg-background-primary border ${errors.fullName ? "border-red-500" : "border-gray-600"
+                } text-text-primary placeholder-gray-400 focus:outline-none focus:border-spotlight-purple transition-colors`}
             />
             {errors.fullName && (
               <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>
@@ -160,9 +159,8 @@ export default function EmailSignupPage() {
               placeholder="Email address"
               value={formData.email}
               onChange={handleInputChange}
-              className={`w-full h-12 px-4 bg-background-primary border ${
-                errors.email ? "border-red-500" : "border-gray-600"
-              } text-text-primary placeholder-gray-400 focus:outline-none focus:border-spotlight-purple transition-colors`}
+              className={`w-full h-12 px-4 bg-background-primary border ${errors.email ? "border-red-500" : "border-gray-600"
+                } text-text-primary placeholder-gray-400 focus:outline-none focus:border-spotlight-purple transition-colors`}
             />
             {errors.email && (
               <p className="text-red-500 text-xs mt-1">{errors.email}</p>
@@ -177,9 +175,8 @@ export default function EmailSignupPage() {
               placeholder="Password"
               value={formData.password}
               onChange={handleInputChange}
-              className={`w-full h-12 px-4 pr-12  bg-background-primary border ${
-                errors.password ? "border-red-500" : "border-gray-600"
-              } text-text-primary placeholder-gray-400 focus:outline-none focus:border-spotlight-purple transition-colors`}
+              className={`w-full h-12 px-4 pr-12  bg-background-primary border ${errors.password ? "border-red-500" : "border-gray-600"
+                } text-text-primary placeholder-gray-400 focus:outline-none focus:border-spotlight-purple transition-colors`}
             />
 
             {errors.password && (
@@ -190,13 +187,12 @@ export default function EmailSignupPage() {
                 <div className="flex items-center gap-2">
                   <div className="flex-1 h-1 bg-gray-600 rounded-full overflow-hidden">
                     <div
-                      className={`h-full transition-all duration-300 ${
-                        passwordStrength >= 3
-                          ? "bg-green-500"
-                          : passwordStrength >= 2
+                      className={`h-full transition-all duration-300 ${passwordStrength >= 3
+                        ? "bg-green-500"
+                        : passwordStrength >= 2
                           ? "bg-yellow-500"
                           : "bg-red-500"
-                      }`}
+                        }`}
                       style={{ width: `${(passwordStrength / 5) * 100}%` }}
                     />
                   </div>
@@ -216,15 +212,14 @@ export default function EmailSignupPage() {
               placeholder="Confirm password"
               value={formData.confirmPassword}
               onChange={handleInputChange}
-              className={`w-full h-12 px-4 pr-12 bg-background-primary border ${
-                errors.confirmPassword ? "border-red-500" : "border-gray-600"
-              } text-text-primary placeholder-gray-400 focus:outline-none focus:border-spotlight-purple transition-colors`}
+              className={`w-full h-12 px-4 pr-12 bg-background-primary border ${errors.confirmPassword ? "border-red-500" : "border-gray-600"
+                } text-text-primary placeholder-gray-400 focus:outline-none focus:border-spotlight-purple transition-colors`}
             />
 
             {formData.confirmPassword && (
               <div className="absolute right-12 top-1/2 transform -translate-y-1/2">
                 {formData.password === formData.confirmPassword &&
-                formData.confirmPassword ? (
+                  formData.confirmPassword ? (
                   <FaCheck className="text-green-500" size={16} />
                 ) : formData.confirmPassword ? (
                   <FaTimes className="text-red-500" size={16} />
@@ -273,16 +268,14 @@ export default function EmailSignupPage() {
           {/* Sign Up Button */}
           <Button
             label={authLoading ? "Creating Account..." : "Create Account"}
-            onclick={handleSubmit}
+            onclick={() => handleSubmit(e)}
             backgroundColor="bg-gradient-to-r from-spotlight-purple to-spotlight-pink"
             hover="hover:shadow-glow-purple"
             borderColor="border-background-primary"
-            textColor="text-text-primary"
-            textSize="text-sm lg:text-lg"
+            textStyle="text-text-primary text-sm lg:text-lg"
             className="w-full h-full"
             width="100%"
             height="50px"
-            disabled={authLoading}
           />
         </form>
 
