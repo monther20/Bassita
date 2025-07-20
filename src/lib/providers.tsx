@@ -3,6 +3,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { useState } from 'react'
+import { FirebaseAuthProvider } from '@/components/providers/FirebaseAuthProvider'
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -23,8 +24,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {children}
-      <ReactQueryDevtools initialIsOpen={false} />
+      <FirebaseAuthProvider>
+        {children}
+        <ReactQueryDevtools initialIsOpen={false} />
+      </FirebaseAuthProvider>
     </QueryClientProvider>
   )
 }

@@ -1,0 +1,46 @@
+---
+alwaysApply: true
+---
+
+# Bassita Frontend Project Structure
+
+This is a Next.js 15 TypeScript project for Bassita - a task management platform.
+
+## Key Files and Structure
+
+- **Main app entry**: [src/app/layout.tsx](mdc:src/app/layout.tsx) - Root layout with providers and font setup
+- **Global styles**: [src/app/globals.css](mdc:src/app/globals.css) - Tailwind CSS global styles
+- **Main page**: [src/app/page.tsx](mdc:src/app/page.tsx) - Home page component
+- **Authentication**: [src/app/(auth)/layout.tsx](mdc:src/app/(auth)/layout.tsx) - Auth layout
+- **Login page**: [src/app/(auth)/login/page.tsx](mdc:src/app/(auth)/login/page.tsx) - Login page
+
+## Core Directories
+
+- `src/app/` - Next.js App Router pages and layouts
+- `src/components/` - Reusable React components
+- `src/components/auth/` - Authentication-related components
+- `src/hooks/` - Custom React hooks
+- `src/lib/` - Utility libraries and configurations
+- `src/queries/` - React Query configurations
+- `src/stores/` - Zustand state management stores
+
+## Key Technologies
+
+- Next.js 15 with App Router
+- TypeScript with strict mode
+- Tailwind CSS v4 for styling
+- React Query for data fetching
+- Zustand for state management
+- Socket.io for real-time features
+- Framer Motion for animations
+
+## Path Mapping
+
+Use `@/*` imports for `src/*` paths as configured in [tsconfig.json](mdc:tsconfig.json).
+
+## Package Management
+
+Use `npm` for package management. Main scripts:
+- `npm run dev` - Development with Turbopack
+- `npm run build` - Production build
+- `npm run lint` - ESLint checking

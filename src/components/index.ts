@@ -1,4 +1,2 @@
-// React components will be added here
-// This file serves as the main entry point for all components
-
-export {} // Keep this file as a placeholder
+export { ProtectedRoute, AuthGuard, GuestGuard, withAuth } from './auth/ProtectedRoute';
+export { default as ProtectedLayout } from './layouts/ProtectedLayout';

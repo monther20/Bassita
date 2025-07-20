@@ -1,0 +1,75 @@
+---
+description: Component development best practices and patterns
+---
+
+# Component Development Guidelines
+
+## Component Structure
+
+Components should be organized in the `src/components/` directory with clear categorization:
+
+- `src/components/auth/` - Authentication-related components
+- `src/components/ui/` - Reusable UI components
+- `src/components/layout/` - Layout components
+
+## Component Naming
+
+- Use PascalCase for component names
+- Use descriptive names that indicate purpose
+- Prefix specialized components with their domain (e.g., `AuthLoginForm`)
+
+## Component Props
+
+- Always define props interface explicitly
+- Use descriptive prop names
+- Provide default values where appropriate
+- Use optional props sparingly
+
+Example:
+```typescript
+interface ButtonProps {
+  variant?: 'primary' | 'secondary' | 'outline';
+  size?: 'sm' | 'md' | 'lg';
+  disabled?: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}
+
+const Button: React.FC<ButtonProps> = ({
+  variant = 'primary',
+  size = 'md',
+  disabled = false,
+  onClick,
+  children,
+}) => {
+  // Component implementation
+};
+```
+
+## Animation Guidelines
+
+- Use Framer Motion for animations as it's already configured
+- Keep animations subtle and purposeful
+- Use consistent easing and timing
+- Consider accessibility and reduced motion preferences
+
+## State Management
+
+- Use Zustand for global state (configured in `src/stores/`)
+- Use React Query for server state (configured in `src/queries/`)
+- Use local state for component-specific data
+- Avoid prop drilling - use context or global state
+
+## Component Composition
+
+- Prefer composition over inheritance
+- Use compound components for complex UI patterns
+- Create reusable hooks for shared logic
+- Keep components focused on a single responsibility
+
+## Performance Considerations
+
+- Use React.memo for expensive renders
+- Implement proper useCallback/useMemo usage
+- Avoid creating objects/functions in render
+- Use proper key props for lists

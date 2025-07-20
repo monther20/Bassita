@@ -1,0 +1,92 @@
+---
+globs: *.tsx,*.css
+---
+
+# Styling Guidelines
+
+## Tailwind CSS v4 Usage
+
+This project uses Tailwind CSS v4. Reference the main styles in [src/app/globals.css](mdc:src/app/globals.css).
+
+## Custom Fonts
+
+The project uses custom fonts configured in [src/app/layout.tsx](mdc:src/app/layout.tsx):
+
+- `--font-display` - Fredoka (headers and display text)
+- `--font-body` - Inter (body text)
+- `--font-mono` - Fira Code (code and monospace)
+- `--font-handwritten` - Kalam (handwritten style)
+
+Use these font families in your CSS:
+```css
+.display-text { font-family: var(--font-display); }
+.body-text { font-family: var(--font-body); }
+.mono-text { font-family: var(--font-mono); }
+.handwritten-text { font-family: var(--font-handwritten); }
+```
+
+## Utility-First Approach
+
+- Use Tailwind utility classes for styling
+- Avoid custom CSS unless absolutely necessary
+- Use `clsx` and `tailwind-merge` for conditional classes
+- Keep responsive design in mind with Tailwind's responsive prefixes
+
+## Color System
+
+- Follow the brand colors defined in globals.css
+- Use semantic color names (primary, secondary, accent)
+- Maintain consistent color usage across components
+
+## Spacing and Layout
+
+- Use Tailwind's spacing scale consistently
+- Follow the 8px grid system
+- Use flexbox and grid utilities for layouts
+- Ensure proper spacing on mobile devices
+
+## Component Styling Patterns
+
+```typescript
+import { clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+// Utility function for combining classes
+const cn = (...inputs: (string | undefined)[]) => {
+  return twMerge(clsx(inputs));
+};
+
+// Example component with conditional styling
+const Button = ({ variant, size, className, ...props }) => {
+  return (
+    <button
+      className={cn(
+        'inline-flex items-center justify-center rounded-md font-medium transition-colors',
+        {
+          'bg-primary text-primary-foreground hover:bg-primary/90': variant === 'primary',
+          'bg-secondary text-secondary-foreground hover:bg-secondary/80': variant === 'secondary',
+          'h-8 px-3 text-sm': size === 'sm',
+          'h-10 px-4 py-2': size === 'default',
+          'h-12 px-6': size === 'lg',
+        },
+        className
+      )}
+      {...props}
+    />
+  );
+};
+```
+
+## Accessibility
+
+- Ensure proper color contrast ratios
+- Use semantic HTML elements
+- Provide focus states for interactive elements
+- Consider screen readers and keyboard navigation
+
+## Performance
+
+- Use Tailwind's purge configuration to remove unused styles
+- Avoid deep nesting in CSS
+- Use CSS variables for theming
+- Consider using CSS-in-JS sparingly
