@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const publicRoutes = [
-  '/',
   '/login',
   '/login/email',
   '/signup',
@@ -50,6 +49,27 @@ async function isFirebaseTokenValid(token: string): Promise<boolean> {
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  
+  // Handle root path redirects
+  if (pathname === '/') {
+    // Get token from cookie or header
+    const tokenFromCookie = request.cookies.get('firebase-auth-token')?.value;
+    const tokenFromHeader = request.headers.get('authorization')?.replace('Bearer ', '');
+    const token = tokenFromCookie || tokenFromHeader;
+
+    let isAuthenticated = false;
+    
+    if (token) {
+      isAuthenticated = await isFirebaseTokenValid(token);
+    }
+
+    // Redirect based on authentication status
+    if (isAuthenticated) {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    } else {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+  }
   
   // Get token from cookie or header
   const tokenFromCookie = request.cookies.get('firebase-auth-token')?.value;

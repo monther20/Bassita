@@ -39,8 +39,7 @@ export default function LoginPage() {
             backgroundColor="bg-white"
             borderColor="border-white"
             hover="hover:shadow-glow-white"
-            textColor="text-text-dark"
-            textSize="text-sm lg:text-lg"
+            textStyle="text-text-dark text-sm lg:text-lg"
             icon={<FcGoogle size={20} className="lg:w-[25px] lg:h-[25px]" />}
             className="w-full h-full"
             width="100%"
@@ -63,8 +62,7 @@ export default function LoginPage() {
             backgroundColor="bg-spotlight-blue"
             hover="hover:shadow-glow-blue"
             borderColor="border-background-primary"
-            textColor="text-text-primary"
-            textSize="text-sm lg:text-lg"
+            textStyle="text-text-primary text-sm lg:text-lg"
             icon={<FaGithub size={20} className="lg:w-[25px] lg:h-[25px]" />}
             className="w-full h-full"
             width="100%"
@@ -86,9 +84,8 @@ export default function LoginPage() {
             }}
             backgroundColor="bg-background-primary"
             borderColor="border-background-primary"
-            textColor="text-text-primary"
+            textStyle="text-text-primary text-sm lg:text-lg"
             hover="hover:shadow-glow-white"
-            textSize="text-sm lg:text-lg"
             icon={<FaMicrosoft size={20} className="lg:w-[25px] lg:h-[25px]" />}
             className="w-full h-full"
             width="100%"
@@ -112,8 +109,7 @@ export default function LoginPage() {
             backgroundColor="bg-gradient-to-r from-spotlight-purple to-spotlight-pink"
             hover="hover:shadow-glow-purple"
             borderColor="border-background-primary"
-            textColor="text-text-primary"
-            textSize="text-sm lg:text-lg"
+            textStyle="text-text-primary text-sm lg:text-lg"
             className="w-full h-full"
             width="100%"
             height="50px"

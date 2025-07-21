@@ -238,4 +238,121 @@
     align-self: flex-end;
     margin-left: 100px;
   }
+
+  /* Responsive spacing utilities */
+  .responsive-gap-xs {
+    gap: 0.5rem;
+  }
+
+  .responsive-gap-sm {
+    gap: 0.75rem;
+  }
+
+  .responsive-gap-md {
+    gap: 1rem;
+  }
+
+  .responsive-gap-lg {
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .responsive-gap-xs {
+      gap: 0.75rem;
+    }
+
+    .responsive-gap-sm {
+      gap: 1rem;
+    }
+
+    .responsive-gap-md {
+      gap: 1.5rem;
+    }
+
+    .responsive-gap-lg {
+      gap: 2rem;
+    }
+  }
+
+  /* Responsive padding utilities */
+  .responsive-px-xs {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .responsive-px-sm {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .responsive-px-md {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .responsive-px-xs {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    .responsive-px-sm {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+
+    .responsive-px-md {
+      padding-left: 2.25rem;
+      padding-right: 2.25rem;
+    }
+  }
+
+  /* Touch-friendly sizing */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Responsive icon sizing */
+  .icon-xs {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .icon-sm {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .icon-md {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .icon-lg {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  @media (min-width: 768px) {
+    .icon-xs {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
+    .icon-sm {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+
+    .icon-md {
+      width: 1.75rem;
+      height: 1.75rem;
+    }
+
+    .icon-lg {
+      width: 2.25rem;
+      height: 2.25rem;
+    }
+  }
 }

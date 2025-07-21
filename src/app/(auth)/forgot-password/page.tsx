@@ -87,13 +87,12 @@ export default function ForgotPasswordPage() {
             </p>
 
             <Button
-              label="Try again"
+              label="Try again" 
               onclick={handleTryAgain}
               backgroundColor="bg-background-primary"
               borderColor="border-gray-600"
-              textColor="text-text-primary"
+              textStyle="text-text-primary text-sm lg:text-lg"
               hover="hover:shadow-glow-black"
-              textSize="text-sm lg:text-lg"
               className="w-full h-full"
               width="100%"
               height="48px"
@@ -151,8 +150,7 @@ export default function ForgotPasswordPage() {
             backgroundColor="bg-gradient-to-r from-spotlight-purple to-spotlight-pink"
             hover="hover:shadow-glow-purple"
             borderColor="border-background-primary"
-            textColor="text-text-primary"
-            textSize="text-sm lg:text-lg"
+            textStyle="text-text-primary text-sm lg:text-lg"
             className="w-full h-full"
             width="100%"
             height="50px"

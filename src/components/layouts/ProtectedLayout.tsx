@@ -1,8 +1,10 @@
 "use client";
 
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { useAuth } from '@/hooks';
 import { AuthGuard } from '@/components/auth/ProtectedRoute';
+import Header from './header';
+import Sidebar from './sidebar';
 
 interface ProtectedLayoutProps {
   children: ReactNode;
@@ -11,92 +13,60 @@ interface ProtectedLayoutProps {
   className?: string;
 }
 
-function UserMenu() {
-  const { user, logout } = useAuth();
-
-  if (!user) return null;
-
-  return (
-    <div className="flex items-center gap-4">
-      <div className="flex items-center gap-2">
-        {user.avatar && (
-          <img
-            src={user.avatar}
-            alt={user.name}
-            className="w-8 h-8 rounded-full"
-          />
-        )}
-        <span className="text-text-primary text-sm">{user.name}</span>
-      </div>
-      <button
-        onClick={logout}
-        className="px-3 py-1 text-sm bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-md transition-colors"
-      >
-        Logout
-      </button>
-    </div>
-  );
-}
-
-function Header() {
-  return (
-    <header className="bg-background-primary border-b border-gray-600 px-6 py-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <h1 className="text-xl font-display text-text-primary">Bassita</h1>
-        </div>
-        <UserMenu />
-      </div>
-    </header>
-  );
-}
-
-function Sidebar() {
-  return (
-    <aside className="w-64 bg-background-secondary border-r border-gray-600 p-4">
-      <nav className="space-y-2">
-        <a
-          href="/dashboard"
-          className="block px-3 py-2 text-text-primary hover:bg-background-primary rounded-md transition-colors"
-        >
-          Dashboard
-        </a>
-        <a
-          href="/tasks"
-          className="block px-3 py-2 text-text-primary hover:bg-background-primary rounded-md transition-colors"
-        >
-          Tasks
-        </a>
-        <a
-          href="/projects"
-          className="block px-3 py-2 text-text-primary hover:bg-background-primary rounded-md transition-colors"
-        >
-          Projects
-        </a>
-        <a
-          href="/settings"
-          className="block px-3 py-2 text-text-primary hover:bg-background-primary rounded-md transition-colors"
-        >
-          Settings
-        </a>
-      </nav>
-    </aside>
-  );
-}
-
 export function ProtectedLayout({
   children,
   showHeader = true,
   showSidebar = true,
   className = '',
 }: ProtectedLayoutProps) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Header height is h-18 which equals 72px (18 * 0.25rem * 16)
+  const sidebarHeight = !showHeader ? "h-screen" : "h-[calc(100vh-4.5rem)]";
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
     <AuthGuard>
       <div className={`min-h-screen bg-background-tertiary ${className}`}>
-        {showHeader && <Header />}
-        <div className="flex">
-          {showSidebar && <Sidebar />}
-          <main className="flex-1 p-6">
+        {showHeader && (
+          <Header 
+            height="h-18" 
+            onToggleSidebar={toggleSidebar}
+            showSidebarToggle={showSidebar}
+          />
+        )}
+        <div className="flex relative">
+          {showSidebar && (
+            <>
+              {/* Mobile overlay */}
+              {isSidebarOpen && (
+                <div 
+                  className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+                  onClick={() => setIsSidebarOpen(false)}
+                />
+              )}
+              
+              {/* Sidebar */}
+              <div className={`
+                fixed lg:relative z-50 lg:z-auto
+                transform transition-transform duration-300 ease-in-out
+                ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+              `}>
+                <Sidebar 
+                  height={sidebarHeight}
+                  onClose={() => setIsSidebarOpen(false)}
+                />
+              </div>
+            </>
+          )}
+          
+          <main className={`
+            flex-1 p-4 lg:p-6 transition-all duration-300
+            ${showSidebar ? 'lg:ml-0' : ''}
+          `}>
             {children}
           </main>
         </div>
