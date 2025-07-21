@@ -14,9 +14,11 @@ interface ButtonProps {
   iconPosition?: "left" | "right";
   className?: string;
   disabled?: boolean;
+  textColor?: string;
   fullWidth?: boolean;
   mobileSize?: ButtonSize;
   height?: string;
+  backgroundColor?: string;
 }
 
 const sizeClasses = {
@@ -26,12 +28,7 @@ const sizeClasses = {
   lg: "h-12 px-8 text-base touch-target"
 };
 
-const variantClasses = {
-  primary: "bg-gradient-to-r from-spotlight-purple to-spotlight-pink text-text-primary hover:shadow-glow-purple",
-  secondary: "bg-background-secondary text-text-primary hover:bg-background-tertiary border border-background-tertiary",
-  outline: "border border-spotlight-purple text-spotlight-purple hover:bg-spotlight-purple hover:text-text-primary",
-  ghost: "text-text-primary hover:bg-background-secondary"
-};
+
 
 export const Button = ({
   label,
@@ -42,10 +39,20 @@ export const Button = ({
   height = "h-8 md:h-10",
   iconPosition = "left",
   className = "",
+  backgroundColor = "bg-gradient-to-r from-spotlight-purple to-spotlight-pink",
+  textColor = "text-text-primary",
   disabled = false,
   fullWidth = false,
   mobileSize,
 }: ButtonProps) => {
+
+  const variantClasses = {
+    primary: `${backgroundColor} ${textColor} hover:shadow-glow-purple`,
+    secondary: "bg-background-secondary text-text-primary hover:bg-background-tertiary border border-background-tertiary",
+    outline: "border border-spotlight-purple text-spotlight-purple hover:bg-spotlight-purple hover:text-text-primary",
+    ghost: "text-text-primary hover:bg-background-secondary"
+  };
+
   const baseClasses = `relative rounded-full font-display cursor-pointer font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-spotlight-purple focus:ring-offset-2 focus:ring-offset-background-primary disabled:opacity-50 disabled:cursor-not-allowed ${height}`;
 
   const currentSize = mobileSize ? `${sizeClasses[mobileSize]} md:${sizeClasses[size].replace('touch-target', '')}` : sizeClasses[size];

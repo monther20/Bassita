@@ -21,7 +21,7 @@ export default function Header({
 
     return (
         <>
-            <header className={`bg-background-primary w-full ${height} border-b border-background-secondary p-2`}>
+            <header className={`bg-background-primary w-full ${height} p-2`}>
                 <div className="flex items-center justify-between h-full responsive-px-sm">
                     {/* Left section */}
                     <div className="flex items-center responsive-gap-sm">

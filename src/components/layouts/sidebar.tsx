@@ -69,7 +69,7 @@ export default function Sidebar({ height = "h-screen", onClose }: SidebarProps) 
     return (
         <aside
             ref={sidebarRef}
-            className={`bg-background-secondary ${height} flex flex-col relative transition-all duration-200 w-64 lg:w-auto border-r border-background-tertiary`}
+            className={`bg-background-primary ${height} flex flex-col relative transition-all duration-200 w-64 lg:w-auto border-r border-background-tertiary`}
             style={{ width: typeof window !== 'undefined' && window.innerWidth >= 1024 ? `${sidebarWidth}px` : '256px' }}
         >
             {/* Mobile close button */}

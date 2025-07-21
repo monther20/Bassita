@@ -12,31 +12,40 @@ export default function AuthLayout({
     <div className="relative flex items-center min-h-screen bg-background-primary">
       <div className="flex flex-col lg:flex-row justify-between w-full px-4 md:px-8 lg:px-22 py-4 lg:py-0 items-center z-1">
         <div className="hidden lg:flex flex-col gap-6 lg:gap-10 items-center z-1">
-          <div className="flex flex-col gap-6 lg:gap-10">
-            <Card
-              width="200"
-              height="120"
-              title="✨ Welcome Task"
-              description="Get ready to dance!"
-              className="rotate-slight-reverse card-right"
-              members={["✔"]}
-            />
-            <Card
-              width="200"
-              height="120"
-              title="🎯 Login Flow"
-              description="Simple and secure"
-              className="rotate-slight card-left"
-              members={["🔥"]}
-            />
-            <Card
-              width="200"
-              height="120"
-              title="🚀 Get Started"
-              description="Create your profile and explore"
-              className="rotate-slight-reverse card-right"
-              members={["→"]}
-            />
+          <div className="flex flex-col gap-6 lg:gap-10 w-full">
+            <div
+              className={`w-3/4 h-26 bg-gradient-to-br from-spotlight-purple to-spotlight-pink rounded-lg p-0.5 rotate-slight-reverse card-right`}
+            >
+              <Card
+                width=""
+                height=""
+                title="✨ Welcome Task"
+                description="Get ready to dance!"
+                members={["✔"]}
+              />
+            </div>
+            <div
+              className={`w-3/4 h-26 bg-gradient-to-br from-spotlight-purple to-spotlight-pink rounded-lg p-0.5 rotate-slight card-left`}
+            >
+              <Card
+                width="200"
+                height="120"
+                title="🎯 Login Flow"
+                description="Simple and secure"
+                members={["🔥"]}
+              />
+            </div>
+            <div
+              className={`w-3/4 h-26 bg-gradient-to-br from-spotlight-purple to-spotlight-pink rounded-lg p-0.5 rotate-slight-reverse card-right`}
+            >
+              <Card
+                width="200"
+                height="120"
+                title="🚀 Get Started"
+                description="Create your profile and explore"
+                members={["→"]}
+              />
+            </div>
           </div>
           <div className="flex flex-col gap-6 lg:gap-10">
             <Image

@@ -22,7 +22,7 @@ export function ProtectedLayout({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Header height is h-18 which equals 72px (18 * 0.25rem * 16)
-  const sidebarHeight = !showHeader ? "h-screen" : "h-[calc(100vh-4.5rem)]";
+  const sidebarHeight = !showHeader ? "h-screen" : "h-[calc(100vh-4.2rem)]";
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -35,6 +35,7 @@ export function ProtectedLayout({
           <Header
             onToggleSidebar={toggleSidebar}
             showSidebarToggle={showSidebar}
+
           />
         )}
         <div className="flex relative">
@@ -63,7 +64,7 @@ export function ProtectedLayout({
           )}
 
           <main className={`
-            flex-1 p-4 lg:p-6 transition-all duration-300
+            flex-1 p-4 lg:p-6 transition-all duration-300 ${sidebarHeight} overflow-y-auto
             ${showSidebar ? 'lg:ml-0' : ''}
           `}>
             {children}

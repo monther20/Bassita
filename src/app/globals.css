@@ -207,11 +207,15 @@
 
   /* Card rotation utilities */
   .rotate-slight {
-    transform: rotate(-2deg);
+    transform: rotate(-1deg);
   }
 
   .rotate-slight-reverse {
-    transform: rotate(2deg);
+    transform: rotate(1deg);
+  }
+
+  .rotate-none {
+    transform: rotate(0deg);
   }
 
   /* Glow effects */
@@ -221,6 +225,14 @@
 
   .glow-pink {
     box-shadow: var(--shadow-glow-pink);
+  }
+
+  .glow-blue {
+    box-shadow: var(--shadow-glow-blue);
+  }
+
+  .glow-green {
+    box-shadow: var(--shadow-glow-green);
   }
 
   /* Neon text effect */
@@ -353,6 +365,54 @@
     .icon-lg {
       width: 2.25rem;
       height: 2.25rem;
+    }
+  }
+
+  /* Loading animations */
+  .animate-shimmer {
+    animation: shimmer 1s ease-in-out infinite;
+  }
+
+  .animate-shimmer-slide {
+    animation: shimmer-slide 1s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+
+    0%,
+    100% {
+      opacity: 0.4;
+    }
+
+    50% {
+      opacity: 0.8;
+    }
+  }
+
+  @keyframes shimmer-slide {
+    0% {
+      transform: translateX(-50%);
+    }
+
+    100% {
+      transform: translateX(150%);
+    }
+  }
+
+  /* Fade in animation */
+  .animate-fade-in {
+    animation: fade-in 0.6s ease-out;
+  }
+
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 }

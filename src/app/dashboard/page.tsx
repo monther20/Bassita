@@ -1,66 +1,296 @@
 "use client";
 
+import { useState, useEffect } from 'react';
+import DashboardSection from '@/components/dashboard/dashboardSection';
 import ProtectedLayout from '@/components/layouts/ProtectedLayout';
-import { useAuth } from '@/hooks';
+import DashboardSectionSkeleton from '@/components/skeletons/DashboardSectionSkeleton';
+
+const recentlyViewedCards = [
+  {
+    title: "Marketing Campaign",
+    description: "Creative Agency",
+    members: [{ name: "JD" }, { name: "SM" }],
+  },
+  {
+    title: "Marketing Campaign",
+    description: "Creative Agency",
+    members: [{ name: "JD" }, { name: "SM" }],
+  },
+  {
+    title: "Marketing Campaign",
+    description: "Creative Agency",
+    members: [{ name: "JD" }, { name: "SM" }],
+  },
+
+];
+
+const workspaces = [
+  {
+    id: "Creative Agency",
+    title: "Creative Agency",
+    cards: [
+      {
+        title: "Workspace 1",
+        lastUpdated: "2h ago",
+        members: [{ name: "JD" }, { name: "SM" }],
+      },
+      {
+        title: "Workspace 2",
+        lastUpdated: "1h ago",
+        members: [{ name: "JD" }, { name: "SM" }],
+      },
+      {
+        title: "Workspace 3",
+        lastUpdated: "1h ago",
+        members: [{ name: "JD" }, { name: "SM" }],
+      },
+
+      {
+        title: "Workspace 4",
+        lastUpdated: "1h ago",
+        members: [{ name: "JD" }, { name: "SM" }],
+      },
+
+      {
+        title: "Workspace 5",
+        lastUpdated: "1h ago",
+        members: [{ name: "JD" }, { name: "SM" }],
+      },
+
+      {
+        title: "Workspace 6",
+        lastUpdated: "1h ago",
+        members: [{ name: "JD" }, { name: "SM" }],
+      },
+    ]
+  },
+
+  {
+    id: "Marketing Campaign",
+    title: "Marketing Campaign",
+    cards: [
+      {
+        title: "Workspace 1",
+        lastUpdated: "2h ago",
+        members: [{ name: "JD" }],
+      },
+      {
+        title: "Workspace 2",
+        lastUpdated: "1h ago",
+        members: [{ name: "JD" }],
+      },
+      {
+        title: "Workspace 3",
+        lastUpdated: "1h ago",
+        members: [{ name: "JD" }],
+      },
+      {
+        title: "Workspace 4",
+        lastUpdated: "1h ago",
+        members: [{ name: "JD" }],
+      },
+      {
+        title: "Workspace 5",
+        lastUpdated: "1h ago",
+        members: [{ name: "JD" }],
+      },
+      {
+        title: "Workspace 6",
+        lastUpdated: "1h ago",
+        members: [{ name: "JD" }],
+      },
+
+    ]
+  },
+
+
+
+];
+
+const guestWorkspaces = [
+  {
+    id: "Creative Agency",
+    title: "Creative Agency",
+    cards: [
+      {
+        title: "Workspace 1",
+        lastUpdated: "2h ago",
+        members: [{ name: "JD" }, { name: "SM" }],
+      },
+      {
+        title: "Workspace 2",
+        lastUpdated: "1h ago",
+        members: [{ name: "JD" }, { name: "SM" }],
+      },
+      {
+        title: "Workspace 3",
+        lastUpdated: "1h ago",
+        members: [{ name: "JD" }, { name: "SM" }],
+      },
+
+      {
+        title: "Workspace 4",
+        lastUpdated: "1h ago",
+        members: [{ name: "JD" }, { name: "SM" }],
+      },
+
+      {
+        title: "Workspace 5",
+        lastUpdated: "1h ago",
+        members: [{ name: "JD" }, { name: "SM" }],
+      },
+
+      {
+        title: "Workspace 6",
+        lastUpdated: "1h ago",
+        members: [{ name: "JD" }, { name: "SM" }],
+      },
+    ]
+  },
+
+  {
+    id: "Marketing Campaign",
+    title: "Marketing Campaign",
+    cards: [
+      {
+        title: "Workspace 1",
+        lastUpdated: "2h ago",
+        members: [{ name: "JD" }],
+      },
+      {
+        title: "Workspace 2",
+        lastUpdated: "1h ago",
+        members: [{ name: "JD" }],
+      },
+      {
+        title: "Workspace 3",
+        lastUpdated: "1h ago",
+        members: [{ name: "JD" }],
+      },
+      {
+        title: "Workspace 4",
+        lastUpdated: "1h ago",
+        members: [{ name: "JD" }],
+      },
+      {
+        title: "Workspace 5",
+        lastUpdated: "1h ago",
+        members: [{ name: "JD" }],
+      },
+      {
+        title: "Workspace 6",
+        lastUpdated: "1h ago",
+        members: [{ name: "JD" }],
+      },
+
+    ]
+  },
+
+
+
+];
 
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const [isRecentlyViewedLoading, setIsRecentlyViewedLoading] = useState(true);
+  const [isWorkspacesLoading, setIsWorkspacesLoading] = useState(true);
+  const [isGuestWorkspacesLoading, setIsGuestWorkspacesLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate API calls with staggered loading
+    const loadRecentlyViewed = setTimeout(() => {
+      setIsRecentlyViewedLoading(false);
+    }, 1000);
+
+    const loadWorkspaces = setTimeout(() => {
+      setIsWorkspacesLoading(false);
+    }, 1500);
+
+    const loadGuestWorkspaces = setTimeout(() => {
+      setIsGuestWorkspacesLoading(false);
+    }, 2000);
+
+    return () => {
+      clearTimeout(loadRecentlyViewed);
+      clearTimeout(loadWorkspaces);
+      clearTimeout(loadGuestWorkspaces);
+    };
+  }, []);
 
   return (
     <ProtectedLayout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-display text-text-primary">
-            Welcome back, {user?.name}!
-          </h1>
-          <p className="text-gray-400 mt-2">
-            Here&apos;s what&apos;s happening with your projects today.
-          </p>
+      <div className="space-y-6 responsive-px-sm max-w-screen-2xl mx-auto">
+        <div className="space-y-1">
+          <div className="text-text-primary text-2xl font-display font-semibold">
+            Recently Viewed
+          </div>
+          {isRecentlyViewedLoading ? (
+            <DashboardSectionSkeleton cardCount={3} />
+          ) : (
+            <div className="animate-fade-in">
+              <DashboardSection
+                cards={recentlyViewedCards}
+              />
+            </div>
+          )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="bg-background-primary border border-gray-600 rounded-lg p-6">
-            <h3 className="text-lg font-display text-text-primary mb-2">
-              Total Tasks
-            </h3>
-            <p className="text-3xl font-bold text-spotlight-purple">42</p>
+        <div className="mt-12 space-y-1">
+          <div className="text-text-primary text-2xl font-display font-semibold">
+            Workspaces
           </div>
-
-          <div className="bg-background-primary border border-gray-600 rounded-lg p-6">
-            <h3 className="text-lg font-display text-text-primary mb-2">
-              Completed
-            </h3>
-            <p className="text-3xl font-bold text-green-500">28</p>
-          </div>
-
-          <div className="bg-background-primary border border-gray-600 rounded-lg p-6">
-            <h3 className="text-lg font-display text-text-primary mb-2">
-              In Progress
-            </h3>
-            <p className="text-3xl font-bold text-yellow-500">14</p>
-          </div>
-        </div>
-
-        <div className="bg-background-primary border border-gray-600 rounded-lg p-6">
-          <h3 className="text-lg font-display text-text-primary mb-4">
-            Recent Activity
-          </h3>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-text-primary">Task &quot;Setup Authentication&quot; completed</span>
-              <span className="text-gray-400 text-sm">2 minutes ago</span>
+          {isWorkspacesLoading ? (
+            <div className="space-y-6">
+              <DashboardSectionSkeleton hasLabel={true} hasInfo={true} cardCount={5} />
+              <DashboardSectionSkeleton hasLabel={true} hasInfo={true} cardCount={5} />
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-text-primary">New project &quot;E-commerce App&quot; created</span>
-              <span className="text-gray-400 text-sm">1 hour ago</span>
+          ) : (
+            <div className="space-y-6 animate-fade-in">
+              {workspaces.map((workspace) => (
+                <DashboardSection
+                  key={workspace.id}
+                  label={workspace.title}
+                  info={{
+                    members: workspace.cards.length,
+                    boards: workspace.cards.length,
+                    owner: "Owner",
+                  }}
+                  cards={workspace.cards}
+                  workspaceId={workspace.id}
+                />
+              ))}
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-text-primary">Team member invited to &quot;Mobile App&quot;</span>
-              <span className="text-gray-400 text-sm">3 hours ago</span>
+          )}
+
+          <div className="mt-12 space-y-1">
+            <div className="text-text-primary text-2xl font-display font-semibold">
+              Guest Workspaces
             </div>
+            {isGuestWorkspacesLoading ? (
+              <div className="space-y-6">
+                <DashboardSectionSkeleton hasLabel={true} hasInfo={true} cardCount={5} />
+                <DashboardSectionSkeleton hasLabel={true} hasInfo={true} cardCount={5} />
+              </div>
+            ) : (
+              <div className="space-y-6 animate-fade-in">
+                {guestWorkspaces.map((workspace) => (
+                  <DashboardSection
+                    key={workspace.id}
+                    label={workspace.title}
+                    info={{
+                      members: workspace.cards.length,
+                      boards: workspace.cards.length,
+                      owner: "Owner",
+                    }}
+                    cards={workspace.cards}
+                    workspaceId={workspace.id}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
-    </ProtectedLayout>
+
+    </ProtectedLayout >
   );
 }
