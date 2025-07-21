@@ -5,6 +5,7 @@ import SearchInput from "../searchInput";
 import SearchModal from "../searchModal";
 import { Button } from "../buttoon";
 import { FiMenu, FiSearch, FiPlus } from "react-icons/fi";
+import Link from "next/link";
 
 interface HeaderProps {
     height?: string;
@@ -37,7 +38,7 @@ export default function Header({
                         )}
 
                         {/* Logo */}
-                        <div className="flex-shrink-0">
+                        <Link href="/dashboard" className="flex-shrink-0">
                             <Image
                                 src="/logo.png"
                                 alt="Company logo"
@@ -46,7 +47,7 @@ export default function Header({
                                 className=" w-auto md:h-12"
                                 priority
                             />
-                        </div>
+                        </Link>
                     </div>
 
                     {/* Center section - Search (hidden on mobile) */}

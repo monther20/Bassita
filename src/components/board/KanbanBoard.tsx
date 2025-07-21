@@ -3,15 +3,22 @@
 import BoardColumn from "./BoardColumn";
 import AddColumnButton from "./AddColumnButton";
 
+interface Label {
+  id: string;
+  name: string;
+  color: string;
+}
+
 interface Task {
   id: string;
   title: string;
   description?: string;
-  emoji?: string;
+  icon?: string;
   assignee?: {
     name: string;
     color: string;
   };
+  labels?: Label[];
 }
 
 interface Column {
@@ -26,13 +33,21 @@ interface KanbanBoardProps {
   onAddColumn?: () => void;
   onAddTask?: (columnId: string) => void;
   onTaskClick?: (taskId: string) => void;
+  onTaskMove?: (taskId: string, sourceColumnId: string, targetColumnId: string) => void;
+  onDragStart?: (taskId: string) => void;
+  onDragEnd?: () => void;
+  draggedTask?: string | null;
 }
 
 export default function KanbanBoard({
   columns,
   onAddColumn = () => console.log("Add column clicked"),
   onAddTask = (columnId) => console.log("Add task to column:", columnId),
-  onTaskClick = (taskId) => console.log("Task clicked:", taskId)
+  onTaskClick = (taskId) => console.log("Task clicked:", taskId),
+  onTaskMove = (taskId, sourceColumnId, targetColumnId) => console.log("Move task:", taskId, sourceColumnId, targetColumnId),
+  onDragStart = (taskId) => console.log("Drag start:", taskId),
+  onDragEnd = () => console.log("Drag end"),
+  draggedTask = null
 }: KanbanBoardProps) {
   return (
     <div className="flex-1 p-6 overflow-x-auto">
@@ -42,11 +57,16 @@ export default function KanbanBoard({
           {columns.map((column) => (
             <BoardColumn
               key={column.id}
+              columnId={column.id}
               title={column.title}
               tasks={column.tasks}
               badgeColor={column.badgeColor}
               onAddTask={() => onAddTask(column.id)}
               onTaskClick={onTaskClick}
+              onTaskMove={onTaskMove}
+              onDragStart={onDragStart}
+              onDragEnd={onDragEnd}
+              draggedTask={draggedTask}
             />
           ))}
 

@@ -1,28 +1,48 @@
 "use client";
 
-import React from "react";
-import { useMemo, useState, useRef, useCallback, useEffect } from "react";
+import React, { useState, useMemo, useRef, useCallback, useEffect } from "react";
+import * as Icons from "react-icons/fi";
+import TaskLabels from "./TaskLabels";
 
-interface TaskCardProps {
+interface Label {
+  id: string;
+  name: string;
+  color: string;
+}
+
+interface Task {
+  id: string;
   title: string;
   description?: string;
-  emoji?: string;
+  icon?: string;
   assignee?: {
     name: string;
     color: string;
   };
+  labels?: Label[];
+}
+
+interface TaskCardProps {
+  task: Task;
+  columnId: string;
   className?: string;
   onClick?: () => void;
+  onDragStart?: (e: React.DragEvent, task: Task, sourceColumnId: string) => void;
+  onDragEnd?: () => void;
+  isDragging?: boolean;
 }
 
 export default function TaskCard({
-  title,
-  description,
-  emoji,
-  assignee,
+  task,
+  columnId,
   className = "",
-  onClick = () => {}
+  onClick,
+  onDragStart,
+  onDragEnd,
+  isDragging = false
 }: TaskCardProps) {
+  const [isCurrentlyDragging, setIsCurrentlyDragging] = useState(false);
+
   // Extract border color and create hover background color
   const hoverBackgroundColor = useMemo(() => {
     const borderColorMap: { [key: string]: string } = {
@@ -48,7 +68,7 @@ export default function TaskCard({
 
   // Mouse tracking handlers
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!cardRef.current) return;
+    if (!cardRef.current || isCurrentlyDragging) return;
 
     // Throttle mouse move events for better performance
     if (throttleRef.current) {
@@ -64,15 +84,42 @@ export default function TaskCard({
 
       setMousePosition({ x, y });
     });
-  }, []);
+  }, [isCurrentlyDragging]);
 
   const handleMouseEnter = useCallback(() => {
-    setIsHovered(true);
-  }, []);
+    if (!isCurrentlyDragging) {
+      setIsHovered(true);
+    }
+  }, [isCurrentlyDragging]);
 
   const handleMouseLeave = useCallback(() => {
     setIsHovered(false);
   }, []);
+
+  // Drag handlers
+  const handleDragStart = (e: React.DragEvent) => {
+    setIsCurrentlyDragging(true);
+    setIsHovered(false);
+
+    // Set drag data
+    e.dataTransfer.setData("application/json", JSON.stringify({
+      taskId: task.id,
+      sourceColumnId: columnId,
+      task: task
+    }));
+    e.dataTransfer.effectAllowed = "move";
+
+    if (onDragStart) {
+      onDragStart(e, task, columnId);
+    }
+  };
+
+  const handleDragEnd = () => {
+    setIsCurrentlyDragging(false);
+    if (onDragEnd) {
+      onDragEnd();
+    }
+  };
 
   // Cleanup on unmount
   useEffect(() => {
@@ -84,68 +131,85 @@ export default function TaskCard({
   }, []);
 
   return (
-    <button
-      ref={cardRef}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onClick={onClick}
-      className={`relative flex flex-col text-left w-full rounded-xl p-4 bg-background-tertiary font-display transition-all duration-200 hover:scale-[1.02] ${className} overflow-hidden cursor-pointer`}
-      style={{
-        background: isHovered
-          ? `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, ${hoverBackgroundColor} 0%, transparent 70%), 
-             linear-gradient(135deg, ${hoverBackgroundColor} 0%, transparent 50%, ${hoverBackgroundColor} 100%),
-             var(--color-background-tertiary)`
-          : undefined,
-        transition: isHovered ? 'none' : 'background 0.3s ease-out',
-      }}
+    <div
+      draggable
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      className={`${(isCurrentlyDragging || isDragging) ? 'opacity-50 scale-95' : ''
+        } transition-all duration-200`}
     >
-      {/* Animated overlay for flowing effect */}
-      {isHovered && (
-        <div
-          className="absolute inset-0 pointer-events-none opacity-30"
-          style={{
-            background: `conic-gradient(from 0deg at ${mousePosition.x}% ${mousePosition.y}%, 
-              ${hoverBackgroundColor} 0deg, 
-              transparent 90deg, 
-              ${hoverBackgroundColor} 180deg, 
-              transparent 270deg, 
-              ${hoverBackgroundColor} 360deg)`,
-            animation: 'card-pulse 2s ease-in-out infinite',
-          }}
-        />
-      )}
+      <button
+        ref={cardRef}
+        onMouseMove={handleMouseMove}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onClick={onClick}
+        className={`relative flex flex-col text-left w-full rounded-xl p-4 bg-background-tertiary font-display transition-all duration-200 hover:scale-[1.02] ${className} overflow-hidden ${isCurrentlyDragging ? 'cursor-grabbing' : 'cursor-grab'
+          }`}
+        style={{
+          background: isHovered && !isCurrentlyDragging
+            ? `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, ${hoverBackgroundColor} 0%, transparent 70%), 
+               linear-gradient(135deg, ${hoverBackgroundColor} 0%, transparent, ${hoverBackgroundColor} 100%),
+               var(--color-background-tertiary)`
+            : undefined,
+          transition: isHovered && !isCurrentlyDragging ? 'none' : 'background 0.3s ease-out',
+        }}
+      >
+        {/* Animated overlay for flowing effect */}
+        {isHovered && !isCurrentlyDragging && (
+          <div
+            className="absolute inset-0 pointer-events-none opacity-30"
+            style={{
+              background: `conic-gradient(from 0deg at ${mousePosition.x}% ${mousePosition.y}%, 
+                ${hoverBackgroundColor} 0deg, 
+                transparent 90deg, 
+                ${hoverBackgroundColor} 180deg, 
+                transparent 270deg, 
+                ${hoverBackgroundColor} 360deg)`,
+              animation: 'card-pulse 2s ease-in-out infinite',
+            }}
+          />
+        )}
 
-      <div className="flex flex-col gap-3 relative z-10">
-        {/* Task header with emoji and title */}
-        <div className="flex items-start gap-2">
-          {emoji && (
-            <span className="text-lg flex-shrink-0">{emoji}</span>
+        <div className="flex flex-col gap-3 relative z-10">
+          {/* Task labels */}
+          {task.labels && task.labels.length > 0 && (
+            <TaskLabels labels={task.labels} maxVisible={3} />
           )}
-          <div className="flex-1">
-            <h3 className="text-text-primary font-medium text-sm leading-tight">
-              {title}
-            </h3>
-            {description && (
-              <p className="text-text-secondary text-xs mt-1 leading-relaxed">
-                {description}
-              </p>
-            )}
-          </div>
-        </div>
 
-        {/* Assignee avatar */}
-        {assignee && (
-          <div className="flex justify-end">
-            <div
-              className={`w-6 h-6 rounded-full bg-${assignee.color} text-text-primary text-xs font-medium flex items-center justify-center`}
-              title={assignee.name}
-            >
-              {assignee.name}
+          {/* Task header with icon and title */}
+          <div className="flex items-start gap-2">
+            {task.icon && (() => {
+              const IconComponent = (Icons as any)[task.icon];
+              return IconComponent ? (
+                <IconComponent className="text-lg flex-shrink-0 text-text-secondary" />
+              ) : null;
+            })()}
+            <div className="flex-1">
+              <h3 className="text-text-primary font-medium text-sm leading-tight">
+                {task.title}
+              </h3>
+              {task.description && (
+                <p className="text-text-secondary text-xs mt-1 leading-relaxed">
+                  {task.description}
+                </p>
+              )}
             </div>
           </div>
-        )}
-      </div>
-    </button>
+
+          {/* Assignee avatar */}
+          {task.assignee && (
+            <div className="flex justify-end">
+              <div
+                className={`w-6 h-6 rounded-full bg-${task.assignee.color} text-text-primary text-xs font-medium flex items-center justify-center`}
+                title={task.assignee.name}
+              >
+                {task.assignee.name}
+              </div>
+            </div>
+          )}
+        </div>
+      </button>
+    </div>
   );
 }

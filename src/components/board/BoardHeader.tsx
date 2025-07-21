@@ -24,7 +24,7 @@ export default function BoardHeader({
   onMenu = () => console.log("Menu clicked")
 }: BoardHeaderProps) {
   return (
-    <div className="bg-background-secondary border-b border-background-tertiary p-1">
+    <div className="bg-background-secondary border-b border-background-tertiary p-1 px-6">
       <div className="flex items-center justify-between max-w-screen mx-auto">
         {/* Left section - Board title with icon */}
         <div className="flex items-center responsive-gap-sm">
@@ -55,11 +55,8 @@ export default function BoardHeader({
           <Button
             label="Share"
             onClick={onShare}
-            variant="outline"
             size="sm"
-            icon={<FiShare />}
             iconPosition="left"
-            className="border-spotlight-purple text-spotlight-purple hover:bg-spotlight-purple hover:text-text-primary"
           />
           <button
             onClick={onMenu}
