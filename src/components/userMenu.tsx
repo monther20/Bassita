@@ -42,24 +42,24 @@ export function UserMenu() {
       {/* Notification bell */}
       <button
         onClick={() => console.log("click")}
-        className="touch-target flex items-center justify-center bg-background-tertiary rounded-full hover:shadow-glow-purple transition-colors p-2 md:p-2.5"
+        className="touch-target flex items-center justify-center bg-background-tertiary rounded-full hover:shadow-glow-purple transition-colors cursor-pointer"
       >
-        <BsBellFill className="icon-sm text-spotlight-purple" />
+        <BsBellFill className="icon-xs text-spotlight-purple" />
       </button>
 
       {/* Info button - hidden on very small screens */}
       <button
         onClick={() => console.log("click")}
-        className="hidden sm:flex touch-target items-center justify-center bg-background-tertiary rounded-full hover:shadow-glow-purple transition-colors p-2 md:p-2.5"
+        className="hidden sm:flex touch-target items-center justify-center bg-background-tertiary rounded-full hover:shadow-glow-purple transition-colors cursor-pointer"
       >
-        <FiInfo className="icon-sm text-spotlight-purple" />
+        <FiInfo className="icon-xs text-spotlight-purple" />
       </button>
 
       {/* User dropdown */}
       <div className="relative" ref={dropdownRef}>
         <button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className="touch-target flex items-center responsive-gap-xs bg-background-tertiary rounded-full hover:shadow-glow-purple transition-all duration-200 p-2 md:p-2.5"
+          className="touch-target flex items-center responsive-gap-xs bg-background-tertiary rounded-full hover:shadow-glow-purple transition-all duration-200 p-2 cursor-pointer"
         >
           {user.avatar && (
             <Image

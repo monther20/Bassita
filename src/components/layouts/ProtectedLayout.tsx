@@ -32,8 +32,7 @@ export function ProtectedLayout({
     <AuthGuard>
       <div className={`min-h-screen bg-background-tertiary ${className}`}>
         {showHeader && (
-          <Header 
-            height="h-18" 
+          <Header
             onToggleSidebar={toggleSidebar}
             showSidebarToggle={showSidebar}
           />
@@ -43,26 +42,26 @@ export function ProtectedLayout({
             <>
               {/* Mobile overlay */}
               {isSidebarOpen && (
-                <div 
+                <div
                   className="fixed inset-0 bg-black/50 z-40 lg:hidden"
                   onClick={() => setIsSidebarOpen(false)}
                 />
               )}
-              
+
               {/* Sidebar */}
               <div className={`
                 fixed lg:relative z-50 lg:z-auto
                 transform transition-transform duration-300 ease-in-out
                 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
               `}>
-                <Sidebar 
+                <Sidebar
                   height={sidebarHeight}
                   onClose={() => setIsSidebarOpen(false)}
                 />
               </div>
             </>
           )}
-          
+
           <main className={`
             flex-1 p-4 lg:p-6 transition-all duration-300
             ${showSidebar ? 'lg:ml-0' : ''}
