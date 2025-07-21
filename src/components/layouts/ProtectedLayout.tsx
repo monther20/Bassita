@@ -64,7 +64,7 @@ export function ProtectedLayout({
           )}
 
           <main className={`
-            flex-1 p-4 lg:p-6 transition-all duration-300 ${sidebarHeight} overflow-y-auto
+            flex-1  transition-all duration-300 ${sidebarHeight} overflow-y-auto
             ${showSidebar ? 'lg:ml-0' : ''}
           `}>
             {children}

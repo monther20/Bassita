@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import DashboardSection from '@/components/dashboard/dashboardSection';
 import ProtectedLayout from '@/components/layouts/ProtectedLayout';
 import DashboardSectionSkeleton from '@/components/skeletons/DashboardSectionSkeleton';
+import { createBoardSlug } from '@/lib/utils';
 
 const recentlyViewedCards = [
   {
@@ -191,9 +193,15 @@ const guestWorkspaces = [
 ];
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [isRecentlyViewedLoading, setIsRecentlyViewedLoading] = useState(true);
   const [isWorkspacesLoading, setIsWorkspacesLoading] = useState(true);
   const [isGuestWorkspacesLoading, setIsGuestWorkspacesLoading] = useState(true);
+
+  const handleCardClick = (cardTitle: string) => {
+    const boardSlug = createBoardSlug(cardTitle);
+    router.push(`/board/${boardSlug}`);
+  };
 
   useEffect(() => {
     // Simulate API calls with staggered loading
@@ -218,7 +226,7 @@ export default function DashboardPage() {
 
   return (
     <ProtectedLayout>
-      <div className="space-y-6 responsive-px-sm max-w-screen-2xl mx-auto">
+      <div className="space-y-6 responsive-px-sm max-w-screen-2xl mx-auto p-6">
         <div className="space-y-1">
           <div className="text-text-primary text-2xl font-display font-semibold">
             Recently Viewed
@@ -229,6 +237,7 @@ export default function DashboardPage() {
             <div className="animate-fade-in">
               <DashboardSection
                 cards={recentlyViewedCards}
+                onCardClick={handleCardClick}
               />
             </div>
           )}
@@ -256,6 +265,7 @@ export default function DashboardPage() {
                   }}
                   cards={workspace.cards}
                   workspaceId={workspace.id}
+                  onCardClick={handleCardClick}
                 />
               ))}
             </div>
@@ -283,6 +293,7 @@ export default function DashboardPage() {
                     }}
                     cards={workspace.cards}
                     workspaceId={workspace.id}
+                    onCardClick={handleCardClick}
                   />
                 ))}
               </div>

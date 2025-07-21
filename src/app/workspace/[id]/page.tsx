@@ -7,6 +7,7 @@ import Card from "@/components/card";
 import { useRouter } from "next/navigation";
 import { FiArrowLeft } from "react-icons/fi";
 import CardSkeleton from "@/components/skeletons/CardSkeleton";
+import { createBoardSlug } from '@/lib/utils';
 
 export default function WorkspacePage() {
   const params = useParams();
@@ -28,32 +29,32 @@ export default function WorkspacePage() {
           },
           cards: [
             {
-              title: "Workspace 1",
+              title: "Board 1",
               lastUpdated: "2h ago",
               members: [{ name: "JD" }, { name: "SM" }],
             },
             {
-              title: "Workspace 2",
+              title: "Board 2",
               lastUpdated: "1h ago",
               members: [{ name: "JD" }, { name: "SM" }],
             },
             {
-              title: "Workspace 3",
+              title: "Board 3",
               lastUpdated: "1h ago",
               members: [{ name: "JD" }, { name: "SM" }],
             },
             {
-              title: "Workspace 4",
+              title: "Board 4",
               lastUpdated: "1h ago",
               members: [{ name: "JD" }, { name: "SM" }],
             },
             {
-              title: "Workspace 5",
+              title: "Board 5",
               lastUpdated: "1h ago",
               members: [{ name: "JD" }, { name: "SM" }],
             },
             {
-              title: "Workspace 6",
+              title: "Board 6",
               lastUpdated: "1h ago",
               members: [{ name: "JD" }, { name: "SM" }],
             },
@@ -100,7 +101,7 @@ export default function WorkspacePage() {
           ],
         },
       };
-      
+
       setWorkspace(workspaceData[workspaceId]);
       setIsLoading(false);
     }, 1200);
@@ -117,6 +118,11 @@ export default function WorkspacePage() {
 
   const getRandomColor = () => {
     return spotlightColors[Math.floor(Math.random() * spotlightColors.length)];
+  };
+
+  const handleCardClick = (cardTitle: string) => {
+    const boardSlug = createBoardSlug(cardTitle);
+    router.push(`/board/${boardSlug}`);
   };
 
   if (isLoading) {
@@ -146,13 +152,12 @@ export default function WorkspacePage() {
           {/* Boards grid skeleton */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {Array.from({ length: 8 }).map((_, index) => (
-              <CardSkeleton 
+              <CardSkeleton
                 key={index}
-                className={`${
-                  Math.random() > 0.5
-                    ? "rotate-slight"
-                    : "rotate-slight-reverse"
-                } border-2 border-background-secondary`}
+                className={`${Math.random() > 0.5
+                  ? "rotate-slight"
+                  : "rotate-slight-reverse"
+                  } border-2 border-background-secondary`}
               />
             ))}
           </div>
@@ -180,7 +185,7 @@ export default function WorkspacePage() {
 
   return (
     <ProtectedLayout>
-      <div className="space-y-6 responsive-px-sm max-w-screen-2xl mx-auto animate-fade-in">
+      <div className="space-y-6 responsive-px-sm max-w-screen-2xl mx-auto animate-fade-in p-6">
         {/* Header */}
         <div className="flex items-center gap-4">
           <button
@@ -227,11 +232,12 @@ export default function WorkspacePage() {
               members={card.members.map((member: any) => member.name)}
               width="w-full"
               height="h-30"
-              className={`bg-background-secondary ${
-                Math.random() > 0.5
-                  ? "rotate-slight hover:rotate-1"
-                  : "rotate-slight-reverse hover:-rotate-1"
-              } cursor-pointer transition-transform duration-200 border-2 ${getRandomColor()} hover:bg-background-secondary/50`}
+              membersSize="w-8 h-8"
+              onClick={() => handleCardClick(card.title)}
+              className={`bg-background-secondary ${Math.random() > 0.5
+                ? "rotate-slight hover:rotate-1"
+                : "rotate-slight-reverse hover:-rotate-1"
+                } cursor-pointer transition-transform duration-200 border-2 ${getRandomColor()} hover:bg-background-secondary/50`}
             />
           ))}
         </div>

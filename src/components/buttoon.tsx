@@ -19,6 +19,7 @@ interface ButtonProps {
   mobileSize?: ButtonSize;
   height?: string;
   backgroundColor?: string;
+  hover?: string;
 }
 
 const sizeClasses = {
@@ -44,16 +45,17 @@ export const Button = ({
   disabled = false,
   fullWidth = false,
   mobileSize,
+  hover = "hover:shadow-glow-purple",
 }: ButtonProps) => {
 
   const variantClasses = {
-    primary: `${backgroundColor} ${textColor} hover:shadow-glow-purple`,
+    primary: `${backgroundColor} ${textColor} ${hover}`,
     secondary: "bg-background-secondary text-text-primary hover:bg-background-tertiary border border-background-tertiary",
     outline: "border border-spotlight-purple text-spotlight-purple hover:bg-spotlight-purple hover:text-text-primary",
     ghost: "text-text-primary hover:bg-background-secondary"
   };
 
-  const baseClasses = `relative rounded-full font-display cursor-pointer font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-spotlight-purple focus:ring-offset-2 focus:ring-offset-background-primary disabled:opacity-50 disabled:cursor-not-allowed ${height}`;
+  const baseClasses = `relative rounded-full font-display cursor-pointer font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${height}`;
 
   const currentSize = mobileSize ? `${sizeClasses[mobileSize]} md:${sizeClasses[size].replace('touch-target', '')}` : sizeClasses[size];
   const widthClass = fullWidth ? "w-full" : "";

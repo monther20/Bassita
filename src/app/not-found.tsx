@@ -43,28 +43,22 @@ export default function NotFound() {
         <div className="space-y-4">
           <Button
             label="Go Home"
-            onclick={handleGoHome}
+            onClick={handleGoHome}
             backgroundColor="bg-gradient-to-r from-spotlight-purple to-spotlight-pink"
             hover="hover:shadow-glow-purple"
-            borderColor="border-background-primary"
             textColor="text-text-primary"
-            textSize="text-lg"
-            className="w-full"
-            width="100%"
-            height="50px"
+            fullWidth={true}
+            height="h-[50px]"
           />
-          
+
           <Button
             label="Go Back"
-            onclick={() => router.back()}
+            onClick={() => router.back()}
             backgroundColor="bg-background-secondary"
             hover="hover:shadow-glow-white"
-            borderColor="border-gray-600"
             textColor="text-text-primary"
-            textSize="text-lg"
-            className="w-full"
-            width="100%"
-            height="50px"
+            fullWidth={true}
+            height="h-[50px]"
           />
         </div>
 

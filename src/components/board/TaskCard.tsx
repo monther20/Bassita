@@ -1,51 +1,28 @@
 "use client";
 
-
 import React from "react";
 import { useMemo, useState, useRef, useCallback, useEffect } from "react";
-import { FiArrowRight } from "react-icons/fi";
 
-export default function Card({
-  width = "200",
-  height = "120",
-  title = "Card",
-  membersSize = "w-6 h-6",
-  description,
-  className = "",
-  members,
-  icon,
-  lastUpdated,
-  onClick,
-}: {
-  width: string;
-  height: string;
+interface TaskCardProps {
   title: string;
-  membersSize?: string;
   description?: string;
+  emoji?: string;
+  assignee?: {
+    name: string;
+    color: string;
+  };
   className?: string;
-  members: string[];
-  icon?: string;
-  lastUpdated?: string;
   onClick?: () => void;
-}) {
-  const spotlightColors = [
-    "spotlight-purple",
-    "spotlight-pink",
-    "spotlight-blue",
-    "spotlight-green",
-    "spotlight-yellow",
-    "spotlight-red",
-  ];
+}
 
-  const memberColors = useMemo(() => {
-    const getRandomColor = () => {
-      return spotlightColors[
-        Math.floor(Math.random() * spotlightColors.length)
-      ];
-    };
-    return members.map(() => getRandomColor());
-  }, [members]);
-
+export default function TaskCard({
+  title,
+  description,
+  emoji,
+  assignee,
+  className = "",
+  onClick = () => {}
+}: TaskCardProps) {
   // Extract border color and create hover background color
   const hoverBackgroundColor = useMemo(() => {
     const borderColorMap: { [key: string]: string } = {
@@ -107,14 +84,13 @@ export default function Card({
   }, []);
 
   return (
-
     <button
       ref={cardRef}
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={onClick}
-      className={`relative flex flex-col text-left ${width} ${height} rounded-lg pl-2.5 pt-1 bg-background-tertiary font-display ${className} overflow-hidden`}
+      className={`relative flex flex-col text-left w-full rounded-xl p-4 bg-background-tertiary font-display transition-all duration-200 hover:scale-[1.02] ${className} overflow-hidden cursor-pointer`}
       style={{
         background: isHovered
           ? `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, ${hoverBackgroundColor} 0%, transparent 70%), 
@@ -140,30 +116,36 @@ export default function Card({
         />
       )}
 
-      <div className="flex flex-col gap-1 relative z-10">
-        <h1 className="text-sm text-text-primary">{title}</h1>
-        {description && <p className="text-xs text-text-tertiary">{description}</p>}
-        {lastUpdated && <p className="text-xs text-text-tertiary">Last updated {lastUpdated}</p>}
-      </div>
-      <div className="absolute bottom-2 right-2 flex flex-row gap-1 z-10">
-        {members.map((member, index) => (
-          <div
-            key={index}
-            className={`${membersSize} rounded-full text-[10px] bg-${memberColors[index]} text-text-primary flex items-center justify-center`}
-          >
-            {member}
-          </div>
-        ))}
-      </div>
-
-      {icon && (
-        <div className="absolute bottom-2 left-2 flex flex-row gap-1 z-10">
-          <div className="w-5 h-5 rounded-full flex items-center justify-center p2">
-            {icon}
+      <div className="flex flex-col gap-3 relative z-10">
+        {/* Task header with emoji and title */}
+        <div className="flex items-start gap-2">
+          {emoji && (
+            <span className="text-lg flex-shrink-0">{emoji}</span>
+          )}
+          <div className="flex-1">
+            <h3 className="text-text-primary font-medium text-sm leading-tight">
+              {title}
+            </h3>
+            {description && (
+              <p className="text-text-secondary text-xs mt-1 leading-relaxed">
+                {description}
+              </p>
+            )}
           </div>
         </div>
-      )}
-    </button>
 
+        {/* Assignee avatar */}
+        {assignee && (
+          <div className="flex justify-end">
+            <div
+              className={`w-6 h-6 rounded-full bg-${assignee.color} text-text-primary text-xs font-medium flex items-center justify-center`}
+              title={assignee.name}
+            >
+              {assignee.name}
+            </div>
+          </div>
+        )}
+      </div>
+    </button>
   );
 }

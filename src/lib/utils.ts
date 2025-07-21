@@ -24,3 +24,12 @@ export function formatTime(date: Date): string {
     hour12: true,
   }).format(date)
 }
+
+export function createBoardSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+}
