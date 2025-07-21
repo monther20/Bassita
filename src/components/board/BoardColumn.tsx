@@ -28,6 +28,7 @@ interface BoardColumnProps {
   tasks: Task[];
   badgeColor?: string;
   onAddTask?: () => void;
+  onColumnClick?: () => void;
   onTaskClick?: (taskId: string) => void;
   onTaskMove?: (taskId: string, sourceColumnId: string, targetColumnId: string) => void;
   onDragStart?: (taskId: string) => void;
@@ -41,6 +42,7 @@ export default function BoardColumn({
   tasks,
   badgeColor = "bg-spotlight-purple",
   onAddTask = () => console.log("Add task clicked"),
+  onColumnClick = () => console.log("Column clicked"),
   onTaskClick = (taskId) => console.log("Task clicked:", taskId),
   onTaskMove = (taskId, sourceColumnId, targetColumnId) => console.log("Move task:", taskId, sourceColumnId, targetColumnId),
   onDragStart = (taskId) => console.log("Drag start:", taskId),
@@ -71,6 +73,9 @@ export default function BoardColumn({
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragOver(false);
+    
+    // Clear drag state immediately when drop happens
+    onDragEnd();
     
     try {
       const dragData = JSON.parse(e.dataTransfer.getData("application/json"));
@@ -103,12 +108,25 @@ export default function BoardColumn({
       onDrop={handleDrop}
     >
       {/* Column Header */}
-      <div className="relative flex w-full items-center justify-center gap-2 mb-2 bg-background-secondary p-1 rounded-lg">
-        <h2 className="text-text-primary font-display font-medium text-base">
-          {title}
-        </h2>
-        <button className="absolute right-2 top-1/2 -translate-y-1/2 bg-spotlight-purple/20 p-1 rounded-full cursor-pointer text-text-tertiary hover:bg-spotlight-purple hover:text-text-primary transition-all duration-200" onClick={onAddTask}>
-          <FiPlus />
+      <div className="relative flex w-full items-center gap-3 mb-2 bg-background-secondary p-3 rounded-lg group">
+        {/* Clickable header area */}
+        <button
+          onClick={onColumnClick}
+          className="flex items-center gap-3 flex-1 text-left hover:bg-background-tertiary/50 rounded-md p-1 -m-1 transition-all duration-200"
+        >
+          <div className={`w-3 h-3 rounded-full ${badgeColor} shadow-sm`} />
+          <h2 className="text-text-primary font-display font-medium text-base">
+            {title}
+          </h2>
+        </button>
+        
+        {/* Add Task Button */}
+        <button 
+          className="bg-spotlight-purple/20 p-1.5 rounded-full cursor-pointer text-text-tertiary hover:bg-spotlight-purple hover:text-text-primary transition-all duration-200 opacity-70 group-hover:opacity-100" 
+          onClick={onAddTask}
+          title="Add Task"
+        >
+          <FiPlus size={14} />
         </button>
       </div>
 

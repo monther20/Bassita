@@ -299,6 +299,7 @@ export default function BoardPage({ params }: BoardPageProps) {
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [showColumnModal, setShowColumnModal] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [editingColumn, setEditingColumn] = useState<{ id: string; title: string; badgeColor: string } | null>(null);
   const [addTaskToColumn, setAddTaskToColumn] = useState<string | null>(null);
 
   const handleShare = () => {
@@ -312,7 +313,20 @@ export default function BoardPage({ params }: BoardPageProps) {
   };
 
   const handleAddColumn = () => {
+    setEditingColumn(null);
     setShowColumnModal(true);
+  };
+
+  const handleColumnClick = (columnId: string) => {
+    const column = boardData.columns.find(col => col.id === columnId);
+    if (column) {
+      setEditingColumn({
+        id: column.id,
+        title: column.title,
+        badgeColor: column.badgeColor
+      });
+      setShowColumnModal(true);
+    }
   };
 
   const handleAddTask = (columnId: string) => {
@@ -430,21 +444,35 @@ export default function BoardPage({ params }: BoardPageProps) {
     setAddTaskToColumn(null);
   };
 
-  const handleSaveColumn = (columnData: { title: string; badgeColor: string }) => {
-    setBoardData(prevBoard => ({
-      ...prevBoard,
-      columns: [
-        ...prevBoard.columns,
-        {
-          id: `column-${Date.now()}`,
-          title: columnData.title,
-          badgeColor: columnData.badgeColor,
-          tasks: []
-        }
-      ]
-    }));
+  const handleSaveColumn = (columnData: { title: string; badgeColor: string } | { id: string; title: string; badgeColor: string }) => {
+    setBoardData(prevBoard => {
+      if ('id' in columnData) {
+        // Editing existing column
+        const newColumns = prevBoard.columns.map(column =>
+          column.id === columnData.id
+            ? { ...column, title: columnData.title, badgeColor: columnData.badgeColor }
+            : column
+        );
+        return { ...prevBoard, columns: newColumns };
+      } else {
+        // Adding new column
+        return {
+          ...prevBoard,
+          columns: [
+            ...prevBoard.columns,
+            {
+              id: `column-${Date.now()}`,
+              title: columnData.title,
+              badgeColor: columnData.badgeColor,
+              tasks: []
+            }
+          ]
+        };
+      }
+    });
     
     setShowColumnModal(false);
+    setEditingColumn(null);
   };
 
   return (
@@ -463,6 +491,7 @@ export default function BoardPage({ params }: BoardPageProps) {
         <KanbanBoard
           columns={boardData.columns}
           onAddColumn={handleAddColumn}
+          onColumnClick={handleColumnClick}
           onAddTask={handleAddTask}
           onTaskClick={handleTaskClick}
           onTaskMove={handleTaskMove}
@@ -488,8 +517,12 @@ export default function BoardPage({ params }: BoardPageProps) {
       
       <ColumnModal
         isOpen={showColumnModal}
-        onClose={() => setShowColumnModal(false)}
+        onClose={() => {
+          setShowColumnModal(false);
+          setEditingColumn(null);
+        }}
         onSave={handleSaveColumn}
+        column={editingColumn}
       />
     </ProtectedLayout>
   );

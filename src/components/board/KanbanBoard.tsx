@@ -31,6 +31,7 @@ interface Column {
 interface KanbanBoardProps {
   columns: Column[];
   onAddColumn?: () => void;
+  onColumnClick?: (columnId: string) => void;
   onAddTask?: (columnId: string) => void;
   onTaskClick?: (taskId: string) => void;
   onTaskMove?: (taskId: string, sourceColumnId: string, targetColumnId: string) => void;
@@ -42,6 +43,7 @@ interface KanbanBoardProps {
 export default function KanbanBoard({
   columns,
   onAddColumn = () => console.log("Add column clicked"),
+  onColumnClick = (columnId) => console.log("Column clicked:", columnId),
   onAddTask = (columnId) => console.log("Add task to column:", columnId),
   onTaskClick = (taskId) => console.log("Task clicked:", taskId),
   onTaskMove = (taskId, sourceColumnId, targetColumnId) => console.log("Move task:", taskId, sourceColumnId, targetColumnId),
@@ -62,6 +64,7 @@ export default function KanbanBoard({
               tasks={column.tasks}
               badgeColor={column.badgeColor}
               onAddTask={() => onAddTask(column.id)}
+              onColumnClick={() => onColumnClick(column.id)}
               onTaskClick={onTaskClick}
               onTaskMove={onTaskMove}
               onDragStart={onDragStart}

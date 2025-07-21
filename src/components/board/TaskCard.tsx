@@ -121,6 +121,13 @@ export default function TaskCard({
     }
   };
 
+  // Sync local drag state with prop changes
+  useEffect(() => {
+    if (!isDragging && isCurrentlyDragging) {
+      setIsCurrentlyDragging(false);
+    }
+  }, [isDragging, isCurrentlyDragging]);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
