@@ -18,6 +18,7 @@ interface Task {
   description: string;
   icon: string;
   assignee: { name: string; color: string };
+  assignees?: Array<{ name: string; color: string }>;
   labels?: Label[];
 }
 
@@ -41,7 +42,7 @@ export default function TaskModal({
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [selectedIcon, setSelectedIcon] = useState("FiCode");
-  const [selectedAssignee, setSelectedAssignee] = useState(members[0] || null);
+  const [selectedAssignees, setSelectedAssignees] = useState<Array<{ name: string; color: string }>>([]);
   const [selectedLabels, setSelectedLabels] = useState<Label[]>([]);
   const [showIconPicker, setShowIconPicker] = useState(false);
   const [showLabelPicker, setShowLabelPicker] = useState(false);
@@ -55,14 +56,21 @@ export default function TaskModal({
         setTitle(task.title);
         setDescription(task.description);
         setSelectedIcon(task.icon || "FiCode");
-        setSelectedAssignee(task.assignee);
+        // Handle both old single assignee and new multiple assignees format
+        if (task.assignees && task.assignees.length > 0) {
+          setSelectedAssignees(task.assignees);
+        } else if (task.assignee) {
+          setSelectedAssignees([task.assignee]);
+        } else {
+          setSelectedAssignees([]);
+        }
         setSelectedLabels(task.labels || []);
       } else {
         // Creating new task
         setTitle("");
         setDescription("");
         setSelectedIcon("FiCode");
-        setSelectedAssignee(members[0] || null);
+        setSelectedAssignees([]);
         setSelectedLabels([]);
       }
     }
@@ -93,6 +101,17 @@ export default function TaskModal({
     }
   };
 
+  const handleAssigneeToggle = (member: { name: string; color: string }) => {
+    setSelectedAssignees(prev => {
+      const isSelected = prev.some(assignee => assignee.name === member.name);
+      if (isSelected) {
+        return prev.filter(assignee => assignee.name !== member.name);
+      } else {
+        return [...prev, member];
+      }
+    });
+  };
+
   const handleSave = () => {
     if (!title.trim()) return;
 
@@ -101,7 +120,9 @@ export default function TaskModal({
       title: title.trim(),
       description: description.trim(),
       icon: selectedIcon,
-      assignee: selectedAssignee,
+      // Keep backward compatibility with single assignee
+      assignee: selectedAssignees[0] || members[0],
+      assignees: selectedAssignees,
       labels: selectedLabels
     };
 
@@ -246,39 +267,67 @@ export default function TaskModal({
               </div>
             </div>
 
-            {/* Right Column - Assignee and Actions */}
+            {/* Right Column - Assignees and Actions */}
             <div className="w-full lg:w-80 bg-background-secondary/30 px-6 py-6 border-t lg:border-t-0 lg:border-l border-background-tertiary">
               <div className="space-y-6">
-                {/* Assignee */}
+                {/* Assignees */}
                 <div>
                   <label className="block text-text-primary font-medium mb-3 text-sm flex items-center gap-2">
                     <FiUser size={16} />
-                    Assignee
+                    Assignees
+                    {selectedAssignees.length > 0 && (
+                      <span className="text-xs text-text-secondary">
+                        ({selectedAssignees.length} selected)
+                      </span>
+                    )}
                   </label>
                   <div className="space-y-2">
-                    {members.map((member) => (
-                      <button
-                        key={member.name}
-                        onClick={() => setSelectedAssignee(member)}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg border transition-all duration-200 ${
-                          selectedAssignee?.name === member.name
-                            ? "bg-spotlight-purple/20 border-spotlight-purple text-text-primary shadow-sm"
-                            : "bg-background-primary border-background-tertiary text-text-primary hover:border-spotlight-purple/50 hover:bg-background-secondary"
-                        }`}
-                      >
-                        <div className={`w-10 h-10 rounded-full bg-${member.color} flex items-center justify-center text-text-primary text-sm font-medium shadow-sm`}>
-                          {member.name}
-                        </div>
-                        <div className="flex-1 text-left">
-                          <div className="font-medium">{member.name}</div>
-                          <div className="text-xs text-text-secondary">Team Member</div>
-                        </div>
-                        {selectedAssignee?.name === member.name && (
-                          <div className="w-2 h-2 bg-spotlight-purple rounded-full"></div>
-                        )}
-                      </button>
-                    ))}
+                    {members.map((member) => {
+                      const isSelected = selectedAssignees.some(assignee => assignee.name === member.name);
+                      return (
+                        <button
+                          key={member.name}
+                          onClick={() => handleAssigneeToggle(member)}
+                          className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg border transition-all duration-200 ${
+                            isSelected
+                              ? "bg-spotlight-purple/20 border-spotlight-purple text-text-primary shadow-sm"
+                              : "bg-background-primary border-background-tertiary text-text-primary hover:border-spotlight-purple/50 hover:bg-background-secondary"
+                          }`}
+                        >
+                          <div className={`w-10 h-10 rounded-full bg-${member.color} flex items-center justify-center text-text-primary text-sm font-medium shadow-sm`}>
+                            {member.name}
+                          </div>
+                          <div className="flex-1 text-left">
+                            <div className="font-medium">{member.name}</div>
+                            <div className="text-xs text-text-secondary">Team Member</div>
+                          </div>
+                          {isSelected && (
+                            <div className="w-2 h-2 bg-spotlight-purple rounded-full"></div>
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
+
+                  {/* Display selected assignees */}
+                  {selectedAssignees.length > 0 && (
+                    <div className="mt-4 p-3 bg-background-primary rounded-lg border border-background-tertiary">
+                      <div className="text-xs text-text-secondary mb-2">Selected Assignees:</div>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedAssignees.map((assignee) => (
+                          <div
+                            key={assignee.name}
+                            className="flex items-center gap-2 px-2 py-1 bg-background-secondary rounded-md"
+                          >
+                            <div className={`w-6 h-6 rounded-full bg-${assignee.color} flex items-center justify-center text-text-primary text-xs font-medium`}>
+                              {assignee.name}
+                            </div>
+                            <span className="text-xs text-text-primary">{assignee.name}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Actions */}

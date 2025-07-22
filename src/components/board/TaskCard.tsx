@@ -19,6 +19,7 @@ interface Task {
     name: string;
     color: string;
   };
+  assignees?: Array<{ name: string; color: string }>;
   labels?: Label[];
 }
 
@@ -204,8 +205,25 @@ export default function TaskCard({
             </div>
           </div>
 
-          {/* Assignee avatar */}
-          {task.assignee && (
+          {/* Assignee avatar(s) */}
+          {task.assignees && task.assignees.length > 0 ? (
+            <div className="flex justify-end gap-1">
+              {task.assignees.slice(0, 3).map((assignee) => (
+                <div
+                  key={assignee.name}
+                  className={`w-6 h-6 rounded-full bg-${assignee.color} text-text-primary text-xs font-medium flex items-center justify-center`}
+                  title={assignee.name}
+                >
+                  {assignee.name}
+                </div>
+              ))}
+              {task.assignees.length > 3 && (
+                <div className="w-6 h-6 rounded-full bg-background-secondary text-text-secondary text-xs font-medium flex items-center justify-center">
+                  +{task.assignees.length - 3}
+                </div>
+              )}
+            </div>
+          ) : task.assignee && (
             <div className="flex justify-end">
               <div
                 className={`w-6 h-6 rounded-full bg-${task.assignee.color} text-text-primary text-xs font-medium flex items-center justify-center`}

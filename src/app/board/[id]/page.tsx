@@ -19,7 +19,8 @@ interface Task {
   title: string;
   description: string;
   icon: string;
-  assignee: { name: string; color: string };
+  assignee: { name: string; color: string }; // backward compatibility
+  assignees?: Array<{ name: string; color: string }>;
   labels?: Label[];
 }
 
@@ -72,6 +73,7 @@ const getBoardData = (boardId: string): BoardData => {
               description: "Create wireframes and mockups",
               icon: "FiLayout",
               assignee: { name: "JD", color: "spotlight-purple" },
+              assignees: [{ name: "JD", color: "spotlight-purple" }],
               labels: [
                 { id: "priority-high", name: "High Priority", color: "bg-red-500" },
                 { id: "feature", name: "Feature", color: "bg-blue-500" }
@@ -83,6 +85,7 @@ const getBoardData = (boardId: string): BoardData => {
               description: "Update API docs",
               icon: "FiBook",
               assignee: { name: "SM", color: "spotlight-pink" },
+              assignees: [{ name: "SM", color: "spotlight-pink" }],
               labels: [
                 { id: "documentation", name: "Documentation", color: "bg-gray-500" }
               ]
@@ -100,6 +103,7 @@ const getBoardData = (boardId: string): BoardData => {
               description: "Build React components",
               icon: "FiCode",
               assignee: { name: "AK", color: "spotlight-green" },
+              assignees: [{ name: "AK", color: "spotlight-green" }],
               labels: [
                 { id: "priority-medium", name: "Medium Priority", color: "bg-yellow-500" },
                 { id: "feature", name: "Feature", color: "bg-blue-500" }
@@ -118,6 +122,7 @@ const getBoardData = (boardId: string): BoardData => {
               description: "OAuth integration complete",
               icon: "FiLock",
               assignee: { name: "MG", color: "spotlight-yellow" },
+              assignees: [{ name: "MG", color: "spotlight-yellow" }],
               labels: [
                 { id: "feature", name: "Feature", color: "bg-blue-500" }
               ]
@@ -128,6 +133,7 @@ const getBoardData = (boardId: string): BoardData => {
               description: "PostgreSQL setup done",
               icon: "FiDatabase",
               assignee: { name: "TL", color: "spotlight-blue" },
+              assignees: [{ name: "TL", color: "spotlight-blue" }],
               labels: [
                 { id: "enhancement", name: "Enhancement", color: "bg-purple-500" }
               ]
@@ -161,6 +167,7 @@ const getBoardData = (boardId: string): BoardData => {
               description: "Create mobile-first UI",
               icon: "FiSmartphone",
               assignee: { name: "JD", color: "spotlight-blue" },
+              assignees: [{ name: "JD", color: "spotlight-blue" }],
               labels: [
                 { id: "mobile", name: "Mobile", color: "bg-blue-500" }
               ]
@@ -178,6 +185,7 @@ const getBoardData = (boardId: string): BoardData => {
               description: "Connect backend services",
               icon: "FiZap",
               assignee: { name: "SM", color: "spotlight-green" },
+              assignees: [{ name: "SM", color: "spotlight-green" }],
               labels: [
                 { id: "api", name: "API", color: "bg-green-500" },
                 { id: "urgent", name: "Urgent", color: "bg-red-500" }
@@ -217,6 +225,7 @@ const getBoardData = (boardId: string): BoardData => {
               description: "Create component library",
               icon: "FiPalette",
               assignee: { name: "JD", color: "spotlight-purple" },
+              assignees: [{ name: "JD", color: "spotlight-purple" }],
               labels: [
                 { id: "design", name: "Design", color: "bg-purple-500" }
               ]
@@ -240,6 +249,7 @@ const getBoardData = (boardId: string): BoardData => {
               description: "Define project scope and timeline",
               icon: "FiClipboard",
               assignee: { name: "SM", color: "spotlight-pink" },
+              assignees: [{ name: "SM", color: "spotlight-pink" }],
               labels: [
                 { id: "planning", name: "Planning", color: "bg-orange-500" }
               ]
@@ -342,7 +352,7 @@ export default function BoardPage({ params }: BoardPageProps) {
       foundTask = column.tasks.find(task => task.id === taskId) || null;
       if (foundTask) break;
     }
-    
+
     if (foundTask) {
       setEditingTask(foundTask);
       setAddTaskToColumn(null);
@@ -355,30 +365,30 @@ export default function BoardPage({ params }: BoardPageProps) {
 
     setBoardData(prevBoard => {
       const newColumns = [...prevBoard.columns];
-      
+
       // Find source and target columns
       const sourceColumnIndex = newColumns.findIndex(col => col.id === sourceColumnId);
       const targetColumnIndex = newColumns.findIndex(col => col.id === targetColumnId);
-      
+
       if (sourceColumnIndex === -1 || targetColumnIndex === -1) return prevBoard;
-      
+
       // Find and remove task from source column
       const sourceColumn = { ...newColumns[sourceColumnIndex] };
       const taskIndex = sourceColumn.tasks.findIndex(task => task.id === taskId);
-      
+
       if (taskIndex === -1) return prevBoard;
-      
+
       const task = sourceColumn.tasks[taskIndex];
       sourceColumn.tasks = sourceColumn.tasks.filter((_, index) => index !== taskIndex);
-      
+
       // Add task to target column
       const targetColumn = { ...newColumns[targetColumnIndex] };
       targetColumn.tasks = [...targetColumn.tasks, task];
-      
+
       // Update columns array
       newColumns[sourceColumnIndex] = sourceColumn;
       newColumns[targetColumnIndex] = targetColumn;
-      
+
       return {
         ...prevBoard,
         columns: newColumns
@@ -397,18 +407,24 @@ export default function BoardPage({ params }: BoardPageProps) {
   const handleSaveTask = (taskData: Omit<Task, 'id'> | Task) => {
     setBoardData(prevBoard => {
       const newColumns = [...prevBoard.columns];
-      
+
       if ('id' in taskData) {
         // Editing existing task
         const taskId = taskData.id;
         for (let i = 0; i < newColumns.length; i++) {
           const taskIndex = newColumns[i].tasks.findIndex(task => task.id === taskId);
           if (taskIndex !== -1) {
+            // Ensure assignee and assignees are both set
+            const assignees = (taskData as any).assignees && (taskData as any).assignees.length > 0 ? (taskData as any).assignees : [(taskData as any).assignee];
             newColumns[i] = {
               ...newColumns[i],
               tasks: [
                 ...newColumns[i].tasks.slice(0, taskIndex),
-                taskData as Task,
+                {
+                  ...taskData,
+                  assignee: assignees[0],
+                  assignees
+                },
                 ...newColumns[i].tasks.slice(taskIndex + 1)
               ]
             };
@@ -420,11 +436,14 @@ export default function BoardPage({ params }: BoardPageProps) {
         if (addTaskToColumn) {
           const columnIndex = newColumns.findIndex(col => col.id === addTaskToColumn);
           if (columnIndex !== -1) {
+            const assignees = (taskData as any).assignees && (taskData as any).assignees.length > 0 ? (taskData as any).assignees : [(taskData as any).assignee];
             const newTask: Task = {
               ...taskData,
-              id: `task-${Date.now()}`
+              id: `task-${Date.now()}`,
+              assignee: assignees[0],
+              assignees
             };
-            
+
             newColumns[columnIndex] = {
               ...newColumns[columnIndex],
               tasks: [...newColumns[columnIndex].tasks, newTask]
@@ -432,13 +451,13 @@ export default function BoardPage({ params }: BoardPageProps) {
           }
         }
       }
-      
+
       return {
         ...prevBoard,
         columns: newColumns
       };
     });
-    
+
     setShowTaskModal(false);
     setEditingTask(null);
     setAddTaskToColumn(null);
@@ -470,7 +489,7 @@ export default function BoardPage({ params }: BoardPageProps) {
         };
       }
     });
-    
+
     setShowColumnModal(false);
     setEditingColumn(null);
   };
@@ -514,7 +533,7 @@ export default function BoardPage({ params }: BoardPageProps) {
         availableLabels={boardData.availableLabels}
         members={boardData.members}
       />
-      
+
       <ColumnModal
         isOpen={showColumnModal}
         onClose={() => {
