@@ -1,28 +1,66 @@
 import { useState, useEffect, useRef } from "react";
-import { FiSearch, FiX, FiClock, FiArrowRight } from "react-icons/fi";
+import { FiSearch, FiX, FiClock, FiArrowRight, FiLayout, FiFolder } from "react-icons/fi";
+import { useSearch, useRecentlyViewed } from "@/hooks/useDashboard";
+import { useRouter } from "next/navigation";
 
 interface SearchModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onCreateBoard?: () => void;
+  onCreateWorkspace?: () => void;
 }
 
-export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
+export default function SearchModal({ 
+  isOpen, 
+  onClose, 
+  onCreateBoard = () => console.log("Create board"),
+  onCreateWorkspace = () => console.log("Create workspace")
+}: SearchModalProps) {
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
+  
+  // Use real data
+  const { recentItems, addRecentItem } = useRecentlyViewed();
+  const searchResults = useSearch(query);
 
-  // Recent searches mock data
-  const recentSearches = [
-    "Marketing Campaign",
-    "Design System",
-    "User Dashboard"
-  ];
+  // Recent searches from recently viewed items
+  const recentSearches = recentItems
+    .filter(item => item.type === 'board')
+    .slice(0, 5)
+    .map(item => item.name);
 
-  // Quick actions mock data
+  // Quick actions with real handlers
   const quickActions = [
-    { label: "Create new board", action: () => console.log("Create board") },
-    { label: "Add new member", action: () => console.log("Add member") },
-    { label: "View templates", action: () => console.log("View templates") }
+    { 
+      label: "Create new board", 
+      icon: FiLayout,
+      action: () => {
+        onCreateBoard();
+        onClose();
+      }
+    },
+    { 
+      label: "Create new workspace", 
+      icon: FiFolder,
+      action: () => {
+        onCreateWorkspace();
+        onClose();
+      }
+    }
   ];
+
+  const handleItemClick = (item: { id: string; name: string; type: 'board' | 'workspace'; workspaceId?: string; workspaceName?: string }) => {
+    addRecentItem(item);
+    
+    if (item.type === 'board') {
+      router.push(`/board/${item.id}`);
+    } else {
+      router.push(`/workspace/${item.id}`);
+    }
+    
+    onClose();
+  };
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
@@ -84,23 +122,25 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
           {query.length === 0 ? (
             <div className="responsive-px-sm py-4 space-y-6">
               {/* Recent Searches */}
-              <div>
-                <h3 className="text-text-secondary text-sm font-display font-medium mb-3 flex items-center responsive-gap-xs">
-                  <FiClock className="icon-xs" />
-                  Recent searches
-                </h3>
-                <div className="space-y-1">
-                  {recentSearches.map((search, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setQuery(search)}
-                      className="w-full text-left px-3 py-2 rounded-lg hover:bg-background-tertiary transition-colors text-text-primary font-display"
-                    >
-                      {search}
-                    </button>
-                  ))}
+              {recentSearches.length > 0 && (
+                <div>
+                  <h3 className="text-text-secondary text-sm font-display font-medium mb-3 flex items-center responsive-gap-xs">
+                    <FiClock className="icon-xs" />
+                    Recent boards
+                  </h3>
+                  <div className="space-y-1">
+                    {recentSearches.map((search, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setQuery(search)}
+                        className="w-full text-left px-3 py-2 rounded-lg hover:bg-background-tertiary transition-colors text-text-primary font-display"
+                      >
+                        {search}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Quick Actions */}
               <div>
@@ -108,30 +148,106 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                   Quick actions
                 </h3>
                 <div className="space-y-1">
-                  {quickActions.map((action, index) => (
-                    <button
-                      key={index}
-                      onClick={() => {
-                        action.action();
-                        onClose();
-                      }}
-                      className="w-full text-left px-3 py-2 rounded-lg hover:bg-background-tertiary transition-colors text-text-primary font-display flex items-center justify-between group"
-                    >
-                      <span>{action.label}</span>
-                      <FiArrowRight className="icon-xs text-text-secondary group-hover:text-text-primary transition-colors" />
-                    </button>
-                  ))}
+                  {quickActions.map((action, index) => {
+                    const IconComponent = action.icon;
+                    return (
+                      <button
+                        key={index}
+                        onClick={action.action}
+                        className="w-full text-left px-3 py-2 rounded-lg hover:bg-background-tertiary transition-colors text-text-primary font-display flex items-center gap-3 group"
+                      >
+                        <div className="w-8 h-8 bg-spotlight-purple/20 rounded-md flex items-center justify-center">
+                          <IconComponent className="w-4 h-4 text-spotlight-purple" />
+                        </div>
+                        <span className="flex-1">{action.label}</span>
+                        <FiArrowRight className="icon-xs text-text-secondary group-hover:text-text-primary transition-colors" />
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
           ) : (
             <div className="responsive-px-sm py-4">
               <div className="text-text-secondary text-sm font-display mb-3">
-                Search results for "{query}"
+                Search results for "{query}" ({searchResults.total} found)
               </div>
-              <div className="text-text-secondary text-center py-8">
-                No results found. Try a different search term.
-              </div>
+              
+              {searchResults.total === 0 ? (
+                <div className="text-text-secondary text-center py-8">
+                  No results found. Try a different search term.
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {/* Workspaces Results */}
+                  {searchResults.workspaces.length > 0 && (
+                    <div>
+                      <h3 className="text-text-secondary text-sm font-display font-medium mb-2 flex items-center gap-2">
+                        <FiFolder className="w-4 h-4" />
+                        Workspaces ({searchResults.workspaces.length})
+                      </h3>
+                      <div className="space-y-1">
+                        {searchResults.workspaces.map((workspace) => (
+                          <button
+                            key={workspace.id}
+                            onClick={() => handleItemClick({
+                              id: workspace.id,
+                              name: workspace.name,
+                              type: 'workspace'
+                            })}
+                            className="w-full text-left px-3 py-2 rounded-lg hover:bg-background-tertiary transition-colors text-text-primary font-display flex items-center gap-3"
+                          >
+                            <div className="w-8 h-8 bg-spotlight-pink/20 rounded-md flex items-center justify-center">
+                              <FiFolder className="w-4 h-4 text-spotlight-pink" />
+                            </div>
+                            <div className="flex-1">
+                              <div className="font-medium">{workspace.name}</div>
+                              <div className="text-xs text-text-secondary">
+                                {workspace.boardCount} boards • {workspace.memberCount} members
+                              </div>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Boards Results */}
+                  {searchResults.boards.length > 0 && (
+                    <div>
+                      <h3 className="text-text-secondary text-sm font-display font-medium mb-2 flex items-center gap-2">
+                        <FiLayout className="w-4 h-4" />
+                        Boards ({searchResults.boards.length})
+                      </h3>
+                      <div className="space-y-1">
+                        {searchResults.boards.map((board) => (
+                          <button
+                            key={board.id}
+                            onClick={() => handleItemClick({
+                              id: board.id,
+                              name: board.name,
+                              type: 'board',
+                              workspaceId: board.workspaceId,
+                              workspaceName: board.workspaceName
+                            })}
+                            className="w-full text-left px-3 py-2 rounded-lg hover:bg-background-tertiary transition-colors text-text-primary font-display flex items-center gap-3"
+                          >
+                            <div className="w-8 h-8 bg-spotlight-purple/20 rounded-md flex items-center justify-center text-lg">
+                              {board.icon}
+                            </div>
+                            <div className="flex-1">
+                              <div className="font-medium">{board.name}</div>
+                              <div className="text-xs text-text-secondary">
+                                {board.workspaceName}
+                              </div>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>

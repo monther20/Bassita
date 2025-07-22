@@ -133,6 +133,15 @@ export function useAuth(): UseAuthReturn {
     }
   }, [reset, setLoading, router]);
 
+  // Debug log the user state
+  console.log('🔐 useAuth Debug:', {
+    userId: user?.id,
+    email: user?.email,
+    isAuthenticated,
+    isLoading,
+    isInitialized
+  });
+
   return {
     user,
     isAuthenticated,

@@ -3,22 +3,48 @@ import { useState } from "react";
 import { UserMenu } from "../userMenu";
 import SearchInput from "../searchInput";
 import SearchModal from "../searchModal";
-import { Button } from "../buttoon";
-import { FiMenu, FiSearch, FiPlus } from "react-icons/fi";
+import CreateDropdown from "../CreateDropdown";
+import CreateBoardModal from "../CreateBoardModal";
+import CreateWorkspaceModal from "../CreateWorkspaceModal";
+import { FiMenu, FiSearch } from "react-icons/fi";
 import Link from "next/link";
 
 interface HeaderProps {
     height?: string;
     onToggleSidebar?: () => void;
     showSidebarToggle?: boolean;
+    workspaceId?: string; // For pre-selecting workspace when creating boards
+    onCreateBoardRef?: React.MutableRefObject<(() => void) | null>;
+    onCreateWorkspaceRef?: React.MutableRefObject<(() => void) | null>;
 }
 
 export default function Header({
     height,
     onToggleSidebar,
-    showSidebarToggle = false
+    showSidebarToggle = false,
+    workspaceId,
+    onCreateBoardRef,
+    onCreateWorkspaceRef
 }: HeaderProps) {
     const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+    const [isCreateBoardModalOpen, setIsCreateBoardModalOpen] = useState(false);
+    const [isCreateWorkspaceModalOpen, setIsCreateWorkspaceModalOpen] = useState(false);
+
+    const handleCreateBoard = () => {
+        setIsCreateBoardModalOpen(true);
+    };
+
+    const handleCreateWorkspace = () => {
+        setIsCreateWorkspaceModalOpen(true);
+    };
+
+    // Expose functions to parent components via refs
+    if (onCreateBoardRef) {
+        onCreateBoardRef.current = handleCreateBoard;
+    }
+    if (onCreateWorkspaceRef) {
+        onCreateWorkspaceRef.current = handleCreateWorkspace;
+    }
 
     return (
         <>
@@ -57,15 +83,14 @@ export default function Header({
                             width="w-full"
                             height="h-8 md:h-10"
                             className="border border-spotlight-purple"
+                            onClick={() => setIsSearchModalOpen(true)}
                         />
                         <div className="hidden sm:block">
-                            <Button
-                                label="Create"
-                                onClick={() => console.log("Create clicked")}
+                            <CreateDropdown
+                                onCreateBoard={handleCreateBoard}
+                                onCreateWorkspace={handleCreateWorkspace}
                                 size="sm"
-                                variant="primary"
-                                mobileSize="xs"
-                                height="h-8 md:h-10"
+                                variant="button"
                             />
                         </div>
                     </div>
@@ -82,13 +107,14 @@ export default function Header({
                         </button>
 
                         {/* Create button - mobile (icon only) */}
-                        <button
-                            onClick={() => console.log("Create clicked")}
-                            className="sm:hidden touch-target bg-gradient-to-r from-spotlight-purple to-spotlight-pink p-2 rounded-full hover:shadow-glow-purple transition-all cursor-pointer"
-                            aria-label="Create new item"
-                        >
-                            <FiPlus className="icon-sm text-text-primary" />
-                        </button>
+                        <div className="sm:hidden">
+                            <CreateDropdown
+                                onCreateBoard={handleCreateBoard}
+                                onCreateWorkspace={handleCreateWorkspace}
+                                size="sm"
+                                variant="icon"
+                            />
+                        </div>
 
                         {/* User menu */}
                         <UserMenu />
@@ -100,6 +126,20 @@ export default function Header({
             <SearchModal
                 isOpen={isSearchModalOpen}
                 onClose={() => setIsSearchModalOpen(false)}
+                onCreateBoard={handleCreateBoard}
+                onCreateWorkspace={handleCreateWorkspace}
+            />
+
+            {/* Create Modals */}
+            <CreateBoardModal
+                isOpen={isCreateBoardModalOpen}
+                onClose={() => setIsCreateBoardModalOpen(false)}
+                workspaceId={workspaceId}
+            />
+            
+            <CreateWorkspaceModal
+                isOpen={isCreateWorkspaceModalOpen}
+                onClose={() => setIsCreateWorkspaceModalOpen(false)}
             />
         </>
     )

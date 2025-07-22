@@ -34,7 +34,7 @@ interface KanbanBoardProps {
   onColumnClick?: (columnId: string) => void;
   onAddTask?: (columnId: string) => void;
   onTaskClick?: (taskId: string) => void;
-  onTaskMove?: (taskId: string, sourceColumnId: string, targetColumnId: string) => void;
+  onTaskMove?: (taskId: string, sourceColumnId: string, targetColumnId: string, targetPosition?: number) => void;
   onDragStart?: (taskId: string) => void;
   onDragEnd?: () => void;
   draggedTask?: string | null;
@@ -46,7 +46,7 @@ export default function KanbanBoard({
   onColumnClick = (columnId) => console.log("Column clicked:", columnId),
   onAddTask = (columnId) => console.log("Add task to column:", columnId),
   onTaskClick = (taskId) => console.log("Task clicked:", taskId),
-  onTaskMove = (taskId, sourceColumnId, targetColumnId) => console.log("Move task:", taskId, sourceColumnId, targetColumnId),
+  onTaskMove = (taskId, sourceColumnId, targetColumnId, targetPosition) => console.log("Move task:", taskId, sourceColumnId, targetColumnId, targetPosition),
   onDragStart = (taskId) => console.log("Drag start:", taskId),
   onDragEnd = () => console.log("Drag end"),
   draggedTask = null

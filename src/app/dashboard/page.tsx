@@ -1,307 +1,184 @@
 "use client";
 
-import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import DashboardSection from '@/components/dashboard/dashboardSection';
 import ProtectedLayout from '@/components/layouts/ProtectedLayout';
 import DashboardSectionSkeleton from '@/components/skeletons/DashboardSectionSkeleton';
-import { createBoardSlug } from '@/lib/utils';
-
-const recentlyViewedCards = [
-  {
-    title: "Marketing Campaign",
-    description: "Creative Agency",
-    members: [{ name: "JD" }, { name: "SM" }],
-  },
-  {
-    title: "Marketing Campaign",
-    description: "Creative Agency",
-    members: [{ name: "JD" }, { name: "SM" }],
-  },
-  {
-    title: "Marketing Campaign",
-    description: "Creative Agency",
-    members: [{ name: "JD" }, { name: "SM" }],
-  },
-
-];
-
-const workspaces = [
-  {
-    id: "Creative Agency",
-    title: "Creative Agency",
-    cards: [
-      {
-        title: "Workspace 1",
-        lastUpdated: "2h ago",
-        members: [{ name: "JD" }, { name: "SM" }],
-      },
-      {
-        title: "Workspace 2",
-        lastUpdated: "1h ago",
-        members: [{ name: "JD" }, { name: "SM" }],
-      },
-      {
-        title: "Workspace 3",
-        lastUpdated: "1h ago",
-        members: [{ name: "JD" }, { name: "SM" }],
-      },
-
-      {
-        title: "Workspace 4",
-        lastUpdated: "1h ago",
-        members: [{ name: "JD" }, { name: "SM" }],
-      },
-
-      {
-        title: "Workspace 5",
-        lastUpdated: "1h ago",
-        members: [{ name: "JD" }, { name: "SM" }],
-      },
-
-      {
-        title: "Workspace 6",
-        lastUpdated: "1h ago",
-        members: [{ name: "JD" }, { name: "SM" }],
-      },
-    ]
-  },
-
-  {
-    id: "Marketing Campaign",
-    title: "Marketing Campaign",
-    cards: [
-      {
-        title: "Workspace 1",
-        lastUpdated: "2h ago",
-        members: [{ name: "JD" }],
-      },
-      {
-        title: "Workspace 2",
-        lastUpdated: "1h ago",
-        members: [{ name: "JD" }],
-      },
-      {
-        title: "Workspace 3",
-        lastUpdated: "1h ago",
-        members: [{ name: "JD" }],
-      },
-      {
-        title: "Workspace 4",
-        lastUpdated: "1h ago",
-        members: [{ name: "JD" }],
-      },
-      {
-        title: "Workspace 5",
-        lastUpdated: "1h ago",
-        members: [{ name: "JD" }],
-      },
-      {
-        title: "Workspace 6",
-        lastUpdated: "1h ago",
-        members: [{ name: "JD" }],
-      },
-
-    ]
-  },
-
-
-
-];
-
-const guestWorkspaces = [
-  {
-    id: "Creative Agency",
-    title: "Creative Agency",
-    cards: [
-      {
-        title: "Workspace 1",
-        lastUpdated: "2h ago",
-        members: [{ name: "JD" }, { name: "SM" }],
-      },
-      {
-        title: "Workspace 2",
-        lastUpdated: "1h ago",
-        members: [{ name: "JD" }, { name: "SM" }],
-      },
-      {
-        title: "Workspace 3",
-        lastUpdated: "1h ago",
-        members: [{ name: "JD" }, { name: "SM" }],
-      },
-
-      {
-        title: "Workspace 4",
-        lastUpdated: "1h ago",
-        members: [{ name: "JD" }, { name: "SM" }],
-      },
-
-      {
-        title: "Workspace 5",
-        lastUpdated: "1h ago",
-        members: [{ name: "JD" }, { name: "SM" }],
-      },
-
-      {
-        title: "Workspace 6",
-        lastUpdated: "1h ago",
-        members: [{ name: "JD" }, { name: "SM" }],
-      },
-    ]
-  },
-
-  {
-    id: "Marketing Campaign",
-    title: "Marketing Campaign",
-    cards: [
-      {
-        title: "Workspace 1",
-        lastUpdated: "2h ago",
-        members: [{ name: "JD" }],
-      },
-      {
-        title: "Workspace 2",
-        lastUpdated: "1h ago",
-        members: [{ name: "JD" }],
-      },
-      {
-        title: "Workspace 3",
-        lastUpdated: "1h ago",
-        members: [{ name: "JD" }],
-      },
-      {
-        title: "Workspace 4",
-        lastUpdated: "1h ago",
-        members: [{ name: "JD" }],
-      },
-      {
-        title: "Workspace 5",
-        lastUpdated: "1h ago",
-        members: [{ name: "JD" }],
-      },
-      {
-        title: "Workspace 6",
-        lastUpdated: "1h ago",
-        members: [{ name: "JD" }],
-      },
-
-    ]
-  },
-
-
-
-];
+import { useDashboardData, useRecentlyViewed } from '@/hooks/useDashboard';
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [isRecentlyViewedLoading, setIsRecentlyViewedLoading] = useState(true);
-  const [isWorkspacesLoading, setIsWorkspacesLoading] = useState(true);
-  const [isGuestWorkspacesLoading, setIsGuestWorkspacesLoading] = useState(true);
+  const { addRecentItem } = useRecentlyViewed();
+  const {
+    myWorkspaces,
+    guestWorkspaces,
+    recentlyViewed,
+    isLoading,
+    error
+  } = useDashboardData();
 
-  const handleCardClick = (cardTitle: string) => {
-    const boardSlug = createBoardSlug(cardTitle);
-    router.push(`/board/${boardSlug}`);
+  console.log("🚀 Dashboard Debug Info:");
+  console.log("  myWorkspaces:", myWorkspaces);
+  console.log("  guestWorkspaces:", guestWorkspaces);
+  console.log("  isLoading:", isLoading);
+  console.log("  error:", error);
+
+  const handleBoardClick = (board: { id: string; name: string; workspaceId?: string; workspaceName?: string }) => {
+    // Add to recently viewed
+    addRecentItem({
+      id: board.id,
+      name: board.name,
+      type: 'board',
+      workspaceId: board.workspaceId,
+      workspaceName: board.workspaceName
+    });
+
+    router.push(`/board/${board.id}`);
   };
 
-  useEffect(() => {
-    // Simulate API calls with staggered loading
-    const loadRecentlyViewed = setTimeout(() => {
-      setIsRecentlyViewedLoading(false);
-    }, 1000);
+  const handleWorkspaceClick = (workspace: { id: string; name: string }) => {
+    // Add to recently viewed
+    addRecentItem({
+      id: workspace.id,
+      name: workspace.name,
+      type: 'workspace'
+    });
 
-    const loadWorkspaces = setTimeout(() => {
-      setIsWorkspacesLoading(false);
-    }, 1500);
+    router.push(`/workspace/${workspace.id}`);
+  };
 
-    const loadGuestWorkspaces = setTimeout(() => {
-      setIsGuestWorkspacesLoading(false);
-    }, 2000);
-
-    return () => {
-      clearTimeout(loadRecentlyViewed);
-      clearTimeout(loadWorkspaces);
-      clearTimeout(loadGuestWorkspaces);
-    };
-  }, []);
+  // Show error state
+  if (error) {
+    return (
+      <ProtectedLayout>
+        <div className="flex items-center justify-center h-full p-6">
+          <div className="text-center">
+            <div className="text-text-primary text-lg font-medium mb-2">
+              Failed to load dashboard
+            </div>
+            <div className="text-text-secondary mb-4">
+              {error.message}
+            </div>
+          </div>
+        </div>
+      </ProtectedLayout>
+    );
+  }
 
   return (
     <ProtectedLayout>
       <div className="space-y-6 responsive-px-sm max-w-screen-2xl mx-auto p-6">
+        {/* Recently Viewed Section */}
         <div className="space-y-1">
           <div className="text-text-primary text-2xl font-display font-semibold">
             Recently Viewed
           </div>
-          {isRecentlyViewedLoading ? (
+          {isLoading ? (
             <DashboardSectionSkeleton cardCount={3} />
-          ) : (
+          ) : recentlyViewed.length > 0 ? (
             <div className="animate-fade-in">
               <DashboardSection
-                cards={recentlyViewedCards}
-                onCardClick={handleCardClick}
+                cards={recentlyViewed.map(board => ({
+                  title: board.name,
+                  description: board.workspaceName || "",
+                  members: board.members,
+                  lastUpdated: new Date(board.lastUpdated).toLocaleString()
+                }))}
+                onCardClick={(title) => {
+                  const board = recentlyViewed.find(b => b.name === title);
+                  if (board) handleBoardClick(board);
+                }}
               />
+            </div>
+          ) : (
+            <div className="text-text-secondary text-center py-8">
+              No recently viewed boards
             </div>
           )}
         </div>
 
+        {/* My Workspaces Section */}
         <div className="mt-12 space-y-1">
           <div className="text-text-primary text-2xl font-display font-semibold">
-            Workspaces
+            My Workspaces
           </div>
-          {isWorkspacesLoading ? (
+          {isLoading ? (
             <div className="space-y-6">
               <DashboardSectionSkeleton hasLabel={true} hasInfo={true} cardCount={5} />
               <DashboardSectionSkeleton hasLabel={true} hasInfo={true} cardCount={5} />
             </div>
-          ) : (
+          ) : myWorkspaces.length > 0 ? (
             <div className="space-y-6 animate-fade-in">
-              {workspaces.map((workspace) => (
+              {myWorkspaces.map((workspace) => (
                 <DashboardSection
                   key={workspace.id}
-                  label={workspace.title}
+                  label={workspace.name}
                   info={{
-                    members: workspace.cards.length,
-                    boards: workspace.cards.length,
+                    members: workspace.memberCount,
+                    boards: workspace.boardCount,
                     owner: "Owner",
                   }}
-                  cards={workspace.cards}
+                  cards={workspace.boards.map(board => ({
+                    title: board.name,
+                    description: board.icon,
+                    members: board.members,
+                    lastUpdated: new Date(board.lastUpdated).toLocaleString()
+                  }))}
                   workspaceId={workspace.id}
-                  onCardClick={handleCardClick}
+                  onCardClick={(title) => {
+                    const board = workspace.boards.find(b => b.name === title);
+                    if (board) handleBoardClick(board);
+                  }}
                 />
               ))}
             </div>
+          ) : (
+            <div className="text-text-secondary text-center py-8">
+              No workspaces found. Create your first workspace to get started!
+            </div>
           )}
 
-          <div className="mt-12 space-y-1">
-            <div className="text-text-primary text-2xl font-display font-semibold">
-              Guest Workspaces
+          {/* Guest Workspaces Section */}
+          {guestWorkspaces.length > 0 && (
+            <div className="mt-12 space-y-1">
+              <div className="text-text-primary text-2xl font-display font-semibold">
+                Guest Workspaces
+              </div>
+              {isLoading ? (
+                <div className="space-y-6">
+                  <DashboardSectionSkeleton hasLabel={true} hasInfo={true} cardCount={5} />
+                  <DashboardSectionSkeleton hasLabel={true} hasInfo={true} cardCount={5} />
+                </div>
+              ) : (
+                <div className="space-y-6 animate-fade-in">
+                  {guestWorkspaces.map((workspace) => (
+                    <DashboardSection
+                      key={workspace.id}
+                      label={workspace.name}
+                      info={{
+                        members: workspace.memberCount,
+                        boards: workspace.boardCount,
+                        owner: "Guest",
+                      }}
+                      cards={workspace.boards.map(board => ({
+                        title: board.name,
+                        description: board.icon,
+                        members: board.members,
+                        lastUpdated: new Date(board.lastUpdated).toLocaleString()
+                      }))}
+                      workspaceId={workspace.id}
+                      onCardClick={(title) => {
+                        const board = workspace.boards.find(b => b.name === title);
+                        if (board) handleBoardClick(board);
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
-            {isGuestWorkspacesLoading ? (
-              <div className="space-y-6">
-                <DashboardSectionSkeleton hasLabel={true} hasInfo={true} cardCount={5} />
-                <DashboardSectionSkeleton hasLabel={true} hasInfo={true} cardCount={5} />
-              </div>
-            ) : (
-              <div className="space-y-6 animate-fade-in">
-                {guestWorkspaces.map((workspace) => (
-                  <DashboardSection
-                    key={workspace.id}
-                    label={workspace.title}
-                    info={{
-                      members: workspace.cards.length,
-                      boards: workspace.cards.length,
-                      owner: "Owner",
-                    }}
-                    cards={workspace.cards}
-                    workspaceId={workspace.id}
-                    onCardClick={handleCardClick}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
+          )}
         </div>
       </div>
-
-    </ProtectedLayout >
+    </ProtectedLayout>
   );
 }
