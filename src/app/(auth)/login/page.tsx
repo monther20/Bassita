@@ -25,7 +25,7 @@ export default function LoginPage() {
         <div className="flex flex-col gap-3 lg:gap-4 w-full">
           <Button
             label="Continue with Google"
-            onclick={async () => {
+            onClick={async () => {
               try {
                 await loginWithGoogle();
                 const redirectTo =
@@ -37,18 +37,15 @@ export default function LoginPage() {
               }
             }}
             backgroundColor="bg-white"
-            borderColor="border-white"
-            hover="hover:shadow-glow-white"
-            textStyle="text-text-dark text-sm lg:text-lg"
+            textColor="text-text-dark"
             icon={<FcGoogle size={20} className="lg:w-[25px] lg:h-[25px]" />}
-            className="w-full h-full"
-            width="100%"
-            height="50px"
+            fullWidth={true}
+            height="h-[50px]"
           />
 
           <Button
             label="Continue with GitHub"
-            onclick={async () => {
+            onClick={async () => {
               try {
                 await loginWithGithub();
                 const redirectTo =
@@ -60,18 +57,15 @@ export default function LoginPage() {
               }
             }}
             backgroundColor="bg-spotlight-blue"
-            hover="hover:shadow-glow-blue"
-            borderColor="border-background-primary"
-            textStyle="text-text-primary text-sm lg:text-lg"
+            textColor="text-text-primary"
             icon={<FaGithub size={20} className="lg:w-[25px] lg:h-[25px]" />}
-            className="w-full h-full"
-            width="100%"
-            height="50px"
+            fullWidth={true}
+            height="h-[50px]"
           />
 
           <Button
             label="Continue with Microsoft"
-            onclick={async () => {
+            onClick={async () => {
               try {
                 await loginWithMicrosoft();
                 const redirectTo =
@@ -83,13 +77,10 @@ export default function LoginPage() {
               }
             }}
             backgroundColor="bg-background-primary"
-            borderColor="border-background-primary"
-            textStyle="text-text-primary text-sm lg:text-lg"
-            hover="hover:shadow-glow-white"
+            textColor="text-text-primary"
             icon={<FaMicrosoft size={20} className="lg:w-[25px] lg:h-[25px]" />}
-            className="w-full h-full"
-            width="100%"
-            height="50px"
+            fullWidth={true}
+            height="h-[50px]"
           />
         </div>
         <div className="flex flex-col gap-3 lg:gap-4 w-full">
@@ -103,16 +94,13 @@ export default function LoginPage() {
         <div className="flex flex-col gap-3 lg:gap-4 w-full">
           <Button
             label="Continue with Email"
-            onclick={() => {
+            onClick={() => {
               router.push("/login/email");
             }}
             backgroundColor="bg-gradient-to-r from-spotlight-purple to-spotlight-pink"
-            hover="hover:shadow-glow-purple"
-            borderColor="border-background-primary"
-            textStyle="text-text-primary text-sm lg:text-lg"
-            className="w-full h-full"
-            width="100%"
-            height="50px"
+            textColor="text-text-primary"
+            fullWidth={true}
+            height="h-[50px]"
           />
         </div>
 

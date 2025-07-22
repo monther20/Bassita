@@ -8,6 +8,7 @@ interface SidebarButtonProps {
     onClick?: () => void;
     variant?: "default" | "active" | "special";
     className?: string;
+    isCollapsed?: boolean;
 }
 
 export default function SidebarButton({
@@ -16,7 +17,8 @@ export default function SidebarButton({
     icon,
     onClick,
     variant = "default",
-    className = ""
+    className = "",
+    isCollapsed = false
 }: SidebarButtonProps) {
     const baseClasses = "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-display transition-colors w-full h-8";
 
@@ -40,7 +42,7 @@ export default function SidebarButton({
     return (
         <button onClick={onClick} className={combinedClasses}>
             {icon && <span className="text-base">{icon}</span>}
-            <span>{label}</span>
+            {!isCollapsed && <span>{label}</span>}
         </button>
     );
 }

@@ -32,10 +32,10 @@ export default function Sidebar({ height = "h-screen", onClose }: SidebarProps) 
 
     const handleMouseMove = (e: MouseEvent) => {
         if (!isDragging || !sidebarRef.current) return;
-        
+
         const sidebarRect = sidebarRef.current.getBoundingClientRect();
         const newWidth = e.clientX - sidebarRect.left;
-        
+
         // Constrain width between 60px (collapsed) and 400px (max expanded)
         const constrainedWidth = Math.max(60, Math.min(400, newWidth));
         setSidebarWidth(constrainedWidth);
@@ -67,9 +67,9 @@ export default function Sidebar({ height = "h-screen", onClose }: SidebarProps) 
     }, [isDragging]);
 
     return (
-        <aside 
+        <aside
             ref={sidebarRef}
-            className={`bg-background-secondary ${height} flex flex-col relative transition-all duration-200 w-64 lg:w-auto border-r border-background-tertiary`}
+            className={`bg-background-primary ${height} flex flex-col relative transition-all duration-200 w-64 lg:w-auto border-r border-background-tertiary`}
             style={{ width: typeof window !== 'undefined' && window.innerWidth >= 1024 ? `${sidebarWidth}px` : '256px' }}
         >
             {/* Mobile close button */}
@@ -181,7 +181,7 @@ export default function Sidebar({ height = "h-screen", onClose }: SidebarProps) 
                                         <FiSettings className="text-text-primary text-base" />
                                     </div>
                                 </div>
-                                <button className="flex items-center justify-between w-full px-3 py-2 text-text-secondary text-sm font-display hover:text-text-primary transition-colors">
+                                <button className="flex items-center bg-background-tertiary/50 rounded-lg justify-between w-full px-3 py-2 text-text-secondary text-sm font-display hover:text-text-primary hover:bg-background-tertiary transition-colors cursor-pointer">
                                     <span>Switch workspace</span>
                                     <FiChevronDown className="text-base" />
                                 </button>

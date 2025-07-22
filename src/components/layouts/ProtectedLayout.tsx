@@ -22,7 +22,7 @@ export function ProtectedLayout({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Header height is h-18 which equals 72px (18 * 0.25rem * 16)
-  const sidebarHeight = !showHeader ? "h-screen" : "h-[calc(100vh-4.5rem)]";
+  const sidebarHeight = !showHeader ? "h-screen" : "h-[calc(100vh-4.2rem)]";
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -32,10 +32,10 @@ export function ProtectedLayout({
     <AuthGuard>
       <div className={`min-h-screen bg-background-tertiary ${className}`}>
         {showHeader && (
-          <Header 
-            height="h-18" 
+          <Header
             onToggleSidebar={toggleSidebar}
             showSidebarToggle={showSidebar}
+
           />
         )}
         <div className="flex relative">
@@ -43,28 +43,28 @@ export function ProtectedLayout({
             <>
               {/* Mobile overlay */}
               {isSidebarOpen && (
-                <div 
+                <div
                   className="fixed inset-0 bg-black/50 z-40 lg:hidden"
                   onClick={() => setIsSidebarOpen(false)}
                 />
               )}
-              
+
               {/* Sidebar */}
               <div className={`
                 fixed lg:relative z-50 lg:z-auto
                 transform transition-transform duration-300 ease-in-out
                 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
               `}>
-                <Sidebar 
+                <Sidebar
                   height={sidebarHeight}
                   onClose={() => setIsSidebarOpen(false)}
                 />
               </div>
             </>
           )}
-          
+
           <main className={`
-            flex-1 p-4 lg:p-6 transition-all duration-300
+            flex-1  transition-all duration-300 ${sidebarHeight} overflow-y-auto
             ${showSidebar ? 'lg:ml-0' : ''}
           `}>
             {children}
