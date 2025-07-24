@@ -1,6 +1,8 @@
 "use client";
 
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { useUserOrganizations } from '@/hooks/useUserOrganizations';
 import DashboardSection from '@/components/dashboard/dashboardSection';
 import ProtectedLayout from '@/components/layouts/ProtectedLayout';
 import DashboardSectionSkeleton from '@/components/skeletons/DashboardSectionSkeleton';
@@ -8,6 +10,7 @@ import { useDashboardData, useRecentlyViewed } from '@/hooks/useDashboard';
 
 export default function DashboardPage() {
   const router = useRouter();
+  const { currentOrganization, loading: orgLoading } = useUserOrganizations();
   const { addRecentItem } = useRecentlyViewed();
   const {
     myWorkspaces,
@@ -16,6 +19,13 @@ export default function DashboardPage() {
     isLoading,
     error
   } = useDashboardData();
+
+  // Redirect to organization page (new default)
+  useEffect(() => {
+    if (!orgLoading && currentOrganization) {
+      router.replace(`/organization/${currentOrganization.id}`);
+    }
+  }, [currentOrganization, orgLoading, router]);
 
   const handleBoardClick = (board: { id: string; name: string; workspaceId?: string; workspaceName?: string }) => {
     // Add to recently viewed

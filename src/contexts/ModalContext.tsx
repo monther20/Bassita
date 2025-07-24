@@ -33,6 +33,10 @@ interface CreateWorkspaceModalState {
   isOpen: boolean;
 }
 
+interface CreateOrganizationModalState {
+  isOpen: boolean;
+}
+
 // Context interface
 interface ModalContextType {
   // Template Preview Modal
@@ -68,6 +72,11 @@ interface ModalContextType {
   createWorkspaceModal: CreateWorkspaceModalState;
   openCreateWorkspaceModal: () => void;
   closeCreateWorkspaceModal: () => void;
+
+  // Create Organization Modal
+  createOrganizationModal: CreateOrganizationModalState;
+  openCreateOrganizationModal: () => void;
+  closeCreateOrganizationModal: () => void;
 }
 
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
@@ -83,14 +92,14 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     task: null,
     availableLabels: [],
     members: [],
-    onSave: () => {},
+    onSave: () => { },
     onDelete: undefined,
   });
 
   const [columnModal, setColumnModal] = useState<ColumnModalState>({
     isOpen: false,
     column: null,
-    onSave: () => {},
+    onSave: () => { },
   });
 
   const [createBoardModal, setCreateBoardModal] = useState<CreateBoardModalState>({
@@ -99,6 +108,10 @@ export function ModalProvider({ children }: { children: ReactNode }) {
   });
 
   const [createWorkspaceModal, setCreateWorkspaceModal] = useState<CreateWorkspaceModalState>({
+    isOpen: false,
+  });
+
+  const [createOrganizationModal, setCreateOrganizationModal] = useState<CreateOrganizationModalState>({
     isOpen: false,
   });
 
@@ -131,7 +144,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
       task: null,
       availableLabels: [],
       members: [],
-      onSave: () => {},
+      onSave: () => { },
       onDelete: undefined,
     });
   };
@@ -151,7 +164,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     setColumnModal({
       isOpen: false,
       column: null,
-      onSave: () => {},
+      onSave: () => { },
     });
   };
 
@@ -171,6 +184,15 @@ export function ModalProvider({ children }: { children: ReactNode }) {
 
   const closeCreateWorkspaceModal = () => {
     setCreateWorkspaceModal({ isOpen: false });
+  };
+
+  // Create Organization Modal handlers
+  const openCreateOrganizationModal = () => {
+    setCreateOrganizationModal({ isOpen: true });
+  };
+
+  const closeCreateOrganizationModal = () => {
+    setCreateOrganizationModal({ isOpen: false });
   };
 
   const value: ModalContextType = {
@@ -193,6 +215,10 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     createWorkspaceModal,
     openCreateWorkspaceModal,
     closeCreateWorkspaceModal,
+
+    createOrganizationModal,
+    openCreateOrganizationModal,
+    closeCreateOrganizationModal,
   };
 
   return (

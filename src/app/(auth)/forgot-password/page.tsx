@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/buttoon";
+import Button from "@/components/buttoon";
 import { useState } from "react";
 import { FaArrowLeft, FaCheck } from "react-icons/fa";
 import Link from "next/link";
@@ -86,7 +86,7 @@ export default function ForgotPasswordPage() {
             </p>
 
             <Button
-              label="Try again" 
+              label="Try again"
               onclick={handleTryAgain}
               backgroundColor="bg-background-primary"
               borderColor="border-gray-600"
@@ -133,9 +133,8 @@ export default function ForgotPasswordPage() {
               placeholder="Enter your email address"
               value={formData.email}
               onChange={handleInputChange}
-              className={`w-full h-12 px-4 rounded-lg bg-background-primary border ${
-                errors.email ? "border-red-500" : "border-gray-600"
-              } text-text-primary placeholder-gray-400 focus:outline-none focus:border-spotlight-purple transition-colors`}
+              className={`w-full h-12 px-4 rounded-lg bg-background-primary border ${errors.email ? "border-red-500" : "border-gray-600"
+                } text-text-primary placeholder-gray-400 focus:outline-none focus:border-spotlight-purple transition-colors`}
             />
             {errors.email && (
               <p className="text-red-500 text-xs mt-1">{errors.email}</p>

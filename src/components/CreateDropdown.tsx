@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { FiPlus, FiFolder, FiLayout, FiChevronDown } from "react-icons/fi";
+import { FiPlus, FiFolder, FiLayout, FiChevronDown, FiUsers } from "react-icons/fi";
 
 interface CreateDropdownProps {
   onCreateBoard: () => void;
   onCreateWorkspace: () => void;
+  onCreateOrganization: () => void;
   size?: "sm" | "md" | "lg";
   variant?: "button" | "icon";
 }
@@ -13,6 +14,7 @@ interface CreateDropdownProps {
 export default function CreateDropdown({
   onCreateBoard,
   onCreateWorkspace,
+  onCreateOrganization,
   size = "md",
   variant = "button"
 }: CreateDropdownProps) {
@@ -62,6 +64,11 @@ export default function CreateDropdown({
   const handleCreateWorkspace = () => {
     setIsOpen(false);
     onCreateWorkspace();
+  };
+
+  const handleCreateOrganization = () => {
+    setIsOpen(false);
+    onCreateOrganization();
   };
 
   const buttonSizes = {
@@ -118,6 +125,19 @@ export default function CreateDropdown({
                   <div className="text-xs text-text-secondary">Organize boards in a workspace</div>
                 </div>
               </button>
+
+              <button
+                onClick={handleCreateOrganization}
+                className="w-full flex items-center gap-3 px-4 py-3 text-text-primary hover:bg-background-tertiary transition-colors text-left"
+              >
+                <div className="w-8 h-8 bg-spotlight-green/20 rounded-md flex items-center justify-center">
+                  <FiUsers className="w-4 h-4 text-spotlight-green" />
+                </div>
+                <div>
+                  <div className="font-medium">Create Organization</div>
+                  <div className="text-xs text-text-secondary">Start a new organization</div>
+                </div>
+              </button>
             </div>
           </div>
         )}
@@ -130,7 +150,7 @@ export default function CreateDropdown({
       <button
         ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
-        className={`${buttonSizes[size]} bg-gradient-to-r from-spotlight-purple to-spotlight-pink text-text-primary px-4 py-2 rounded-full hover:shadow-glow-purple transition-all cursor-pointer flex items-center gap-2`}
+        className={`${buttonSizes[size]} bg-gradient-to-r from-spotlight-purple to-spotlight-pink text-text-primary px-4 py-2 rounded-lg hover:shadow-glow-purple transition-all cursor-pointer flex items-center gap-2`}
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
@@ -141,7 +161,7 @@ export default function CreateDropdown({
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-56 bg-background-secondary border border-background-tertiary rounded-lg shadow-lg z-50">
+        <div className="absolute right-0 top-full mt-2 w-58 bg-background-secondary border border-background-tertiary rounded-lg shadow-lg z-50">
           <div className="py-2">
             <button
               onClick={handleCreateBoard}
@@ -166,6 +186,19 @@ export default function CreateDropdown({
               <div>
                 <div className="font-medium">Create Workspace</div>
                 <div className="text-xs text-text-secondary">Organize boards in a workspace</div>
+              </div>
+            </button>
+
+            <button
+              onClick={handleCreateOrganization}
+              className="w-full flex items-center gap-3 px-4 py-3 text-text-primary hover:bg-background-tertiary transition-colors text-left"
+            >
+              <div className="w-8 h-8 bg-spotlight-green/20 rounded-md flex items-center justify-center">
+                <FiUsers className="w-4 h-4 text-spotlight-green" />
+              </div>
+              <div>
+                <div className="font-medium">Create Organization</div>
+                <div className="text-xs text-text-secondary">Start a new organization</div>
               </div>
             </button>
           </div>

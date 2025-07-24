@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/buttoon";
+import Button from "@/components/buttoon";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks";
 

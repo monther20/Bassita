@@ -9,6 +9,7 @@ import TaskModal from './board/TaskModal';
 import ColumnModal from './board/ColumnModal';
 import CreateBoardModal from './CreateBoardModal';
 import CreateWorkspaceModal from './CreateWorkspaceModal';
+import CreateOrganizationModal from './CreateOrganizationModal';
 
 export default function ModalRenderer() {
   const {
@@ -22,6 +23,8 @@ export default function ModalRenderer() {
     closeCreateBoardModal,
     createWorkspaceModal,
     closeCreateWorkspaceModal,
+    createOrganizationModal,
+    closeCreateOrganizationModal,
   } = useModal();
 
   return (
@@ -63,6 +66,12 @@ export default function ModalRenderer() {
       <CreateWorkspaceModal
         isOpen={createWorkspaceModal.isOpen}
         onClose={closeCreateWorkspaceModal}
+      />
+
+      {/* Create Organization Modal */}
+      <CreateOrganizationModal
+        isOpen={createOrganizationModal.isOpen}
+        onClose={closeCreateOrganizationModal}
       />
     </>
   );

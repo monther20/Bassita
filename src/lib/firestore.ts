@@ -21,7 +21,8 @@ import {
     FirestoreWorkspace,
     FirestoreBoard,
     FirestoreTask,
-    FirestoreTemplate
+    FirestoreTemplate,
+    FirestoreOrganization
 } from '@/types/firestore';
 
 // Collections
@@ -30,6 +31,7 @@ const WORKSPACES = 'workspaces';
 const BOARDS = 'boards';
 const TASKS = 'tasks';
 const TEMPLATES = 'templates';
+const ORGANIZATIONS = 'organizations';
 
 export class FirestoreService {
     // ===============================
@@ -439,5 +441,41 @@ export class FirestoreService {
             isActive: false,
             updatedAt: serverTimestamp()
         });
+    }
+
+    // ===============================
+    // ORGANIZATION OPERATIONS
+    // ===============================
+
+    static async getUserOrganizations(userId: string): Promise<FirestoreOrganization[]> {
+        if (!userId) {
+            console.error('❌ No userId provided to getUserOrganizations');
+            return [];
+        }
+        try {
+            const orgsRef = collection(db, ORGANIZATIONS);
+            const q = query(orgsRef, where('memberUserIds', 'array-contains', userId));
+            const querySnapshot = await getDocs(q);
+            const organizations = querySnapshot.docs.map(doc => ({
+                ...doc.data(),
+                id: doc.id,
+                createdAt: doc.data().createdAt?.toDate(),
+                updatedAt: doc.data().updatedAt?.toDate()
+            })) as FirestoreOrganization[];
+            return organizations;
+        } catch (error) {
+            console.error('❌ Error in getUserOrganizations:', error);
+            return [];
+        }
+    }
+
+    static async createOrganization(orgData: Omit<FirestoreOrganization, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
+        const orgRef = await addDoc(collection(db, ORGANIZATIONS), {
+            ...orgData,
+            memberUserIds: orgData.members.map(m => m.userId),
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+        });
+        return orgRef.id;
     }
 }

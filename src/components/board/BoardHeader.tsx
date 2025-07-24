@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "../buttoon";
+import Button from "@/components/buttoon";
 import { FiShare, FiMoreHorizontal } from "react-icons/fi";
 import * as Icons from "react-icons/fi";
 import React from "react";
