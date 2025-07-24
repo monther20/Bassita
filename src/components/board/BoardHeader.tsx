@@ -2,6 +2,8 @@
 
 import { Button } from "../buttoon";
 import { FiShare, FiMoreHorizontal } from "react-icons/fi";
+import * as Icons from "react-icons/fi";
+import React from "react";
 
 interface Member {
   name: string;
@@ -28,7 +30,7 @@ export default function BoardHeader({
       <div className="flex items-center justify-between max-w-screen mx-auto">
         {/* Left section - Board title with icon */}
         <div className="flex items-center responsive-gap-sm">
-          <span className="text-2xl">{boardIcon}</span>
+          <span className="text-2xl">{Icons[boardIcon as keyof typeof Icons] && React.createElement(Icons[boardIcon as keyof typeof Icons])}</span>
           <div>
             <h1 className="text-text-primary text-xl font-display font-semibold">
               {boardName}

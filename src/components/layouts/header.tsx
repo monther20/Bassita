@@ -4,8 +4,7 @@ import { UserMenu } from "../userMenu";
 import SearchInput from "../searchInput";
 import SearchModal from "../searchModal";
 import CreateDropdown from "../CreateDropdown";
-import CreateBoardModal from "../CreateBoardModal";
-import CreateWorkspaceModal from "../CreateWorkspaceModal";
+import { useModal } from "@/contexts/ModalContext";
 import { FiMenu, FiSearch } from "react-icons/fi";
 import Link from "next/link";
 
@@ -27,15 +26,14 @@ export default function Header({
     onCreateWorkspaceRef
 }: HeaderProps) {
     const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
-    const [isCreateBoardModalOpen, setIsCreateBoardModalOpen] = useState(false);
-    const [isCreateWorkspaceModalOpen, setIsCreateWorkspaceModalOpen] = useState(false);
+    const { openCreateBoardModal, openCreateWorkspaceModal } = useModal();
 
     const handleCreateBoard = () => {
-        setIsCreateBoardModalOpen(true);
+        openCreateBoardModal(workspaceId);
     };
 
     const handleCreateWorkspace = () => {
-        setIsCreateWorkspaceModalOpen(true);
+        openCreateWorkspaceModal();
     };
 
     // Expose functions to parent components via refs
@@ -130,17 +128,6 @@ export default function Header({
                 onCreateWorkspace={handleCreateWorkspace}
             />
 
-            {/* Create Modals */}
-            <CreateBoardModal
-                isOpen={isCreateBoardModalOpen}
-                onClose={() => setIsCreateBoardModalOpen(false)}
-                workspaceId={workspaceId}
-            />
-            
-            <CreateWorkspaceModal
-                isOpen={isCreateWorkspaceModalOpen}
-                onClose={() => setIsCreateWorkspaceModalOpen(false)}
-            />
         </>
     )
 }

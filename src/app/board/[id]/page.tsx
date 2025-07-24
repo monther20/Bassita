@@ -4,8 +4,7 @@ import { useState, use } from "react";
 import ProtectedLayout from "@/components/layouts/ProtectedLayout";
 import BoardHeader from "@/components/board/BoardHeader";
 import KanbanBoard from "@/components/board/KanbanBoard";
-import TaskModal from "@/components/board/TaskModal";
-import ColumnModal from "@/components/board/ColumnModal";
+import { useModal } from "@/contexts/ModalContext";
 import { useRealTimeBoard } from "@/hooks/useRealTimeBoard";
 import { useMoveTask, useCreateTask, useUpdateTask, useUpdateBoard, useDeleteTask } from "@/hooks/useFirestore";
 import { FirestoreTask } from "@/types/firestore";
@@ -60,10 +59,11 @@ export default function BoardPage({ params }: BoardPageProps) {
     updateBoardMutation.isPending ||
     deleteTaskMutation.isPending;
   
+  // Modal context
+  const { openTaskModal, openColumnModal } = useModal();
+  
   // Local UI state
   const [draggedTask, setDraggedTask] = useState<string | null>(null);
-  const [showTaskModal, setShowTaskModal] = useState(false);
-  const [showColumnModal, setShowColumnModal] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [editingColumn, setEditingColumn] = useState<{ id: string; title: string; badgeColor: string } | null>(null);
   const [addTaskToColumn, setAddTaskToColumn] = useState<string | null>(null);
@@ -108,25 +108,38 @@ export default function BoardPage({ params }: BoardPageProps) {
 
   const handleAddColumn = () => {
     setEditingColumn(null);
-    setShowColumnModal(true);
+    openColumnModal({
+      column: null,
+      onSave: handleSaveColumn
+    });
   };
 
   const handleColumnClick = (columnId: string) => {
     const column = boardData.columns.find(col => col.id === columnId);
     if (column) {
-      setEditingColumn({
+      const editingColumnData = {
         id: column.id,
         title: column.title,
         badgeColor: column.badgeColor
+      };
+      setEditingColumn(editingColumnData);
+      openColumnModal({
+        column: editingColumnData,
+        onSave: handleSaveColumn
       });
-      setShowColumnModal(true);
     }
   };
 
   const handleAddTask = (columnId: string) => {
     setAddTaskToColumn(columnId);
     setEditingTask(null);
-    setShowTaskModal(true);
+    openTaskModal({
+      task: null,
+      availableLabels: boardData.availableLabels,
+      members: boardData.members,
+      onSave: handleSaveTask,
+      onDelete: handleDeleteTask
+    });
   };
 
   const handleTaskClick = (taskId: string) => {
@@ -140,7 +153,13 @@ export default function BoardPage({ params }: BoardPageProps) {
     if (foundTask) {
       setEditingTask(foundTask);
       setAddTaskToColumn(null);
-      setShowTaskModal(true);
+      openTaskModal({
+        task: foundTask,
+        availableLabels: boardData.availableLabels,
+        members: boardData.members,
+        onSave: handleSaveTask,
+        onDelete: handleDeleteTask
+      });
     }
   };
 
@@ -213,7 +232,6 @@ export default function BoardPage({ params }: BoardPageProps) {
         updates: firestoreUpdates
       }, {
         onSuccess: () => {
-          setShowTaskModal(false);
           setEditingTask(null);
           setAddTaskToColumn(null);
         },
@@ -240,7 +258,6 @@ export default function BoardPage({ params }: BoardPageProps) {
         
         createTaskMutation.mutate(newFirestoreTask, {
           onSuccess: () => {
-            setShowTaskModal(false);
             setEditingTask(null);
             setAddTaskToColumn(null);
           },
@@ -285,7 +302,6 @@ export default function BoardPage({ params }: BoardPageProps) {
         updates: { columns: updatedColumns }
       }, {
         onSuccess: () => {
-          setShowColumnModal(false);
           setEditingColumn(null);
         },
         onError: (error: MutationError) => {
@@ -308,7 +324,6 @@ export default function BoardPage({ params }: BoardPageProps) {
         updates: { columns: updatedColumns }
       }, {
         onSuccess: () => {
-          setShowColumnModal(false);
           setEditingColumn(null);
         },
         onError: (error: MutationError) => {
@@ -365,31 +380,6 @@ export default function BoardPage({ params }: BoardPageProps) {
         />
       </div>
 
-      {/* Modals */}
-      <TaskModal
-        isOpen={showTaskModal}
-        onClose={() => {
-          setShowTaskModal(false);
-          setEditingTask(null);
-          setAddTaskToColumn(null);
-          clearError();
-        }}
-        onSave={handleSaveTask}
-        onDelete={handleDeleteTask}
-        task={editingTask}
-        availableLabels={boardData.availableLabels}
-        members={boardData.members}
-      />
-
-      <ColumnModal
-        isOpen={showColumnModal}
-        onClose={() => {
-          setShowColumnModal(false);
-          setEditingColumn(null);
-        }}
-        onSave={handleSaveColumn}
-        column={editingColumn}
-      />
     </ProtectedLayout>
   );
 }

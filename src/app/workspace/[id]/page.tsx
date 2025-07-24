@@ -6,7 +6,7 @@ import ProtectedLayout from "@/components/layouts/ProtectedLayout";
 import DashboardSection from "@/components/dashboard/dashboardSection";
 import { useWorkspace, useWorkspaceBoards } from "@/hooks/useFirestore";
 import { useRecentlyViewed } from "@/hooks/useDashboard";
-import { FiArrowLeft } from "react-icons/fi";
+import { FiArrowLeft, FiUserPlus } from "react-icons/fi";
 
 interface WorkspacePageProps {
   params: Promise<{
@@ -39,7 +39,7 @@ export default function WorkspacePage({ params }: WorkspacePageProps) {
         workspaceId: workspace?.id,
         workspaceName: workspace?.name
       });
-      
+
       router.push(`/board/${board.id}`);
     }
   };
@@ -80,7 +80,7 @@ export default function WorkspacePage({ params }: WorkspacePageProps) {
   }
 
   return (
-    <ProtectedLayout workspaceId={workspaceId} onCreateBoardRef={createBoardRef}>
+    <ProtectedLayout showSidebar={false} workspaceId={workspaceId} onCreateBoardRef={createBoardRef}>
       <div className="space-y-6 responsive-px-sm max-w-screen-2xl mx-auto p-6">
         {/* Workspace Header */}
         <div className="space-y-2">
@@ -93,7 +93,7 @@ export default function WorkspacePage({ params }: WorkspacePageProps) {
               Back to Dashboard
             </button>
           </div>
-          
+
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-text-primary text-3xl font-display font-bold">
@@ -107,21 +107,14 @@ export default function WorkspacePage({ params }: WorkspacePageProps) {
                 <span>Owner</span>
               </div>
             </div>
-            
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => console.log('Invite members')}
-                className="px-4 py-2 text-text-secondary border border-background-tertiary rounded-lg hover:border-text-tertiary transition-colors"
-              >
-                Invite Members
-              </button>
-              <button
-                onClick={() => createBoardRef.current?.()}
-                className="px-4 py-2 bg-spotlight-purple text-text-primary rounded-lg hover:bg-spotlight-purple/90 transition-colors"
-              >
-                Create Board
-              </button>
-            </div>
+
+            <button
+              onClick={() => console.log('Invite members')}
+              className="px-4 py-2 text-text-secondary border border-background-tertiary rounded-lg hover:border-text-tertiary hover:text-text-primary transition-colors flex items-center gap-2"
+            >
+              <FiUserPlus className="w-4 h-4" />
+              Invite Members
+            </button>
           </div>
         </div>
 
@@ -130,9 +123,10 @@ export default function WorkspacePage({ params }: WorkspacePageProps) {
           <div className="text-text-primary text-2xl font-display font-semibold mb-4">
             Boards
           </div>
-          
+
           {boards.length > 0 ? (
             <DashboardSection
+              showAllBoards={true}
               cards={boards.map(board => ({
                 title: board.name,
                 description: board.icon,

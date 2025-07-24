@@ -20,7 +20,8 @@ import {
     FirestoreUser,
     FirestoreWorkspace,
     FirestoreBoard,
-    FirestoreTask
+    FirestoreTask,
+    FirestoreTemplate
 } from '@/types/firestore';
 
 // Collections
@@ -28,6 +29,7 @@ const USERS = 'users';
 const WORKSPACES = 'workspaces';
 const BOARDS = 'boards';
 const TASKS = 'tasks';
+const TEMPLATES = 'templates';
 
 export class FirestoreService {
     // ===============================
@@ -50,19 +52,17 @@ export class FirestoreService {
             console.error('Invalid userId provided to createUserIfNotExists:', userId);
             return;
         }
-        
+
         if (!db) {
             console.error('Firestore db instance is not initialized');
             return;
         }
-        
+
         try {
-            console.log('Creating user document for userId:', userId);
             const userRef = doc(db, USERS, userId);
             const userSnap = await getDoc(userRef);
 
             if (!userSnap.exists()) {
-                console.log('User document does not exist, creating new one');
                 await setDoc(userRef, {
                     ...userData,
                     id: userId,
@@ -70,7 +70,6 @@ export class FirestoreService {
                     createdAt: serverTimestamp(),
                     updatedAt: serverTimestamp()
                 });
-                console.log('User document created successfully');
             } else {
                 console.log('User document already exists');
             }
@@ -141,22 +140,20 @@ export class FirestoreService {
     }
 
     static async getUserWorkspaces(userId: string): Promise<FirestoreWorkspace[]> {
-        console.log('🔍 getUserWorkspaces called with userId:', userId);
-        
+
         if (!userId) {
             console.error('❌ No userId provided to getUserWorkspaces');
             return [];
         }
-        
+
         try {
             const workspacesRef = collection(db, WORKSPACES);
             const q = query(
                 workspacesRef,
                 where('memberUserIds', 'array-contains', userId)
             );
-            
+
             const querySnapshot = await getDocs(q);
-            console.log('📊 Query results:', querySnapshot.docs.length, 'workspaces found');
 
             const workspaces = querySnapshot.docs.map(doc => ({
                 ...doc.data(),
@@ -164,8 +161,7 @@ export class FirestoreService {
                 createdAt: doc.data().createdAt?.toDate(),
                 updatedAt: doc.data().updatedAt?.toDate()
             })) as FirestoreWorkspace[];
-            
-            console.log('✅ Returning workspaces:', workspaces.length);
+
             return workspaces;
         } catch (error) {
             console.error('❌ Error in getUserWorkspaces:', error);
@@ -333,5 +329,115 @@ export class FirestoreService {
         });
 
         await batch.commit();
+    }
+
+    // ===============================
+    // TEMPLATE OPERATIONS
+    // ===============================
+
+    static async createTemplate(templateData: Omit<FirestoreTemplate, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
+        const templateRef = await addDoc(collection(db, TEMPLATES), {
+            ...templateData,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+        });
+        return templateRef.id;
+    }
+
+    static async getTemplates(): Promise<FirestoreTemplate[]> {
+        const templatesRef = collection(db, TEMPLATES);
+        const q = query(templatesRef, where('isActive', '==', true), orderBy('name'));
+        const querySnapshot = await getDocs(q);
+
+        return querySnapshot.docs.map(doc => ({
+            ...doc.data(),
+            id: doc.id,
+            createdAt: doc.data().createdAt?.toDate(),
+            updatedAt: doc.data().updatedAt?.toDate()
+        })) as FirestoreTemplate[];
+    }
+
+    static async getTemplate(templateId: string): Promise<FirestoreTemplate | null> {
+        const templateRef = doc(db, TEMPLATES, templateId);
+        const templateSnap = await getDoc(templateRef);
+        if (templateSnap.exists()) {
+            const data = templateSnap.data();
+            return {
+                ...data,
+                id: templateId,
+                createdAt: data.createdAt?.toDate(),
+                updatedAt: data.updatedAt?.toDate()
+            } as FirestoreTemplate;
+        }
+        return null;
+    }
+
+    static async createBoardFromTemplate(
+        templateId: string,
+        boardName: string,
+        workspaceId: string,
+        ownerId: string
+    ): Promise<string> {
+        const template = await this.getTemplate(templateId);
+        if (!template) {
+            throw new Error('Template not found');
+        }
+
+        // Create board with template data
+        const boardData: Omit<FirestoreBoard, 'id' | 'createdAt' | 'updatedAt'> = {
+            name: boardName,
+            icon: template.icon,
+            workspaceId,
+            ownerId,
+            members: [{
+                userId: ownerId,
+                role: 'owner'
+            }],
+            columns: template.columns,
+            availableLabels: template.availableLabels
+        };
+
+        const boardId = await this.createBoard(boardData);
+
+        // Create sample tasks if they exist in template
+        if (template.sampleTasks && template.sampleTasks.length > 0) {
+            const batch = writeBatch(db);
+
+            template.sampleTasks.forEach(sampleTask => {
+                const taskRef = doc(collection(db, TASKS));
+                const taskData = {
+                    ...sampleTask,
+                    boardId,
+                    assigneeIds: [],
+                    labels: template.availableLabels.filter(label =>
+                        sampleTask.labels.includes(label.id)
+                    ),
+                    createdBy: ownerId,
+                    createdAt: serverTimestamp(),
+                    updatedAt: serverTimestamp()
+                };
+                batch.set(taskRef, taskData);
+            });
+
+            await batch.commit();
+        }
+
+        return boardId;
+    }
+
+    static async updateTemplate(templateId: string, updates: Partial<FirestoreTemplate>): Promise<void> {
+        const templateRef = doc(db, TEMPLATES, templateId);
+        await updateDoc(templateRef, {
+            ...updates,
+            updatedAt: serverTimestamp()
+        });
+    }
+
+    static async deactivateTemplate(templateId: string): Promise<void> {
+        const templateRef = doc(db, TEMPLATES, templateId);
+        await updateDoc(templateRef, {
+            isActive: false,
+            updatedAt: serverTimestamp()
+        });
     }
 }

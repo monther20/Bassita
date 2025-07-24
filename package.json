@@ -3,10 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev --turbopack", 
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "create-templates": "npx ts-node -P scripts/tsconfig.json scripts/create-templates.ts",
+    "create-templates:clear": "npx ts-node -P scripts/tsconfig.json scripts/create-templates.ts --clear",
+    "validate-templates": "npx ts-node -P scripts/tsconfig.json scripts/validate-templates.ts",
+    "test-firebase-config": "npx ts-node -P scripts/tsconfig.json scripts/test-env.ts"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.83.0",
@@ -41,6 +45,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.4.1",
     "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }

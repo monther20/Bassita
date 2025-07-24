@@ -87,7 +87,6 @@ export default function ResetPasswordPage() {
 
     // TODO: Implement actual reset password logic
     setTimeout(() => {
-      console.log("Reset password:", { token, password: formData.password });
       setIsLoading(false);
       setIsSuccess(true);
     }, 1500);

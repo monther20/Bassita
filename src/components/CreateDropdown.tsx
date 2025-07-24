@@ -10,9 +10,9 @@ interface CreateDropdownProps {
   variant?: "button" | "icon";
 }
 
-export default function CreateDropdown({ 
-  onCreateBoard, 
-  onCreateWorkspace, 
+export default function CreateDropdown({
+  onCreateBoard,
+  onCreateWorkspace,
   size = "md",
   variant = "button"
 }: CreateDropdownProps) {
@@ -105,7 +105,7 @@ export default function CreateDropdown({
                   <div className="text-xs text-text-secondary">Start a new kanban board</div>
                 </div>
               </button>
-              
+
               <button
                 onClick={handleCreateWorkspace}
                 className="w-full flex items-center gap-3 px-4 py-3 text-text-primary hover:bg-background-tertiary transition-colors text-left"
@@ -130,14 +130,13 @@ export default function CreateDropdown({
       <button
         ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
-        className={`${buttonSizes[size]} bg-gradient-to-r from-spotlight-purple to-spotlight-pink text-text-primary rounded-lg hover:shadow-glow-purple transition-all cursor-pointer flex items-center gap-2`}
+        className={`${buttonSizes[size]} bg-gradient-to-r from-spotlight-purple to-spotlight-pink text-text-primary px-4 py-2 rounded-full hover:shadow-glow-purple transition-all cursor-pointer flex items-center gap-2`}
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
-        <FiPlus className="w-4 h-4" />
         <span>Create</span>
-        <FiChevronDown 
-          className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} 
+        <FiChevronDown
+          className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
         />
       </button>
 
@@ -156,7 +155,7 @@ export default function CreateDropdown({
                 <div className="text-xs text-text-secondary">Start a new kanban board</div>
               </div>
             </button>
-            
+
             <button
               onClick={handleCreateWorkspace}
               className="w-full flex items-center gap-3 px-4 py-3 text-text-primary hover:bg-background-tertiary transition-colors text-left"

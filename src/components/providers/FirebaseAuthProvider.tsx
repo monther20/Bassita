@@ -22,8 +22,7 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
   // Handle new user setup (create user document and default workspace)
   const handleNewUser = async (user: any) => {
     try {
-      console.log('Setting up new user:', user?.id || user?.uid, user?.email);
-      
+
       // Validate user object - check both id (from mapped User) and uid (from Firebase User)
       const userId = user?.id || user?.uid;
       if (!user || !userId) {
@@ -38,21 +37,16 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
         workspaces: []
       };
 
-      console.log('User data prepared:', userData);
 
       // Create user document if it doesn't exist
       await FirestoreService.createUserIfNotExists(userId, userData);
 
       // Check if user has any workspaces, if not create a default one
-      console.log('Checking user workspaces...');
       const userWorkspaces = await FirestoreService.getUserWorkspaces(userId);
-      console.log('User workspaces found:', userWorkspaces.length);
-      
+
       if (userWorkspaces.length === 0) {
         const userName = userData.name || 'User';
-        console.log('Creating default workspace for user:', userName);
         await FirestoreService.createDefaultWorkspaceForUser(userId, userName);
-        console.log('Created default workspace for new user');
       }
     } catch (error) {
       console.error('Error setting up new user:', error);
@@ -83,7 +77,7 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
         // Set up auth state listener
         unsubscribe = FirebaseAuthService.onAuthStateChange(async (user) => {
           setUser(user);
-          
+
           // Set token cookie if user is authenticated
           if (user) {
             try {
@@ -91,7 +85,7 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
               if (token) {
                 FirebaseAuthService.setTokenCookie(token);
               }
-              
+
               // Create user document and default workspace if user is new
               await handleNewUser(user);
             } catch (error) {
@@ -100,7 +94,7 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
           } else {
             FirebaseAuthService.removeTokenCookie();
           }
-          
+
           if (!useAuthStore.getState().isInitialized) {
             setInitialized(true);
           }

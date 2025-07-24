@@ -53,7 +53,7 @@ export function useRecentlyViewed() {
     const newItem = { ...item, timestamp: Date.now() };
     const filtered = recentItems.filter(i => !(i.id === item.id && i.type === item.type));
     const updated = [newItem, ...filtered].slice(0, MAX_RECENT_ITEMS);
-    
+
     setRecentItems(updated);
     localStorage.setItem(RECENT_ITEMS_KEY, JSON.stringify(updated));
   };
@@ -70,50 +70,28 @@ export function useDashboardData() {
   const workspacesQuery = useQuery({
     queryKey: ['dashboard-workspaces', user?.id],
     queryFn: async () => {
-      console.log('📋 Dashboard workspaces query executing with userId:', user?.id);
       if (!user?.id) {
-        console.log('❌ No user ID in dashboard workspace query');
         return [];
       }
       const result = await FirestoreService.getUserWorkspaces(user.id);
-      console.log('📋 Dashboard workspaces query result:', result.length, 'workspaces');
       return result;
     },
     enabled: !!user?.id,
     staleTime: 0, // Always refetch for debugging
     gcTime: 0, // No caching for debugging
     retry: 1,
-    onSuccess: (data) => {
-      console.log('🎯 React Query workspaces onSuccess:', {
-        dataLength: data?.length,
-        data: data
-      });
-    },
-    onError: (error) => {
-      console.error('❌ React Query workspaces onError:', error);
-    }
   });
 
   // Fetch all boards for the user
   const boardsQuery = useQuery({
     queryKey: ['dashboard-boards', user?.id],
     queryFn: async () => {
-      console.log('📋 Dashboard boards query executing with:', {
-        userId: user?.id,
-        workspacesData: workspacesQuery.data,
-        workspacesLength: workspacesQuery.data?.length
-      });
-      
       if (!user?.id || !workspacesQuery.data) {
-        console.log('❌ Boards query: missing user ID or workspaces data');
         return [];
       }
-      
       const allBoards = await Promise.all(
         workspacesQuery.data.map(async (workspace) => {
-          console.log('📋 Fetching boards for workspace:', workspace.id, workspace.name);
           const boards = await FirestoreService.getWorkspaceBoards(workspace.id);
-          console.log('📋 Found boards:', boards.length, 'for workspace', workspace.name);
           return boards.map(board => ({
             ...board,
             workspaceName: workspace.name,
@@ -121,39 +99,22 @@ export function useDashboardData() {
           }));
         })
       );
-      
+
       const flatBoards = allBoards.flat();
-      console.log('📋 Total boards across all workspaces:', flatBoards.length);
       return flatBoards;
     },
     enabled: !!user?.id && !!workspacesQuery.data,
     staleTime: 0, // Always refetch for debugging
     gcTime: 0, // No caching for debugging
     retry: 1,
-    onSuccess: (data) => {
-      console.log('🎯 React Query boards onSuccess:', {
-        dataLength: data?.length,
-        data: data
-      });
-    },
-    onError: (error) => {
-      console.error('❌ React Query boards onError:', error);
-    }
+
   });
 
   // Transform data for dashboard UI
   const dashboardData = useMemo(() => {
-    console.log('🔄 Dashboard data transformation:', {
-      workspacesData: workspacesQuery.data,
-      workspacesLength: workspacesQuery.data?.length,
-      boardsData: boardsQuery.data,
-      boardsLength: boardsQuery.data?.length,
-      userId: user?.id,
-      hasAllData: !!(workspacesQuery.data && boardsQuery.data && user?.id)
-    });
+
 
     if (!workspacesQuery.data || !boardsQuery.data || !user?.id) {
-      console.log('❌ Missing data for transformation, returning empty arrays');
       return {
         myWorkspaces: [],
         guestWorkspaces: [],
@@ -165,14 +126,7 @@ export function useDashboardData() {
     // Transform workspaces
     const transformedWorkspaces = workspacesQuery.data.map((workspace): DashboardWorkspace => {
       const workspaceBoards = boardsQuery.data.filter(board => board.workspaceId === workspace.id);
-      
-      console.log(`🏢 Transforming workspace: ${workspace.name}`, {
-        workspaceId: workspace.id,
-        boardsForWorkspace: workspaceBoards.length,
-        isOwner: workspace.ownerId === user.id,
-        memberCount: workspace.members?.length
-      });
-      
+
       return {
         id: workspace.id,
         name: workspace.name,
@@ -199,14 +153,7 @@ export function useDashboardData() {
     // Separate owned vs guest workspaces
     const myWorkspaces = transformedWorkspaces.filter(w => w.isOwner);
     const guestWorkspaces = transformedWorkspaces.filter(w => !w.isOwner);
-    
-    console.log('🎯 Final workspace separation:', {
-      totalWorkspaces: transformedWorkspaces.length,
-      myWorkspaces: myWorkspaces.length,
-      guestWorkspaces: guestWorkspaces.length,
-      myWorkspaceDetails: myWorkspaces.map(w => ({ id: w.id, name: w.name, boardCount: w.boardCount })),
-      guestWorkspaceDetails: guestWorkspaces.map(w => ({ id: w.id, name: w.name, boardCount: w.boardCount }))
-    });
+
 
     // Get recently viewed boards
     const recentlyViewed = recentItems
@@ -214,7 +161,7 @@ export function useDashboardData() {
       .map(item => {
         const board = boardsQuery.data.find(b => b.id === item.id);
         if (!board) return null;
-        
+
         return {
           id: board.id,
           name: board.name,
@@ -249,14 +196,8 @@ export function useDashboardData() {
         isOwner: board.isOwner
       }))
     };
-    
-    console.log('✅ Final dashboard data result:', {
-      myWorkspacesCount: finalResult.myWorkspaces.length,
-      guestWorkspacesCount: finalResult.guestWorkspaces.length,
-      recentlyViewedCount: finalResult.recentlyViewed.length,
-      allBoardsCount: finalResult.allBoards.length
-    });
-    
+
+
     return finalResult;
   }, [workspacesQuery.data, boardsQuery.data, user?.id, recentItems]);
 

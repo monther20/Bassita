@@ -17,12 +17,6 @@ export default function DashboardPage() {
     error
   } = useDashboardData();
 
-  console.log("🚀 Dashboard Debug Info:");
-  console.log("  myWorkspaces:", myWorkspaces);
-  console.log("  guestWorkspaces:", guestWorkspaces);
-  console.log("  isLoading:", isLoading);
-  console.log("  error:", error);
-
   const handleBoardClick = (board: { id: string; name: string; workspaceId?: string; workspaceName?: string }) => {
     // Add to recently viewed
     addRecentItem({
@@ -120,7 +114,7 @@ export default function DashboardPage() {
                   }}
                   cards={workspace.boards.map(board => ({
                     title: board.name,
-                    description: board.icon,
+                    icon: board.icon,
                     members: board.members,
                     lastUpdated: new Date(board.lastUpdated).toLocaleString()
                   }))}

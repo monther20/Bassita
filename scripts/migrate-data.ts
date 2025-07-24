@@ -38,7 +38,6 @@ export async function migrateData() {
     try {
         // 1. Create workspace
         const workspaceId = await FirestoreService.createWorkspace(mockWorkspace);
-        console.log('Created workspace:', workspaceId);
 
         // 2. Create boards
         for (const boardData of mockBoards) {
@@ -46,7 +45,6 @@ export async function migrateData() {
                 ...boardData,
                 workspaceId
             });
-            console.log('Created board:', boardId);
 
             // 3. Create sample tasks
             await FirestoreService.createTask({
@@ -62,7 +60,6 @@ export async function migrateData() {
             });
         }
 
-        console.log('Migration completed successfully!');
     } catch (error) {
         console.error('Migration failed:', error);
     }
@@ -71,7 +68,6 @@ export async function migrateData() {
 // Migration function to add memberUserIds to existing workspaces
 export async function migrateExistingWorkspaces() {
     try {
-        console.log('🔧 Migrating existing workspaces to add memberUserIds field...');
         
         const workspacesRef = collection(db, 'workspaces');
         const querySnapshot = await getDocs(workspacesRef);
@@ -97,13 +93,9 @@ export async function migrateExistingWorkspaces() {
                 memberUserIds
             });
             
-            console.log(`✅ Migrated ${workspaceData.name} - added ${memberUserIds.length} member IDs`);
             migrated++;
         }
         
-        console.log(`\n🎉 Migration completed!`);
-        console.log(`✅ Migrated: ${migrated} workspaces`);
-        console.log(`⏩ Skipped: ${skipped} workspaces (already migrated)`);
         
     } catch (error) {
         console.error('❌ Migration failed:', error);

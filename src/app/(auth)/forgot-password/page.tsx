@@ -35,7 +35,6 @@ export default function ForgotPasswordPage() {
 
     // TODO: Implement actual forgot password logic
     setTimeout(() => {
-      console.log("Forgot password request:", formData);
       setIsLoading(false);
       setIsSuccess(true);
     }, 1500);

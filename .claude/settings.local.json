@@ -16,7 +16,10 @@
       "Bash(true)",
       "Bash(npm run lint:*)",
       "Bash(timeout 10s npm run dev:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(npm run validate-templates:*)",
+      "Bash(npx ts-node:*)",
+      "Bash(npm run test-firebase-config:*)"
     ],
     "deny": []
   }

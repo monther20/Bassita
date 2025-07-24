@@ -65,3 +65,34 @@ export interface FirestoreTask {
     createdAt: Date;
     updatedAt: Date;
 }
+
+export interface FirestoreTemplate {
+    id: string;
+    name: string;
+    description: string;
+    icon: string;
+    category: string;
+    columns: Array<{
+        id: string;
+        title: string;
+        badgeColor: string;
+        order: number;
+    }>;
+    availableLabels: Array<{
+        id: string;
+        name: string;
+        color: string;
+    }>;
+    sampleTasks?: Array<{
+        id: string;
+        title: string;
+        description: string;
+        columnId: string;
+        position: number;
+        labels: string[]; // Array of label IDs
+        icon?: string;
+    }>;
+    isActive: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+}
