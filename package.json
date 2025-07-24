@@ -3,10 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev --turbopack", 
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "create-templates": "npx ts-node -P scripts/tsconfig.json scripts/create-templates.ts",
+    "create-templates:clear": "npx ts-node -P scripts/tsconfig.json scripts/create-templates.ts --clear",
+    "validate-templates": "npx ts-node -P scripts/tsconfig.json scripts/validate-templates.ts",
+    "test-firebase-config": "npx ts-node -P scripts/tsconfig.json scripts/test-env.ts"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.83.0",
@@ -16,6 +20,7 @@
     "@tsparticles/interaction-external-repulse": "^3.8.1",
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/updater-opacity": "^3.8.1",
+    "@types/uuid": "^10.0.0",
     "clsx": "^2.1.1",
     "firebase": "^12.0.0",
     "firebase-admin": "^13.4.0",
@@ -27,6 +32,7 @@
     "react-icons": "^5.5.0",
     "socket.io-client": "^4.8.1",
     "tailwind-merge": "^3.3.1",
+    "uuid": "^11.1.0",
     "zustand": "^5.0.6"
   },
   "devDependencies": {
@@ -39,6 +45,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.4.1",
     "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }

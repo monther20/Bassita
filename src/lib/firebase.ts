@@ -40,7 +40,6 @@ if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_USE_FIREBA
     try {
       connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
       isAuthEmulatorConnected = true;
-      console.log('Connected to Auth emulator');
     } catch (error) {
       console.log('Auth emulator connection failed (this is normal if already connected):', error);
     }
@@ -51,7 +50,6 @@ if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_USE_FIREBA
     try {
       connectFirestoreEmulator(db, 'localhost', 8080);
       isFirestoreEmulatorConnected = true;
-      console.log('Connected to Firestore emulator');
     } catch (error) {
       console.log('Firestore emulator connection failed (this is normal if already connected):', error);
     }

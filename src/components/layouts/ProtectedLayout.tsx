@@ -11,6 +11,9 @@ interface ProtectedLayoutProps {
   showHeader?: boolean;
   showSidebar?: boolean;
   className?: string;
+  workspaceId?: string; // For passing workspace context to header
+  onCreateBoardRef?: React.MutableRefObject<(() => void) | null>;
+  onCreateWorkspaceRef?: React.MutableRefObject<(() => void) | null>;
 }
 
 export function ProtectedLayout({
@@ -18,6 +21,9 @@ export function ProtectedLayout({
   showHeader = true,
   showSidebar = true,
   className = '',
+  workspaceId,
+  onCreateBoardRef,
+  onCreateWorkspaceRef,
 }: ProtectedLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -35,7 +41,9 @@ export function ProtectedLayout({
           <Header
             onToggleSidebar={toggleSidebar}
             showSidebarToggle={showSidebar}
-
+            workspaceId={workspaceId}
+            onCreateBoardRef={onCreateBoardRef}
+            onCreateWorkspaceRef={onCreateWorkspaceRef}
           />
         )}
         <div className="flex relative">

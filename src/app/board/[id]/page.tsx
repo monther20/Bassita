@@ -1,13 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, use } from "react";
 import ProtectedLayout from "@/components/layouts/ProtectedLayout";
 import BoardHeader from "@/components/board/BoardHeader";
 import KanbanBoard from "@/components/board/KanbanBoard";
-import TaskModal from "@/components/board/TaskModal";
-import ColumnModal from "@/components/board/ColumnModal";
+import { useModal } from "@/contexts/ModalContext";
+import { useRealTimeBoard } from "@/hooks/useRealTimeBoard";
+import { useMoveTask, useCreateTask, useUpdateTask, useUpdateBoard, useDeleteTask } from "@/hooks/useFirestore";
+import { FirestoreTask } from "@/types/firestore";
+import { v4 as uuidv4 } from "uuid";
 
-// Sample data for different boards
+
+// UI-compatible interfaces (matches useRealTimeBoard output)
 interface Label {
   id: string;
   name: string;
@@ -24,325 +28,118 @@ interface Task {
   labels?: Label[];
 }
 
-interface BoardData {
-  id: string;
-  name: string;
-  icon: string;
-  members: Array<{ name: string; color: string }>;
-  columns: Array<{
-    id: string;
-    title: string;
-    badgeColor: string;
-    tasks: Task[];
-  }>;
-  availableLabels: Label[];
-}
-
-const getBoardData = (boardId: string): BoardData => {
-  const boardsData: { [key: string]: BoardData } = {
-    "marketing-campaign": {
-      id: "marketing-campaign",
-      name: "Marketing Campaign",
-      icon: "🚀",
-      members: [
-        { name: "JD", color: "spotlight-purple" },
-        { name: "SM", color: "spotlight-pink" },
-        { name: "AK", color: "spotlight-green" },
-        { name: "MG", color: "spotlight-yellow" },
-        { name: "TL", color: "spotlight-blue" }
-      ],
-      availableLabels: [
-        { id: "priority-high", name: "High Priority", color: "bg-red-500" },
-        { id: "priority-medium", name: "Medium Priority", color: "bg-yellow-500" },
-        { id: "priority-low", name: "Low Priority", color: "bg-green-500" },
-        { id: "feature", name: "Feature", color: "bg-blue-500" },
-        { id: "bug", name: "Bug", color: "bg-red-600" },
-        { id: "enhancement", name: "Enhancement", color: "bg-purple-500" },
-        { id: "documentation", name: "Documentation", color: "bg-gray-500" },
-        { id: "testing", name: "Testing", color: "bg-pink-500" }
-      ],
-      columns: [
-        {
-          id: "todo",
-          title: "To Do",
-          badgeColor: "bg-spotlight-purple",
-          tasks: [
-            {
-              id: "task-1",
-              title: "Design user interface",
-              description: "Create wireframes and mockups",
-              icon: "FiLayout",
-              assignee: { name: "JD", color: "spotlight-purple" },
-              assignees: [{ name: "JD", color: "spotlight-purple" }],
-              labels: [
-                { id: "priority-high", name: "High Priority", color: "bg-red-500" },
-                { id: "feature", name: "Feature", color: "bg-blue-500" }
-              ]
-            },
-            {
-              id: "task-2",
-              title: "Write documentation",
-              description: "Update API docs",
-              icon: "FiBook",
-              assignee: { name: "SM", color: "spotlight-pink" },
-              assignees: [{ name: "SM", color: "spotlight-pink" }],
-              labels: [
-                { id: "documentation", name: "Documentation", color: "bg-gray-500" }
-              ]
-            }
-          ]
-        },
-        {
-          id: "in-progress",
-          title: "In Progress",
-          badgeColor: "bg-spotlight-yellow",
-          tasks: [
-            {
-              id: "task-3",
-              title: "Implement dashboard",
-              description: "Build React components",
-              icon: "FiCode",
-              assignee: { name: "AK", color: "spotlight-green" },
-              assignees: [{ name: "AK", color: "spotlight-green" }],
-              labels: [
-                { id: "priority-medium", name: "Medium Priority", color: "bg-yellow-500" },
-                { id: "feature", name: "Feature", color: "bg-blue-500" }
-              ]
-            }
-          ]
-        },
-        {
-          id: "done",
-          title: "Done",
-          badgeColor: "bg-spotlight-green",
-          tasks: [
-            {
-              id: "task-4",
-              title: "Setup authentication",
-              description: "OAuth integration complete",
-              icon: "FiLock",
-              assignee: { name: "MG", color: "spotlight-yellow" },
-              assignees: [{ name: "MG", color: "spotlight-yellow" }],
-              labels: [
-                { id: "feature", name: "Feature", color: "bg-blue-500" }
-              ]
-            },
-            {
-              id: "task-5",
-              title: "Database schema",
-              description: "PostgreSQL setup done",
-              icon: "FiDatabase",
-              assignee: { name: "TL", color: "spotlight-blue" },
-              assignees: [{ name: "TL", color: "spotlight-blue" }],
-              labels: [
-                { id: "enhancement", name: "Enhancement", color: "bg-purple-500" }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    "workspace-1": {
-      id: "workspace-1",
-      name: "Workspace 1",
-      icon: "📱",
-      members: [
-        { name: "JD", color: "spotlight-blue" },
-        { name: "SM", color: "spotlight-green" }
-      ],
-      availableLabels: [
-        { id: "mobile", name: "Mobile", color: "bg-blue-500" },
-        { id: "api", name: "API", color: "bg-green-500" },
-        { id: "urgent", name: "Urgent", color: "bg-red-500" }
-      ],
-      columns: [
-        {
-          id: "todo",
-          title: "To Do",
-          badgeColor: "bg-spotlight-blue",
-          tasks: [
-            {
-              id: "task-1",
-              title: "Mobile app design",
-              description: "Create mobile-first UI",
-              icon: "FiSmartphone",
-              assignee: { name: "JD", color: "spotlight-blue" },
-              assignees: [{ name: "JD", color: "spotlight-blue" }],
-              labels: [
-                { id: "mobile", name: "Mobile", color: "bg-blue-500" }
-              ]
-            }
-          ]
-        },
-        {
-          id: "in-progress",
-          title: "In Progress",
-          badgeColor: "bg-spotlight-yellow",
-          tasks: [
-            {
-              id: "task-2",
-              title: "API integration",
-              description: "Connect backend services",
-              icon: "FiZap",
-              assignee: { name: "SM", color: "spotlight-green" },
-              assignees: [{ name: "SM", color: "spotlight-green" }],
-              labels: [
-                { id: "api", name: "API", color: "bg-green-500" },
-                { id: "urgent", name: "Urgent", color: "bg-red-500" }
-              ]
-            }
-          ]
-        },
-        {
-          id: "done",
-          title: "Done",
-          badgeColor: "bg-spotlight-green",
-          tasks: []
-        }
-      ]
-    },
-    "board-1": {
-      id: "board-1",
-      name: "Board 1",
-      icon: "🏷️",
-      members: [
-        { name: "JD", color: "spotlight-purple" },
-        { name: "SM", color: "spotlight-pink" }
-      ],
-      availableLabels: [
-        { id: "design", name: "Design", color: "bg-purple-500" },
-        { id: "planning", name: "Planning", color: "bg-orange-500" }
-      ],
-      columns: [
-        {
-          id: "todo",
-          title: "To Do",
-          badgeColor: "bg-spotlight-purple",
-          tasks: [
-            {
-              id: "task-1",
-              title: "Design system setup",
-              description: "Create component library",
-              icon: "FiPalette",
-              assignee: { name: "JD", color: "spotlight-purple" },
-              assignees: [{ name: "JD", color: "spotlight-purple" }],
-              labels: [
-                { id: "design", name: "Design", color: "bg-purple-500" }
-              ]
-            }
-          ]
-        },
-        {
-          id: "in-progress",
-          title: "In Progress",
-          badgeColor: "bg-spotlight-yellow",
-          tasks: []
-        },
-        {
-          id: "done",
-          title: "Done",
-          badgeColor: "bg-spotlight-green",
-          tasks: [
-            {
-              id: "task-2",
-              title: "Project planning",
-              description: "Define project scope and timeline",
-              icon: "FiClipboard",
-              assignee: { name: "SM", color: "spotlight-pink" },
-              assignees: [{ name: "SM", color: "spotlight-pink" }],
-              labels: [
-                { id: "planning", name: "Planning", color: "bg-orange-500" }
-              ]
-            }
-          ]
-        }
-      ]
-    }
-  };
-
-  // Return board data or default
-  return boardsData[boardId] || {
-    id: boardId,
-    name: boardId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-    icon: "📋",
-    members: [
-      { name: "JD", color: "spotlight-purple" },
-      { name: "SM", color: "spotlight-pink" }
-    ],
-    availableLabels: [
-      { id: "priority-high", name: "High Priority", color: "bg-red-500" },
-      { id: "priority-medium", name: "Medium Priority", color: "bg-yellow-500" },
-      { id: "priority-low", name: "Low Priority", color: "bg-green-500" }
-    ],
-    columns: [
-      {
-        id: "todo",
-        title: "To Do",
-        badgeColor: "bg-spotlight-purple",
-        tasks: []
-      },
-      {
-        id: "in-progress",
-        title: "In Progress",
-        badgeColor: "bg-spotlight-yellow",
-        tasks: []
-      },
-      {
-        id: "done",
-        title: "Done",
-        badgeColor: "bg-spotlight-green",
-        tasks: []
-      }
-    ]
-  };
-};
+// Type for mutation error handling
+type MutationError = Error | { message: string };
 
 interface BoardPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default function BoardPage({ params }: BoardPageProps) {
-  const [boardData, setBoardData] = useState(() => getBoardData(params.id));
+  // Unwrap async params for Next.js 15 compatibility
+  const { id: boardId } = use(params);
+  
+  // Real-time Firestore data subscription
+  const { board: boardData, loading, error } = useRealTimeBoard(boardId);
+  
+  // Firestore mutations
+  const moveTaskMutation = useMoveTask();
+  const createTaskMutation = useCreateTask();
+  const updateTaskMutation = useUpdateTask();
+  const updateBoardMutation = useUpdateBoard();
+  const deleteTaskMutation = useDeleteTask();
+  
+  // Mutation states for loading/error handling
+  const isAnyMutationLoading = 
+    moveTaskMutation.isPending || 
+    createTaskMutation.isPending || 
+    updateTaskMutation.isPending || 
+    updateBoardMutation.isPending ||
+    deleteTaskMutation.isPending;
+  
+  // Modal context
+  const { openTaskModal, openColumnModal } = useModal();
+  
+  // Local UI state
   const [draggedTask, setDraggedTask] = useState<string | null>(null);
-  const [showTaskModal, setShowTaskModal] = useState(false);
-  const [showColumnModal, setShowColumnModal] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [editingColumn, setEditingColumn] = useState<{ id: string; title: string; badgeColor: string } | null>(null);
   const [addTaskToColumn, setAddTaskToColumn] = useState<string | null>(null);
+  const [mutationError, setMutationError] = useState<string | null>(null);
+  
+  // Clear errors when they occur
+  const clearError = () => setMutationError(null);
+  
+  // Show loading state
+  if (loading) {
+    return (
+      <ProtectedLayout showSidebar={false} className="bg-background-primary">
+        <div className="flex items-center justify-center h-full">
+          <div className="text-text-secondary font-display text-lg">Loading board...</div>
+        </div>
+      </ProtectedLayout>
+    );
+  }
+  
+  // Show error state
+  if (error || !boardData) {
+    return (
+      <ProtectedLayout showSidebar={false} className="bg-background-primary">
+        <div className="flex items-center justify-center h-full">
+          <div className="text-text-secondary font-display text-lg">
+            {error || 'Board not found'}
+          </div>
+        </div>
+      </ProtectedLayout>
+    );
+  }
 
   const handleShare = () => {
-    console.log("Share board:", params.id);
+    console.log("Share board:", boardId);
     // TODO: Implement share functionality
   };
 
   const handleMenu = () => {
-    console.log("Open board menu:", params.id);
+    console.log("Open board menu:", boardId);
     // TODO: Implement board menu
   };
 
   const handleAddColumn = () => {
     setEditingColumn(null);
-    setShowColumnModal(true);
+    openColumnModal({
+      column: null,
+      onSave: handleSaveColumn
+    });
   };
 
   const handleColumnClick = (columnId: string) => {
     const column = boardData.columns.find(col => col.id === columnId);
     if (column) {
-      setEditingColumn({
+      const editingColumnData = {
         id: column.id,
         title: column.title,
         badgeColor: column.badgeColor
+      };
+      setEditingColumn(editingColumnData);
+      openColumnModal({
+        column: editingColumnData,
+        onSave: handleSaveColumn
       });
-      setShowColumnModal(true);
     }
   };
 
   const handleAddTask = (columnId: string) => {
     setAddTaskToColumn(columnId);
     setEditingTask(null);
-    setShowTaskModal(true);
+    openTaskModal({
+      task: null,
+      availableLabels: boardData.availableLabels,
+      members: boardData.members,
+      onSave: handleSaveTask,
+      onDelete: handleDeleteTask
+    });
   };
 
   const handleTaskClick = (taskId: string) => {
@@ -356,43 +153,32 @@ export default function BoardPage({ params }: BoardPageProps) {
     if (foundTask) {
       setEditingTask(foundTask);
       setAddTaskToColumn(null);
-      setShowTaskModal(true);
+      openTaskModal({
+        task: foundTask,
+        availableLabels: boardData.availableLabels,
+        members: boardData.members,
+        onSave: handleSaveTask,
+        onDelete: handleDeleteTask
+      });
     }
   };
 
-  const handleTaskMove = (taskId: string, sourceColumnId: string, targetColumnId: string) => {
-    if (sourceColumnId === targetColumnId) return;
-
-    setBoardData(prevBoard => {
-      const newColumns = [...prevBoard.columns];
-
-      // Find source and target columns
-      const sourceColumnIndex = newColumns.findIndex(col => col.id === sourceColumnId);
-      const targetColumnIndex = newColumns.findIndex(col => col.id === targetColumnId);
-
-      if (sourceColumnIndex === -1 || targetColumnIndex === -1) return prevBoard;
-
-      // Find and remove task from source column
-      const sourceColumn = { ...newColumns[sourceColumnIndex] };
-      const taskIndex = sourceColumn.tasks.findIndex(task => task.id === taskId);
-
-      if (taskIndex === -1) return prevBoard;
-
-      const task = sourceColumn.tasks[taskIndex];
-      sourceColumn.tasks = sourceColumn.tasks.filter((_, index) => index !== taskIndex);
-
-      // Add task to target column
-      const targetColumn = { ...newColumns[targetColumnIndex] };
-      targetColumn.tasks = [...targetColumn.tasks, task];
-
-      // Update columns array
-      newColumns[sourceColumnIndex] = sourceColumn;
-      newColumns[targetColumnIndex] = targetColumn;
-
-      return {
-        ...prevBoard,
-        columns: newColumns
-      };
+  const handleTaskMove = (taskId: string, sourceColumnId: string, targetColumnId: string, targetPosition?: number) => {
+    // Calculate position - if not provided, add to end
+    const targetColumn = boardData.columns.find(col => col.id === targetColumnId);
+    const position = targetPosition !== undefined ? targetPosition : (targetColumn?.tasks.length || 0);
+    
+    clearError();
+    
+    // Use Firestore mutation to move task
+    moveTaskMutation.mutate({
+      taskId,
+      columnId: targetColumnId,
+      position
+    }, {
+      onError: (error: MutationError) => {
+        setMutationError(`Failed to move task: ${error.message}`);
+      }
     });
   };
 
@@ -404,99 +190,173 @@ export default function BoardPage({ params }: BoardPageProps) {
     setDraggedTask(null);
   };
 
-  const handleSaveTask = (taskData: Omit<Task, 'id'> | Task) => {
-    setBoardData(prevBoard => {
-      const newColumns = [...prevBoard.columns];
-
-      if ('id' in taskData) {
-        // Editing existing task
-        const taskId = taskData.id;
-        for (let i = 0; i < newColumns.length; i++) {
-          const taskIndex = newColumns[i].tasks.findIndex(task => task.id === taskId);
-          if (taskIndex !== -1) {
-            // Ensure assignee and assignees are both set
-            const assignees = (taskData as any).assignees && (taskData as any).assignees.length > 0 ? (taskData as any).assignees : [(taskData as any).assignee];
-            newColumns[i] = {
-              ...newColumns[i],
-              tasks: [
-                ...newColumns[i].tasks.slice(0, taskIndex),
-                {
-                  ...taskData,
-                  assignee: assignees[0],
-                  assignees
-                },
-                ...newColumns[i].tasks.slice(taskIndex + 1)
-              ]
-            };
-            break;
-          }
-        }
-      } else {
-        // Adding new task
-        if (addTaskToColumn) {
-          const columnIndex = newColumns.findIndex(col => col.id === addTaskToColumn);
-          if (columnIndex !== -1) {
-            const assignees = (taskData as any).assignees && (taskData as any).assignees.length > 0 ? (taskData as any).assignees : [(taskData as any).assignee];
-            const newTask: Task = {
-              ...taskData,
-              id: `task-${Date.now()}`,
-              assignee: assignees[0],
-              assignees
-            };
-
-            newColumns[columnIndex] = {
-              ...newColumns[columnIndex],
-              tasks: [...newColumns[columnIndex].tasks, newTask]
-            };
-          }
-        }
+  const handleDeleteTask = (taskId: string) => {
+    if (!confirm('Are you sure you want to delete this task?')) {
+      return;
+    }
+    
+    clearError();
+    deleteTaskMutation.mutate(taskId, {
+      onError: (error: MutationError) => {
+        setMutationError(`Failed to delete task: ${error.message}`);
       }
-
-      return {
-        ...prevBoard,
-        columns: newColumns
-      };
     });
+  };
 
-    setShowTaskModal(false);
-    setEditingTask(null);
-    setAddTaskToColumn(null);
+  const handleSaveTask = (taskData: Omit<Task, 'id'> | Task) => {
+    // Data validation
+    if (!taskData.title.trim()) {
+      setMutationError('Task title is required');
+      return;
+    }
+    
+    if (!taskData.description.trim()) {
+      setMutationError('Task description is required');
+      return;
+    }
+    
+    clearError();
+    
+    if ('id' in taskData) {
+      // Editing existing task - convert UI format to Firestore format
+      const firestoreUpdates: Partial<FirestoreTask> = {
+        title: taskData.title.trim(),
+        description: taskData.description.trim(),
+        icon: taskData.icon,
+        assigneeIds: taskData.assignees?.map(a => a.name) || [taskData.assignee.name],
+        labels: taskData.labels || []
+      };
+      
+      updateTaskMutation.mutate({
+        taskId: taskData.id,
+        updates: firestoreUpdates
+      }, {
+        onSuccess: () => {
+          setEditingTask(null);
+          setAddTaskToColumn(null);
+        },
+        onError: (error: MutationError) => {
+          setMutationError(`Failed to update task: ${error.message}`);
+        }
+      });
+    } else {
+      // Adding new task
+      if (addTaskToColumn) {
+        const targetColumn = boardData.columns.find(col => col.id === addTaskToColumn);
+        const position = targetColumn?.tasks.length || 0;
+        
+        const newFirestoreTask: Omit<FirestoreTask, 'id' | 'createdAt' | 'updatedAt' | 'createdBy'> = {
+          title: taskData.title.trim(),
+          description: taskData.description.trim(),
+          boardId: boardId,
+          columnId: addTaskToColumn,
+          position,
+          assigneeIds: taskData.assignees?.map(a => a.name) || [taskData.assignee.name],
+          labels: taskData.labels || [],
+          icon: taskData.icon
+        };
+        
+        createTaskMutation.mutate(newFirestoreTask, {
+          onSuccess: () => {
+            setEditingTask(null);
+            setAddTaskToColumn(null);
+          },
+          onError: (error: MutationError) => {
+            setMutationError(`Failed to create task: ${error.message}`);
+          }
+        });
+      }
+    }
   };
 
   const handleSaveColumn = (columnData: { title: string; badgeColor: string } | { id: string; title: string; badgeColor: string }) => {
-    setBoardData(prevBoard => {
-      if ('id' in columnData) {
-        // Editing existing column
-        const newColumns = prevBoard.columns.map(column =>
-          column.id === columnData.id
-            ? { ...column, title: columnData.title, badgeColor: columnData.badgeColor }
-            : column
-        );
-        return { ...prevBoard, columns: newColumns };
-      } else {
-        // Adding new column
-        return {
-          ...prevBoard,
-          columns: [
-            ...prevBoard.columns,
-            {
-              id: `column-${Date.now()}`,
-              title: columnData.title,
-              badgeColor: columnData.badgeColor,
-              tasks: []
-            }
-          ]
-        };
-      }
-    });
-
-    setShowColumnModal(false);
-    setEditingColumn(null);
+    // Data validation
+    if (!columnData.title.trim()) {
+      setMutationError('Column title is required');
+      return;
+    }
+    
+    // Check for duplicate column names (excluding the current column being edited)
+    const existingColumn = boardData.columns.find(col => 
+      col.title.toLowerCase() === columnData.title.trim().toLowerCase() && 
+      ('id' in columnData ? col.id !== columnData.id : true)
+    );
+    
+    if (existingColumn) {
+      setMutationError('A column with this name already exists');
+      return;
+    }
+    
+    clearError();
+    
+    if ('id' in columnData) {
+      // Editing existing column
+      const updatedColumns = boardData.columns.map(column =>
+        column.id === columnData.id
+          ? { ...column, title: columnData.title.trim(), badgeColor: columnData.badgeColor }
+          : column
+      );
+      
+      updateBoardMutation.mutate({
+        boardId: boardId,
+        updates: { columns: updatedColumns }
+      }, {
+        onSuccess: () => {
+          setEditingColumn(null);
+        },
+        onError: (error: MutationError) => {
+          setMutationError(`Failed to update column: ${error.message}`);
+        }
+      });
+    } else {
+      // Adding new column
+      const newColumn = {
+        id: uuidv4(),
+        title: columnData.title.trim(),
+        badgeColor: columnData.badgeColor,
+        order: boardData.columns.length
+      };
+      
+      const updatedColumns = [...boardData.columns, newColumn];
+      
+      updateBoardMutation.mutate({
+        boardId: boardId,
+        updates: { columns: updatedColumns }
+      }, {
+        onSuccess: () => {
+          setEditingColumn(null);
+        },
+        onError: (error: MutationError) => {
+          setMutationError(`Failed to create column: ${error.message}`);
+        }
+      });
+    }
   };
 
   return (
     <ProtectedLayout showSidebar={false} className="bg-background-primary">
       <div className="flex flex-col h-full">
+        {/* Error Banner */}
+        {mutationError && (
+          <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 mx-6 mt-4 rounded-lg flex items-center justify-between">
+            <span>{mutationError}</span>
+            <button 
+              onClick={clearError}
+              className="text-red-400 hover:text-red-300 ml-4"
+              aria-label="Close error"
+            >
+              ×
+            </button>
+          </div>
+        )}
+        
+        {/* Loading Overlay */}
+        {isAnyMutationLoading && (
+          <div className="bg-blue-500/10 border border-blue-500/20 text-blue-400 px-4 py-2 mx-6 mt-2 rounded-lg text-center">
+            <span>Saving changes...</span>
+          </div>
+        )}
+
         {/* Board Header */}
         <BoardHeader
           boardName={boardData.name}
@@ -520,29 +380,6 @@ export default function BoardPage({ params }: BoardPageProps) {
         />
       </div>
 
-      {/* Modals */}
-      <TaskModal
-        isOpen={showTaskModal}
-        onClose={() => {
-          setShowTaskModal(false);
-          setEditingTask(null);
-          setAddTaskToColumn(null);
-        }}
-        onSave={handleSaveTask}
-        task={editingTask}
-        availableLabels={boardData.availableLabels}
-        members={boardData.members}
-      />
-
-      <ColumnModal
-        isOpen={showColumnModal}
-        onClose={() => {
-          setShowColumnModal(false);
-          setEditingColumn(null);
-        }}
-        onSave={handleSaveColumn}
-        column={editingColumn}
-      />
     </ProtectedLayout>
   );
 }

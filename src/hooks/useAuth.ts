@@ -121,7 +121,7 @@ export function useAuth(): UseAuthReturn {
 
   const logout = useCallback(async () => {
     setLoading(true);
-    
+
     try {
       await FirebaseAuthService.signOut();
       reset();
@@ -132,6 +132,7 @@ export function useAuth(): UseAuthReturn {
       router.push('/login');
     }
   }, [reset, setLoading, router]);
+
 
   return {
     user,

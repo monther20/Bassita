@@ -4,6 +4,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { useState } from 'react'
 import { FirebaseAuthProvider } from '@/components/providers/FirebaseAuthProvider'
+import { ModalProvider } from '@/contexts/ModalContext'
+import ModalRenderer from '@/components/ModalRenderer'
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -25,8 +27,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <FirebaseAuthProvider>
-        {children}
-        <ReactQueryDevtools initialIsOpen={false} />
+        <ModalProvider>
+          {children}
+          <ModalRenderer />
+          <ReactQueryDevtools initialIsOpen={false} />
+        </ModalProvider>
       </FirebaseAuthProvider>
     </QueryClientProvider>
   )

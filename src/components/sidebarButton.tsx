@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ReactNode } from "react";
+import * as Icons from "react-icons/fi";
 
 interface SidebarButtonProps {
     label: string;
@@ -33,7 +34,7 @@ export default function SidebarButton({
     if (href) {
         return (
             <Link href={href} className={combinedClasses}>
-                {icon && <span className="text-base">{icon}</span>}
+                {`<${Icons}.${icon} />`}
                 <span className="text-text-primary font-display font-normal">{label}</span>
             </Link>
         );
@@ -41,7 +42,7 @@ export default function SidebarButton({
 
     return (
         <button onClick={onClick} className={combinedClasses}>
-            {icon && <span className="text-base">{icon}</span>}
+            {`<${Icons}.${icon} />`}
             {!isCollapsed && <span>{label}</span>}
         </button>
     );

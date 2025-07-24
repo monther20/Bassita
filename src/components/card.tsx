@@ -1,9 +1,8 @@
 "use client";
 
-
 import React from "react";
 import { useMemo, useState, useRef, useCallback, useEffect } from "react";
-import { FiArrowRight } from "react-icons/fi";
+import * as Icons from "react-icons/fi";
 
 export default function Card({
   width = "200",
@@ -158,8 +157,8 @@ export default function Card({
 
       {icon && (
         <div className="absolute bottom-2 left-2 flex flex-row gap-1 z-10">
-          <div className="w-5 h-5 rounded-full flex items-center justify-center p2">
-            {icon}
+          <div className="w-5 h-5 rounded-full flex items-center justify-center">
+            {Icons[icon as keyof typeof Icons] && React.createElement(Icons[icon as keyof typeof Icons])}
           </div>
         </div>
       )}

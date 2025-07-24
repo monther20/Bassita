@@ -26,6 +26,7 @@ interface TaskModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (task: Omit<Task, 'id'> | Task) => void;
+  onDelete?: (taskId: string) => void;
   task?: Task | null; // For editing
   availableLabels: Label[];
   members: Array<{ name: string; color: string }>;
@@ -35,6 +36,7 @@ export default function TaskModal({
   isOpen,
   onClose,
   onSave,
+  onDelete,
   task,
   availableLabels,
   members
@@ -345,6 +347,18 @@ export default function TaskModal({
                   >
                     Cancel
                   </button>
+                  {/* Delete button - only show when editing existing task */}
+                  {task && onDelete && (
+                    <button
+                      onClick={() => {
+                        onDelete(task.id);
+                        onClose();
+                      }}
+                      className="w-full px-4 py-3 text-red-400 hover:text-red-300 border border-red-500/30 hover:border-red-500/50 hover:bg-red-500/10 rounded-lg transition-all duration-200"
+                    >
+                      Delete Task
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

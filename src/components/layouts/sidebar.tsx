@@ -1,6 +1,11 @@
 import { FiFolder, FiSettings, FiChevronDown, FiArrowUp, FiX } from "react-icons/fi";
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import SidebarButton from "../sidebarButton";
+import WorkspaceSwitcher from "../WorkspaceSwitcher";
+import { useTemplates, useAllUserBoards, useCurrentWorkspace } from "@/hooks";
+import { FirestoreTemplate } from "@/types/firestore";
+import { useModal } from "@/contexts/ModalContext";
+import * as Icons from "react-icons/fi";
 
 interface SidebarProps {
     height?: string;
@@ -10,8 +15,16 @@ interface SidebarProps {
 export default function Sidebar({ height = "h-screen", onClose }: SidebarProps) {
     const [sidebarWidth, setSidebarWidth] = useState(256);
     const [isDragging, setIsDragging] = useState(false);
+    const [showAllBoards, setShowAllBoards] = useState(false);
+
     const sidebarRef = useRef<HTMLElement>(null);
     const isCollapsed = sidebarWidth <= 80;
+
+    // Hooks
+    const { openTemplatePreviewModal } = useModal();
+    const currentWorkspaceId = useCurrentWorkspace();
+    const { templates, loading: templatesLoading } = useTemplates();
+    const { boards, loading: boardsLoading } = useAllUserBoards();
 
     // Load width from localStorage on mount
     useEffect(() => {
@@ -66,6 +79,26 @@ export default function Sidebar({ height = "h-screen", onClose }: SidebarProps) 
         };
     }, [isDragging]);
 
+    // Template selection handler
+    const handleTemplateSelect = (template: FirestoreTemplate) => {
+        openTemplatePreviewModal(template);
+    };
+
+    // Sort boards to prioritize current workspace, then by name
+    const sortedBoards = boards.sort((a, b) => {
+        // Prioritize current workspace boards
+        if (currentWorkspaceId) {
+            if (a.workspaceId === currentWorkspaceId && b.workspaceId !== currentWorkspaceId) {
+                return -1;
+            }
+            if (b.workspaceId === currentWorkspaceId && a.workspaceId !== currentWorkspaceId) {
+                return 1;
+            }
+        }
+        // Then sort alphabetically
+        return a.name.localeCompare(b.name);
+    });
+
     return (
         <aside
             ref={sidebarRef}
@@ -94,28 +127,68 @@ export default function Sidebar({ height = "h-screen", onClose }: SidebarProps) 
                         </div>
                     )}
                     <div className={`space-y-1 ${isCollapsed ? '' : 'ml-2'}`}>
-                        <SidebarButton
-                            label="Marketing Campaign"
-                            href="/boards/marketing"
-                            icon="🚀"
-                            isCollapsed={isCollapsed}
-                        />
-                        <SidebarButton
-                            label="Development Sprint"
-                            href="/boards/development"
-                            icon="📱"
-                            isCollapsed={isCollapsed}
-                        />
-                        <SidebarButton
-                            label="Design System"
-                            href="/boards/design"
-                            icon="🏷️"
-                            isCollapsed={isCollapsed}
-                        />
-                        {!isCollapsed && (
-                            <button className="w-full text-text-secondary text-sm font-display px-3 py-1 hover:text-text-primary transition-colors bg-background-tertiary/50 rounded-lg border-2 border-dashed border-spotlight-purple/50 hover:bg-background-tertiary hover:border-spotlight-purple cursor-pointer">
-                                View all boards
-                            </button>
+                        {boardsLoading ? (
+                            // Loading skeleton
+                            Array.from({ length: 3 }).map((_, i) => (
+                                <div key={i} className="animate-pulse">
+                                    <div className="h-8 bg-background-tertiary rounded-lg"></div>
+                                </div>
+                            ))
+                        ) : sortedBoards.length > 0 ? (
+                            <>
+                                {sortedBoards.slice(0, 5).map((board) => (
+                                    <div key={board.id} className="group">
+                                        {isCollapsed ? (
+                                            <SidebarButton
+                                                label={board.name}
+                                                href={board.href}
+                                                icon={board.icon}
+                                                isCollapsed={isCollapsed}
+                                            />
+                                        ) : (
+                                            <a
+                                                href={board.href}
+                                                className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors hover:bg-background-secondary"
+                                            >
+                                                <span className="text-lg flex-shrink-0">
+                                                    {Icons[board.icon as keyof typeof Icons] && React.createElement(Icons[board.icon as keyof typeof Icons])}
+                                                </span>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="text-text-primary font-display text-sm font-medium truncate">
+                                                        {board.name}
+                                                    </div>
+                                                    <div className="flex items-center gap-1">
+
+                                                        {board.workspaceId === currentWorkspaceId && (
+                                                            <div className="w-1.5 h-1.5 bg-spotlight-purple rounded-full flex-shrink-0" title="Current workspace" />
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                {board.isOwner && (
+                                                    <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <div className="w-2 h-2 bg-spotlight-purple rounded-full" title="Owner" />
+                                                    </div>
+                                                )}
+                                            </a>
+                                        )}
+                                    </div>
+                                ))}
+                                {!isCollapsed && sortedBoards.length > 5 && (
+                                    <button
+                                        onClick={() => setShowAllBoards(true)}
+                                        className="w-full text-text-secondary text-sm font-display px-3 py-1 hover:text-text-primary transition-colors bg-background-tertiary/50 rounded-lg border-2 border-dashed border-spotlight-purple/50 hover:bg-background-tertiary hover:border-spotlight-purple cursor-pointer"
+                                    >
+                                        View all boards ({sortedBoards.length})
+                                    </button>
+                                )}
+                            </>
+                        ) : (
+                            // Empty state
+                            !isCollapsed && (
+                                <div className="text-text-secondary text-xs px-3 py-2 text-center">
+                                    No boards available
+                                </div>
+                            )
                         )}
                     </div>
                 </div>
@@ -129,24 +202,48 @@ export default function Sidebar({ height = "h-screen", onClose }: SidebarProps) 
                         </div>
                     )}
                     <div className={`space-y-1 ${isCollapsed ? '' : 'ml-2'}`}>
-                        <SidebarButton
-                            label="Kanban Board"
-                            href="/templates/kanban"
-                            icon="⚡"
-                            isCollapsed={isCollapsed}
-                        />
-                        <SidebarButton
-                            label="Sprint Planning"
-                            href="/templates/sprint"
-                            icon="🏃"
-                            isCollapsed={isCollapsed}
-                        />
-                        <SidebarButton
-                            label="Project Tracker"
-                            href="/templates/tracker"
-                            icon="📊"
-                            isCollapsed={isCollapsed}
-                        />
+                        {templatesLoading ? (
+                            // Loading skeleton
+                            Array.from({ length: 3 }).map((_, i) => (
+                                <div key={i} className="animate-pulse">
+                                    <div className="h-8 bg-background-tertiary rounded-lg"></div>
+                                </div>
+                            ))
+                        ) : templates.length > 0 ? (
+                            templates.map((template) => (
+                                <button
+                                    key={template.id}
+                                    onClick={() => handleTemplateSelect(template)}
+                                    className={`
+                                        w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-left
+                                        hover:bg-background-secondary
+                                        ${isCollapsed ? 'justify-center' : ''}
+                                    `}
+                                    title={isCollapsed ? template.name : undefined}
+                                >
+                                    <span className="text-lg flex-shrink-0">
+                                        {template.icon}
+                                    </span>
+                                    {!isCollapsed && (
+                                        <div className="flex-1 min-w-0">
+                                            <div className="text-text-primary font-display text-sm font-medium truncate">
+                                                {template.name}
+                                            </div>
+                                            <div className="text-text-secondary text-xs truncate">
+                                                {template.category}
+                                            </div>
+                                        </div>
+                                    )}
+                                </button>
+                            ))
+                        ) : (
+                            // Empty state
+                            !isCollapsed && (
+                                <div className="text-text-secondary text-xs px-3 py-2 text-center">
+                                    No templates available
+                                </div>
+                            )
+                        )}
                     </div>
                 </div>
 
@@ -158,35 +255,8 @@ export default function Sidebar({ height = "h-screen", onClose }: SidebarProps) 
                             <span className="text-text-primary font-display font-medium">Workspaces</span>
                         </div>
                     )}
-                    <div className={`space-y-2 ${isCollapsed ? '' : 'ml-2'}`}>
-                        {isCollapsed ? (
-                            <SidebarButton
-                                label="Creative Agency"
-                                icon={<FiFolder className="text-spotlight-purple" />}
-                                variant="special"
-                                isCollapsed={isCollapsed}
-                            />
-                        ) : (
-                            <>
-                                <div className="bg-spotlight-purple rounded-lg p-3 relative">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <div className="text-text-primary font-display font-medium text-sm">
-                                                Creative Agency
-                                            </div>
-                                            <div className="text-text-secondary text-xs font-display">
-                                                12 members • 8 boards
-                                            </div>
-                                        </div>
-                                        <FiSettings className="text-text-primary text-base" />
-                                    </div>
-                                </div>
-                                <button className="flex items-center bg-background-tertiary/50 rounded-lg justify-between w-full px-3 py-2 text-text-secondary text-sm font-display hover:text-text-primary hover:bg-background-tertiary transition-colors cursor-pointer">
-                                    <span>Switch workspace</span>
-                                    <FiChevronDown className="text-base" />
-                                </button>
-                            </>
-                        )}
+                    <div className={`${isCollapsed ? '' : 'ml-2'}`}>
+                        <WorkspaceSwitcher isCollapsed={isCollapsed} />
                     </div>
                 </div>
             </div>
@@ -214,6 +284,7 @@ export default function Sidebar({ height = "h-screen", onClose }: SidebarProps) 
                 className="hidden lg:block absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-spotlight-purple/30 transition-colors"
                 onMouseDown={handleMouseDown}
             />
+
         </aside>
     );
 }
