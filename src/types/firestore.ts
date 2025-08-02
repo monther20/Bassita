@@ -1,9 +1,30 @@
+export interface FirestoreOrganization {
+    id: string;
+    name: string;
+    ownerId: string;
+    members: Array<{
+        userId: string;
+        role: 'owner' | 'admin' | 'member';
+        joinedAt: Date;
+    }>;
+    memberUserIds: string[]; // Flattened array of user IDs for efficient querying
+    workspaces: string[]; // Array of workspace IDs in this organization
+    settings: {
+        allowMemberInvites: boolean;
+        allowWorkspaceCreation: boolean;
+    };
+    createdAt: Date;
+    updatedAt: Date;
+}
+
 export interface FirestoreUser {
     id: string;
     email: string;
     name: string;
     avatar?: string;
-    workspaces: string[];
+    organizations: string[]; // Array of organization IDs
+    workspaces: string[]; // Legacy field for backward compatibility
+    defaultOrganizationId?: string; // User's default organization
     createdAt: Date;
     updatedAt: Date;
 }
@@ -11,6 +32,7 @@ export interface FirestoreUser {
 export interface FirestoreWorkspace {
     id: string;
     name: string;
+    organizationId: string; // Required: workspace belongs to an organization
     ownerId: string;
     members: Array<{
         userId: string;

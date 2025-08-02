@@ -62,19 +62,26 @@ export function useRecentlyViewed() {
 }
 
 // Main dashboard data hook
-export function useDashboardData() {
+export function useDashboardData(organizationId?: string) {
   const { user } = useAuth();
   const { recentItems } = useRecentlyViewed();
 
-  // Fetch user workspaces
+  // Fetch user workspaces (organization-specific or all)
   const workspacesQuery = useQuery({
-    queryKey: ['dashboard-workspaces', user?.id],
+    queryKey: ['dashboard-workspaces', user?.id, organizationId],
     queryFn: async () => {
       if (!user?.id) {
         return [];
       }
-      const result = await FirestoreService.getUserWorkspaces(user.id);
-      return result;
+      // Use organization-specific method if organizationId is provided
+      if (organizationId) {
+        const result = await FirestoreService.getOrganizationWorkspaces(organizationId, user.id);
+        return result;
+      } else {
+        // Fall back to getting all user workspaces (for backward compatibility)
+        const result = await FirestoreService.getUserWorkspaces(user.id);
+        return result;
+      }
     },
     enabled: !!user?.id,
     staleTime: 0, // Always refetch for debugging
@@ -84,7 +91,7 @@ export function useDashboardData() {
 
   // Fetch all boards for the user
   const boardsQuery = useQuery({
-    queryKey: ['dashboard-boards', user?.id],
+    queryKey: ['dashboard-boards', user?.id, organizationId],
     queryFn: async () => {
       if (!user?.id || !workspacesQuery.data) {
         return [];

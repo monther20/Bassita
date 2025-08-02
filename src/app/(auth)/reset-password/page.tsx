@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/buttoon";
+import Button from "@/components/buttoon";
 import { useState, useEffect } from "react";
 import { FaEye, FaEyeSlash, FaCheck } from "react-icons/fa";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -204,10 +204,10 @@ export default function ResetPasswordPage() {
                   <div className="flex-1 h-1 bg-gray-600 rounded-full overflow-hidden">
                     <div
                       className={`h-full transition-all duration-300 ${passwordStrength >= 3
-                          ? "bg-green-500"
-                          : passwordStrength >= 2
-                            ? "bg-yellow-500"
-                            : "bg-red-500"
+                        ? "bg-green-500"
+                        : passwordStrength >= 2
+                          ? "bg-yellow-500"
+                          : "bg-red-500"
                         }`}
                       style={{ width: `${(passwordStrength / 5) * 100}%` }}
                     />

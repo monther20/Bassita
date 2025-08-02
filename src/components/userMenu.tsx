@@ -42,7 +42,7 @@ export function UserMenu() {
       {/* Notification bell */}
       <button
         onClick={() => console.log("click")}
-        className="touch-target flex items-center justify-center bg-background-tertiary rounded-full hover:shadow-glow-purple transition-colors cursor-pointer"
+        className="touch-target flex items-center justify-center bg-background-tertiary rounded-lg hover:shadow-glow-purple transition-colors cursor-pointer"
       >
         <BsBellFill className="icon-xs text-spotlight-purple" />
       </button>
@@ -50,7 +50,7 @@ export function UserMenu() {
       {/* Info button - hidden on very small screens */}
       <button
         onClick={() => console.log("click")}
-        className="hidden sm:flex touch-target items-center justify-center bg-background-tertiary rounded-full hover:shadow-glow-purple transition-colors cursor-pointer"
+        className="hidden sm:flex touch-target items-center justify-center bg-background-tertiary rounded-lg hover:shadow-glow-purple transition-colors cursor-pointer"
       >
         <FiInfo className="icon-xs text-spotlight-purple" />
       </button>
@@ -59,13 +59,13 @@ export function UserMenu() {
       <div className="relative" ref={dropdownRef}>
         <button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className="touch-target flex items-center responsive-gap-xs bg-background-tertiary rounded-full hover:shadow-glow-purple transition-all duration-200 p-2 cursor-pointer"
+          className="touch-target flex items-center responsive-gap-xs bg-background-tertiary rounded-lg hover:shadow-glow-purple transition-all duration-200 p-2 cursor-pointer"
         >
           {user.avatar && (
             <Image
               src={user.avatar}
               alt={user.name}
-              className="w-6 h-6 md:w-8 md:h-8 rounded-full"
+              className="w-5 h-5 md:w-7 md:h-7 rounded-lg"
               width={32}
               height={32}
             />

@@ -31,7 +31,7 @@ export function withAuth<P extends object>(
           const loginUrl = `${redirectTo}?redirect=${encodeURIComponent(currentPath)}`;
           router.push(loginUrl);
         } else if (!requireAuth && isAuthenticated) {
-          router.push('/dashboard');
+          router.push('/organization');
         }
       }
     }, [isAuthenticated, isLoading, router]);
@@ -79,7 +79,7 @@ export function ProtectedRoute({
         const loginUrl = `${redirectTo}?redirect=${encodeURIComponent(currentPath)}`;
         router.push(loginUrl);
       } else if (!requireAuth && isAuthenticated) {
-        router.push('/dashboard');
+        router.push('/organization');
       }
     }
   }, [isAuthenticated, isLoading, router, requireAuth, redirectTo]);

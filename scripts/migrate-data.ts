@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 // Your existing mock data structure
 const mockWorkspace = {
     name: "Default Workspace",
+    organizationId: "your-organization-id", // Replace with actual organization ID
     ownerId: "your-user-id", // Replace with actual user ID
     members: [
         { userId: "your-user-id", role: 'owner' as const, joinedAt: new Date() }

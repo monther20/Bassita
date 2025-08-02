@@ -26,10 +26,14 @@ export default function Header({
     onCreateWorkspaceRef
 }: HeaderProps) {
     const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
-    const { openCreateBoardModal, openCreateWorkspaceModal } = useModal();
+    const { openCreateBoardModal, openCreateWorkspaceModal, openCreateOrganizationModal } = useModal();
 
     const handleCreateBoard = () => {
         openCreateBoardModal(workspaceId);
+    };
+
+    const handleCreateOrganization = () => {
+        openCreateOrganizationModal();
     };
 
     const handleCreateWorkspace = () => {
@@ -62,7 +66,7 @@ export default function Header({
                         )}
 
                         {/* Logo */}
-                        <Link href="/dashboard" className="flex-shrink-0">
+                        <Link href="/organization" className="flex-shrink-0">
                             <Image
                                 src="/logo.png"
                                 alt="Company logo"
@@ -87,6 +91,7 @@ export default function Header({
                             <CreateDropdown
                                 onCreateBoard={handleCreateBoard}
                                 onCreateWorkspace={handleCreateWorkspace}
+                                onCreateOrganization={handleCreateOrganization}
                                 size="sm"
                                 variant="button"
                             />
@@ -109,6 +114,7 @@ export default function Header({
                             <CreateDropdown
                                 onCreateBoard={handleCreateBoard}
                                 onCreateWorkspace={handleCreateWorkspace}
+                                onCreateOrganization={handleCreateOrganization}
                                 size="sm"
                                 variant="icon"
                             />

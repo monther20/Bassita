@@ -4,3 +4,4 @@ export { useTemplates } from './useTemplates';
 export { useSidebarBoards } from './useSidebarBoards';
 export { useAllUserBoards } from './useAllUserBoards';
 export { useSidebarWorkspaces, useCurrentWorkspace } from './useSidebarWorkspaces';
+export { useUserOrganizations, useCurrentOrganization } from './useUserOrganizations';

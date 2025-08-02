@@ -1,7 +1,7 @@
 import { FiFolder, FiSettings, FiChevronDown, FiArrowUp, FiX } from "react-icons/fi";
 import React, { useState, useRef, useEffect } from "react";
 import SidebarButton from "../sidebarButton";
-import WorkspaceSwitcher from "../WorkspaceSwitcher";
+import OrganizationSwitcher from "../OrganizationSwitcher";
 import { useTemplates, useAllUserBoards, useCurrentWorkspace } from "@/hooks";
 import { FirestoreTemplate } from "@/types/firestore";
 import { useModal } from "@/contexts/ModalContext";
@@ -247,16 +247,16 @@ export default function Sidebar({ height = "h-screen", onClose }: SidebarProps) 
                     </div>
                 </div>
 
-                {/* Workspaces Section */}
+                {/* Organizations Section */}
                 <div className="space-y-3">
                     {!isCollapsed && (
                         <div className="flex items-center gap-2 px-2">
                             <FiFolder className="text-spotlight-blue text-base" />
-                            <span className="text-text-primary font-display font-medium">Workspaces</span>
+                            <span className="text-text-primary font-display font-medium">Organizations</span>
                         </div>
                     )}
                     <div className={`${isCollapsed ? '' : 'ml-2'}`}>
-                        <WorkspaceSwitcher isCollapsed={isCollapsed} />
+                        <OrganizationSwitcher isCollapsed={isCollapsed} />
                     </div>
                 </div>
             </div>

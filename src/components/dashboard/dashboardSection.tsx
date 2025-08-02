@@ -2,7 +2,7 @@ import Card from "../card";
 import ShowAllBoardsCard from "./ShowAllBoardsCard";
 
 export default function DashboardSection({
-    label, info, cards, workspaceId, onCardClick, showAllBoards = false
+    label, info, cards, workspaceId, onCardClick, onWorkspaceClick, showAllBoards = false
 }: {
     label?: string;
     info?: {
@@ -22,6 +22,7 @@ export default function DashboardSection({
     }[];
     workspaceId?: string;
     onCardClick?: (cardTitle: string) => void;
+    onWorkspaceClick?: () => void;
     showAllBoards?: boolean;
 }) {
 
@@ -44,7 +45,14 @@ export default function DashboardSection({
             <div className="flex flex-col gap-2 justify-between">
 
                 <div className="flex flex-col gap-0">
-                    {label && <span className="text-spotlight-purple neon-text text-lg font-display">{label}</span>}
+                    {label && (
+                        <button 
+                            onClick={onWorkspaceClick}
+                            className={`text-spotlight-purple neon-text text-lg font-display text-left ${onWorkspaceClick ? 'hover:text-spotlight-purple/80 cursor-pointer' : ''}`}
+                        >
+                            {label}
+                        </button>
+                    )}
                     <div className="flex items-center gap-2">
                         {info && <span className="text-text-secondary text-sm font-display">{info.members} members</span>}
                         {info && info.members && <span className="text-text-secondary text-sm">•</span>}
