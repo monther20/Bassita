@@ -9,11 +9,13 @@ import { useRouter } from "next/navigation";
 interface CreateWorkspaceModalProps {
     isOpen: boolean;
     onClose: () => void;
+    organizationId?: string;
 }
 
 export default function CreateWorkspaceModal({
     isOpen,
-    onClose
+    onClose,
+    organizationId
 }: CreateWorkspaceModalProps) {
     const [name, setName] = useState("");
     const [error, setError] = useState("");
@@ -72,6 +74,7 @@ export default function CreateWorkspaceModal({
         try {
             const workspaceData = {
                 name: name.trim(),
+                organizationId: organizationId || '',
                 ownerId: user.id,
                 members: [{
                     userId: user.id,
@@ -82,7 +85,14 @@ export default function CreateWorkspaceModal({
 
             const newWorkspaceId = await createWorkspaceMutation.mutateAsync(workspaceData);
             onClose();
-            router.push(`/workspace/${newWorkspaceId}`);
+            
+            // Navigate to nested route if organizationId is available
+            if (organizationId) {
+                router.push(`/organization/${organizationId}/workspace/${newWorkspaceId}`);
+            } else {
+                // Fallback to old route for backward compatibility
+                router.push(`/workspace/${newWorkspaceId}`);
+            }
         } catch (error: any) {
             setError(error.message || "Failed to create workspace");
         }

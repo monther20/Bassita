@@ -17,12 +17,12 @@ export default function HomePage() {
             return;
         }
 
-        if (!orgLoading && currentOrganization) {
-            // User authenticated and has organization, redirect to organization page
-            router.replace(`/organization/${currentOrganization.id}`);
+        if (!authLoading && user) {
+            // User authenticated, redirect to organization list page
+            router.replace('/organization');
             return;
         }
-    }, [user, currentOrganization, authLoading, orgLoading, router]);
+    }, [user, authLoading, router]);
 
     // Show loading while determining where to redirect
     return (

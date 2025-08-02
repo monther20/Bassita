@@ -87,13 +87,10 @@ export default function ForgotPasswordPage() {
 
             <Button
               label="Try again"
-              onclick={handleTryAgain}
+              onClick={handleTryAgain}
               backgroundColor="bg-background-primary"
-              borderColor="border-gray-600"
-              textStyle="text-text-primary text-sm lg:text-lg"
               hover="hover:shadow-glow-black"
-              className="w-full h-full"
-              width="100%"
+              className="w-full border border-gray-600 text-text-primary text-sm lg:text-lg"
               height="48px"
             />
           </div>

@@ -13,32 +13,33 @@ import { useModal } from '@/contexts/ModalContext';
 export default function OrganizationPage() {
     const router = useRouter();
     const params = useParams();
-    const organizationId = params.id as string;
+    const organizationId = params.orgId as string;
     
-    const { currentOrganization, switchOrganization, loading: orgLoading } = useUserOrganizations();
-    const { myWorkspaces, isLoading: dashboardLoading, error } = useDashboardData();
+    const { organizations, currentOrganization, switchOrganization, loading: orgLoading } = useUserOrganizations();
+    const { myWorkspaces, isLoading: dashboardLoading, error } = useDashboardData(organizationId);
     const { openCreateWorkspaceModal } = useModal();
     
     // Switch to the organization from URL if different from current
     useEffect(() => {
         if (organizationId && currentOrganization && organizationId !== currentOrganization.id) {
-            switchOrganization(organizationId);
+            // Check if the organization ID is valid by finding it in available organizations
+            const isValidOrganization = organizations.some(org => org.id === organizationId);
+            
+            if (isValidOrganization) {
+                switchOrganization(organizationId);
+            } else if (!orgLoading && organizations.length > 0) {
+                // Only redirect if organization is not found and not loading
+                router.replace(`/organization/${currentOrganization.id}`);
+            }
         }
-    }, [organizationId, currentOrganization, switchOrganization]);
-
-    // Redirect to current organization if no ID provided or organization not found
-    useEffect(() => {
-        if (!orgLoading && currentOrganization && organizationId !== currentOrganization.id) {
-            router.replace(`/organization/${currentOrganization.id}`);
-        }
-    }, [organizationId, currentOrganization, orgLoading, router]);
+    }, [organizationId, currentOrganization, organizations, switchOrganization, orgLoading, router]);
 
     const handleWorkspaceClick = (workspace: { id: string; name: string }) => {
-        router.push(`/workspace/${workspace.id}`);
+        router.push(`/organization/${organizationId}/workspace/${workspace.id}`);
     };
 
     const handleBoardClick = (board: { id: string; name: string; workspaceId?: string; workspaceName?: string }) => {
-        router.push(`/board/${board.id}`);
+        router.push(`/organization/${organizationId}/workspace/${board.workspaceId}/board/${board.id}`);
     };
 
     if (orgLoading || !currentOrganization) {
@@ -92,7 +93,7 @@ export default function OrganizationPage() {
                         </div>
                         <div className="flex items-center gap-3">
                             <button
-                                onClick={() => openCreateWorkspaceModal()}
+                                onClick={() => openCreateWorkspaceModal(organizationId)}
                                 className="flex items-center gap-2 bg-spotlight-purple hover:bg-spotlight-purple/80 text-text-primary px-4 py-2 rounded-lg font-medium transition-colors"
                             >
                                 <FiPlus size={18} />
@@ -203,7 +204,7 @@ export default function OrganizationPage() {
                                     Create your first workspace to start organizing your boards and collaborating with your team.
                                 </p>
                                 <button
-                                    onClick={() => openCreateWorkspaceModal()}
+                                    onClick={() => openCreateWorkspaceModal(organizationId)}
                                     className="flex items-center gap-2 bg-spotlight-purple hover:bg-spotlight-purple/80 text-text-primary px-4 py-2 rounded-lg font-medium transition-colors mx-auto"
                                 >
                                     <FiPlus size={16} />

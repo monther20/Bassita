@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import { FiX, FiUsers } from "react-icons/fi";
+import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { FirestoreService } from '@/lib/firestore';
 import { useAuth } from "@/hooks/useAuth";
 
@@ -19,6 +21,8 @@ export default function CreateOrganizationModal({
     const [loading, setLoading] = useState(false);
     const modalRef = useRef<HTMLDivElement>(null);
     const { user } = useAuth();
+    const router = useRouter();
+    const queryClient = useQueryClient();
 
     // Reset form when modal opens/closes
     useEffect(() => {
@@ -80,10 +84,14 @@ export default function CreateOrganizationModal({
                     allowWorkspaceCreation: true
                 }
             };
-            await FirestoreService.createOrganization(orgData);
+            const newOrgId = await FirestoreService.createOrganization(orgData);
+            
+            // Invalidate organizations query to fetch the new organization
+            await queryClient.invalidateQueries({ queryKey: ['user-organizations', user.id] });
+            
             setLoading(false);
             onClose();
-            // Optionally: show a toast or redirect
+            router.push(`/organization/${newOrgId}`);
         } catch (error: any) {
             setLoading(false);
             setError(error.message || "Failed to create organization");

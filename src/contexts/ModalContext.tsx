@@ -31,6 +31,7 @@ interface CreateBoardModalState {
 
 interface CreateWorkspaceModalState {
   isOpen: boolean;
+  organizationId?: string;
 }
 
 interface CreateOrganizationModalState {
@@ -70,7 +71,7 @@ interface ModalContextType {
 
   // Create Workspace Modal
   createWorkspaceModal: CreateWorkspaceModalState;
-  openCreateWorkspaceModal: () => void;
+  openCreateWorkspaceModal: (organizationId?: string) => void;
   closeCreateWorkspaceModal: () => void;
 
   // Create Organization Modal
@@ -178,12 +179,12 @@ export function ModalProvider({ children }: { children: ReactNode }) {
   };
 
   // Create Workspace Modal handlers
-  const openCreateWorkspaceModal = () => {
-    setCreateWorkspaceModal({ isOpen: true });
+  const openCreateWorkspaceModal = (organizationId?: string) => {
+    setCreateWorkspaceModal({ isOpen: true, organizationId });
   };
 
   const closeCreateWorkspaceModal = () => {
-    setCreateWorkspaceModal({ isOpen: false });
+    setCreateWorkspaceModal({ isOpen: false, organizationId: undefined });
   };
 
   // Create Organization Modal handlers

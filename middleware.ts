@@ -65,7 +65,7 @@ export async function middleware(request: NextRequest) {
 
     // Redirect based on authentication status
     if (isAuthenticated) {
-      return NextResponse.redirect(new URL('/dashboard', request.url));
+      return NextResponse.redirect(new URL('/organization', request.url));
     } else {
       return NextResponse.redirect(new URL('/login', request.url));
     }
@@ -85,9 +85,9 @@ export async function middleware(request: NextRequest) {
   const isPublicRoute = publicRoutes.includes(pathname);
   const isAuthRoute = authRoutes.includes(pathname);
 
-  // If user is authenticated and trying to access auth pages, redirect to dashboard
+  // If user is authenticated and trying to access auth pages, redirect to organization
   if (isAuthenticated && isAuthRoute) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+    return NextResponse.redirect(new URL('/organization', request.url));
   }
 
   // If user is not authenticated and trying to access protected route

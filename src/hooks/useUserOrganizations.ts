@@ -73,8 +73,12 @@ export function useUserOrganizations(): UseUserOrganizationsReturn {
         setCurrentOrganizationId(organizationId);
         localStorage.setItem('current-organization-id', organizationId);
 
-        // Optionally update user's default organization in the backend
-        // This would be implemented when Firebase integration is complete
+        // If switching to an organization that's not in our current list,
+        // trigger a refetch to get the latest data
+        const organizationExists = organizations.some(org => org.id === organizationId);
+        if (!organizationExists) {
+            refetch();
+        }
     };
 
     return {

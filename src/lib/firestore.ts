@@ -171,6 +171,36 @@ export class FirestoreService {
         }
     }
 
+    static async getOrganizationWorkspaces(organizationId: string, userId: string): Promise<FirestoreWorkspace[]> {
+        if (!organizationId || !userId) {
+            console.error('❌ No organizationId or userId provided to getOrganizationWorkspaces');
+            return [];
+        }
+
+        try {
+            const workspacesRef = collection(db, WORKSPACES);
+            const q = query(
+                workspacesRef,
+                where('organizationId', '==', organizationId),
+                where('memberUserIds', 'array-contains', userId)
+            );
+
+            const querySnapshot = await getDocs(q);
+
+            const workspaces = querySnapshot.docs.map(doc => ({
+                ...doc.data(),
+                id: doc.id,
+                createdAt: doc.data().createdAt?.toDate(),
+                updatedAt: doc.data().updatedAt?.toDate()
+            })) as FirestoreWorkspace[];
+
+            return workspaces;
+        } catch (error) {
+            console.error('❌ Error in getOrganizationWorkspaces:', error);
+            return [];
+        }
+    }
+
     // ===============================
     // BOARD OPERATIONS
     // ===============================

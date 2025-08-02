@@ -66,6 +66,7 @@ export default function ModalRenderer() {
       <CreateWorkspaceModal
         isOpen={createWorkspaceModal.isOpen}
         onClose={closeCreateWorkspaceModal}
+        organizationId={createWorkspaceModal.organizationId}
       />
 
       {/* Create Organization Modal */}

@@ -66,7 +66,7 @@ export default function Header({
                         )}
 
                         {/* Logo */}
-                        <Link href="/dashboard" className="flex-shrink-0">
+                        <Link href="/organization" className="flex-shrink-0">
                             <Image
                                 src="/logo.png"
                                 alt="Company logo"

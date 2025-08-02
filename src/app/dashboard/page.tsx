@@ -20,12 +20,8 @@ export default function DashboardPage() {
     error
   } = useDashboardData();
 
-  // Redirect to organization page (new default)
-  useEffect(() => {
-    if (!orgLoading && currentOrganization) {
-      router.replace(`/organization/${currentOrganization.id}`);
-    }
-  }, [currentOrganization, orgLoading, router]);
+  // Dashboard is now accessible without auto-redirect
+  // Users can access dashboard directly if they choose to
 
   const handleBoardClick = (board: { id: string; name: string; workspaceId?: string; workspaceName?: string }) => {
     // Add to recently viewed

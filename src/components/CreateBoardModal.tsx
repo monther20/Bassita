@@ -112,7 +112,7 @@ export default function CreateBoardModal({
 
             const newBoardId = await createBoardMutation.mutateAsync(boardData);
             onClose();
-            router.push(`/board/${newBoardId}`);
+            router.push(`/organization/${selectedWorkspaceId}/board/${newBoardId}`);
         } catch (error: any) {
             setError(error.message || "Failed to create board");
         }
