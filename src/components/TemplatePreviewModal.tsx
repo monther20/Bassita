@@ -6,6 +6,7 @@ import { FirestoreTemplate } from "@/types/firestore";
 import { FirestoreService } from "@/lib/firestore";
 import { useAuth } from "@/hooks/useAuth";
 import { useCurrentWorkspace } from "@/hooks/useSidebarWorkspaces";
+import { useWorkspace } from "@/hooks/useFirestore";
 import { useRouter } from "next/navigation";
 
 interface TemplatePreviewModalProps {
@@ -28,6 +29,7 @@ export default function TemplatePreviewModal({
     const router = useRouter();
     const { user } = useAuth();
     const currentWorkspaceId = useCurrentWorkspace();
+    const { data: currentWorkspace } = useWorkspace(currentWorkspaceId || "");
 
     // Reset form when modal opens/closes
     useEffect(() => {
@@ -85,7 +87,7 @@ export default function TemplatePreviewModal({
             );
 
             onClose();
-            router.push(`/board/${newBoardId}`);
+            router.push(`/organization/${currentWorkspace.organizationId}/workspace/${currentWorkspaceId}/board/${newBoardId}`);
         } catch (error: any) {
             setError(error.message || "Failed to create board from template");
         } finally {

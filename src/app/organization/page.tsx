@@ -20,7 +20,7 @@ export default function Organization() {
 
     if (loading) {
         return (
-            <ProtectedLayout showSidebar={false}>
+            <ProtectedLayout>
                 <div className="space-y-6 responsive-px-sm max-w-screen-2xl mx-auto p-6">
                     <div className="space-y-4">
                         <div className="animate-pulse">
@@ -39,7 +39,7 @@ export default function Organization() {
 
     if (error) {
         return (
-            <ProtectedLayout showSidebar={false}>
+            <ProtectedLayout>
                 <div className="flex items-center justify-center h-full p-6">
                     <div className="text-center">
                         <div className="text-text-primary text-lg font-medium mb-2">
@@ -61,7 +61,7 @@ export default function Organization() {
     }
 
     return (
-        <ProtectedLayout showSidebar={false}>
+        <ProtectedLayout>
             <div className="space-y-6 responsive-px-sm max-w-screen-2xl mx-auto p-6">
                 {/* Header */}
                 <div className="space-y-4">

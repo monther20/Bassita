@@ -261,23 +261,6 @@ export default function Sidebar({ height = "h-screen", onClose }: SidebarProps) 
                 </div>
             </div>
 
-            {/* Upgrade Plan Button */}
-            <div className={isCollapsed ? 'p-2' : 'p-4'}>
-                {isCollapsed ? (
-                    <SidebarButton
-                        label="Upgrade Plan"
-                        icon={<FiArrowUp className="text-spotlight-purple" />}
-                        isCollapsed={isCollapsed}
-                    />
-                ) : (
-                    <button className="w-full border border-spotlight-purple rounded-lg p-3 flex items-center gap-3 hover:bg-spotlight-purple/50 transition-colors cursor-pointer">
-                        <div className="bg-spotlight-purple rounded-full p-1.5">
-                            <FiArrowUp className="text-text-primary text-sm" />
-                        </div>
-                        <span className="text-text-primary font-display font-medium">Upgrade Plan</span>
-                    </button>
-                )}
-            </div>
 
             {/* Resize Handle - Only on desktop */}
             <div

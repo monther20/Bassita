@@ -82,7 +82,7 @@ export default function WorkspacePage({ params }: WorkspacePageProps) {
   }
 
   return (
-    <ProtectedLayout showSidebar={false} workspaceId={workspaceId} onCreateBoardRef={createBoardRef}>
+    <ProtectedLayout workspaceId={workspaceId} onCreateBoardRef={createBoardRef}>
       <div className="space-y-6 responsive-px-sm max-w-screen-2xl mx-auto p-6">
         {/* Workspace Header */}
         <div className="space-y-2">

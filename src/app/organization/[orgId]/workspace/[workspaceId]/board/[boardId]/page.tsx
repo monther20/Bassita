@@ -42,38 +42,38 @@ interface BoardPageProps {
 export default function BoardPage({ params }: BoardPageProps) {
   // Unwrap async params for Next.js 15 compatibility
   const { orgId: organizationId, workspaceId, boardId } = use(params);
-  
+
   // Real-time Firestore data subscription
   const { board: boardData, loading, error } = useRealTimeBoard(boardId);
-  
+
   // Firestore mutations
   const moveTaskMutation = useMoveTask();
   const createTaskMutation = useCreateTask();
   const updateTaskMutation = useUpdateTask();
   const updateBoardMutation = useUpdateBoard();
   const deleteTaskMutation = useDeleteTask();
-  
+
   // Mutation states for loading/error handling
-  const isAnyMutationLoading = 
-    moveTaskMutation.isPending || 
-    createTaskMutation.isPending || 
-    updateTaskMutation.isPending || 
+  const isAnyMutationLoading =
+    moveTaskMutation.isPending ||
+    createTaskMutation.isPending ||
+    updateTaskMutation.isPending ||
     updateBoardMutation.isPending ||
     deleteTaskMutation.isPending;
-  
+
   // Modal context
   const { openTaskModal, openColumnModal } = useModal();
-  
+
   // Local UI state
   const [draggedTask, setDraggedTask] = useState<string | null>(null);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [editingColumn, setEditingColumn] = useState<{ id: string; title: string; badgeColor: string } | null>(null);
   const [addTaskToColumn, setAddTaskToColumn] = useState<string | null>(null);
   const [mutationError, setMutationError] = useState<string | null>(null);
-  
+
   // Clear errors when they occur
   const clearError = () => setMutationError(null);
-  
+
   // Show loading state
   if (loading) {
     return (
@@ -84,7 +84,7 @@ export default function BoardPage({ params }: BoardPageProps) {
       </ProtectedLayout>
     );
   }
-  
+
   // Show error state
   if (error || !boardData) {
     return (
@@ -169,9 +169,9 @@ export default function BoardPage({ params }: BoardPageProps) {
     // Calculate position - if not provided, add to end
     const targetColumn = boardData.columns.find(col => col.id === targetColumnId);
     const position = targetPosition !== undefined ? targetPosition : (targetColumn?.tasks.length || 0);
-    
+
     clearError();
-    
+
     // Use Firestore mutation to move task
     moveTaskMutation.mutate({
       taskId,
@@ -196,7 +196,7 @@ export default function BoardPage({ params }: BoardPageProps) {
     if (!confirm('Are you sure you want to delete this task?')) {
       return;
     }
-    
+
     clearError();
     deleteTaskMutation.mutate(taskId, {
       onError: (error: MutationError) => {
@@ -211,14 +211,14 @@ export default function BoardPage({ params }: BoardPageProps) {
       setMutationError('Task title is required');
       return;
     }
-    
+
     if (!taskData.description.trim()) {
       setMutationError('Task description is required');
       return;
     }
-    
+
     clearError();
-    
+
     if ('id' in taskData) {
       // Editing existing task - convert UI format to Firestore format
       const firestoreUpdates: Partial<FirestoreTask> = {
@@ -228,7 +228,7 @@ export default function BoardPage({ params }: BoardPageProps) {
         assigneeIds: taskData.assignees?.map(a => a.name) || [taskData.assignee.name],
         labels: taskData.labels || []
       };
-      
+
       updateTaskMutation.mutate({
         taskId: taskData.id,
         updates: firestoreUpdates
@@ -246,7 +246,7 @@ export default function BoardPage({ params }: BoardPageProps) {
       if (addTaskToColumn) {
         const targetColumn = boardData.columns.find(col => col.id === addTaskToColumn);
         const position = targetColumn?.tasks.length || 0;
-        
+
         const newFirestoreTask: Omit<FirestoreTask, 'id' | 'createdAt' | 'updatedAt' | 'createdBy'> = {
           title: taskData.title.trim(),
           description: taskData.description.trim(),
@@ -257,7 +257,7 @@ export default function BoardPage({ params }: BoardPageProps) {
           labels: taskData.labels || [],
           icon: taskData.icon
         };
-        
+
         createTaskMutation.mutate(newFirestoreTask, {
           onSuccess: () => {
             setEditingTask(null);
@@ -277,20 +277,20 @@ export default function BoardPage({ params }: BoardPageProps) {
       setMutationError('Column title is required');
       return;
     }
-    
+
     // Check for duplicate column names (excluding the current column being edited)
-    const existingColumn = boardData.columns.find(col => 
-      col.title.toLowerCase() === columnData.title.trim().toLowerCase() && 
+    const existingColumn = boardData.columns.find(col =>
+      col.title.toLowerCase() === columnData.title.trim().toLowerCase() &&
       ('id' in columnData ? col.id !== columnData.id : true)
     );
-    
+
     if (existingColumn) {
       setMutationError('A column with this name already exists');
       return;
     }
-    
+
     clearError();
-    
+
     if ('id' in columnData) {
       // Editing existing column
       const updatedColumns = boardData.columns.map(column =>
@@ -298,7 +298,7 @@ export default function BoardPage({ params }: BoardPageProps) {
           ? { ...column, title: columnData.title.trim(), badgeColor: columnData.badgeColor }
           : column
       );
-      
+
       updateBoardMutation.mutate({
         boardId: boardId,
         updates: { columns: updatedColumns }
@@ -318,9 +318,9 @@ export default function BoardPage({ params }: BoardPageProps) {
         badgeColor: columnData.badgeColor,
         order: boardData.columns.length
       };
-      
+
       const updatedColumns = [...boardData.columns, newColumn];
-      
+
       updateBoardMutation.mutate({
         boardId: boardId,
         updates: { columns: updatedColumns }
@@ -342,7 +342,7 @@ export default function BoardPage({ params }: BoardPageProps) {
         {mutationError && (
           <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 mx-6 mt-4 rounded-lg flex items-center justify-between">
             <span>{mutationError}</span>
-            <button 
+            <button
               onClick={clearError}
               className="text-red-400 hover:text-red-300 ml-4"
               aria-label="Close error"
@@ -351,7 +351,7 @@ export default function BoardPage({ params }: BoardPageProps) {
             </button>
           </div>
         )}
-        
+
         {/* Loading Overlay */}
         {isAnyMutationLoading && (
           <div className="bg-blue-500/10 border border-blue-500/20 text-blue-400 px-4 py-2 mx-6 mt-2 rounded-lg text-center">
