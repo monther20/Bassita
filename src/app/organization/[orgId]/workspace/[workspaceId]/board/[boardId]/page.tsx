@@ -340,22 +340,15 @@ export default function BoardPage({ params }: BoardPageProps) {
       <div className="flex flex-col h-full">
         {/* Error Banner */}
         {mutationError && (
-          <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 mx-6 mt-4 rounded-lg flex items-center justify-between">
-            <span>{mutationError}</span>
+          <div className="bg-red-500/10 border border-red-500/20 text-red-400 responsive-px-sm py-3 mt-4 rounded-lg flex items-center justify-between">
+            <span className="text-sm md:text-base">{mutationError}</span>
             <button
               onClick={clearError}
-              className="text-red-400 hover:text-red-300 ml-4"
+              className="text-red-400 hover:text-red-300 ml-4 touch-target"
               aria-label="Close error"
             >
               ×
             </button>
-          </div>
-        )}
-
-        {/* Loading Overlay */}
-        {isAnyMutationLoading && (
-          <div className="bg-blue-500/10 border border-blue-500/20 text-blue-400 px-4 py-2 mx-6 mt-2 rounded-lg text-center">
-            <span>Saving changes...</span>
           </div>
         )}
 

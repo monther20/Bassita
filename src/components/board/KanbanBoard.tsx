@@ -52,9 +52,9 @@ export default function KanbanBoard({
   draggedTask = null
 }: KanbanBoardProps) {
   return (
-    <div className="flex-1 p-6 overflow-x-auto">
-      <div className="flex items-center justify-center">
-        <div className="flex gap-6 h-full min-h-[calc(100vh-200px)]">
+    <div className="flex-1 responsive-px-sm md:p-6 overflow-x-auto mobile-board-scroll">
+      <div className="flex items-start">
+        <div className="flex gap-3 md:gap-6 h-full min-h-[calc(100vh-200px)] pb-4">
           {/* Render columns */}
           {columns.map((column) => (
             <BoardColumn
