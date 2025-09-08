@@ -10,13 +10,14 @@ import { FiArrowLeft, FiUserPlus } from "react-icons/fi";
 
 interface WorkspacePageProps {
   params: Promise<{
-    id: string;
+    orgId: string;
+    workspaceId: string;
   }>;
 }
 
 export default function WorkspacePage({ params }: WorkspacePageProps) {
   // Unwrap async params for Next.js 15 compatibility
-  const { id: workspaceId } = use(params);
+  const { orgId: organizationId, workspaceId } = use(params);
   const router = useRouter();
   const { addRecentItem } = useRecentlyViewed();
   const createBoardRef = useRef<(() => void) | null>(null);
@@ -40,7 +41,8 @@ export default function WorkspacePage({ params }: WorkspacePageProps) {
         workspaceName: workspace?.name
       });
 
-      router.push(`/board/${board.id}`);
+      // Navigate to nested board route
+      router.push(`/organization/${organizationId}/workspace/${workspaceId}/board/${board.id}`);
     }
   };
 
@@ -68,10 +70,10 @@ export default function WorkspacePage({ params }: WorkspacePageProps) {
               {error?.message || 'This workspace may not exist or you may not have access to it.'}
             </div>
             <button
-              onClick={() => router.push('/dashboard')}
+              onClick={() => router.push(`/organization/${organizationId}`)}
               className="px-4 py-2 bg-spotlight-purple text-text-primary rounded-lg hover:bg-spotlight-purple/90 transition-colors"
             >
-              Back to Dashboard
+              Back to Organization
             </button>
           </div>
         </div>
@@ -80,17 +82,17 @@ export default function WorkspacePage({ params }: WorkspacePageProps) {
   }
 
   return (
-    <ProtectedLayout showSidebar={false} workspaceId={workspaceId} onCreateBoardRef={createBoardRef}>
+    <ProtectedLayout workspaceId={workspaceId} onCreateBoardRef={createBoardRef}>
       <div className="space-y-6 responsive-px-sm max-w-screen-2xl mx-auto p-6">
         {/* Workspace Header */}
         <div className="space-y-2">
           <div className="flex items-center gap-3">
             <button
-              onClick={() => router.push('/dashboard')}
+              onClick={() => router.push(`/organization/${organizationId}`)}
               className="text-text-secondary hover:text-text-primary transition-colors flex items-center gap-2"
             >
               <FiArrowLeft className="w-4 h-4" />
-              Back to Dashboard
+              Back to Organization
             </button>
           </div>
 

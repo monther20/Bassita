@@ -9,6 +9,7 @@ interface UserBoard {
     href: string;
     workspaceId: string;
     workspaceName: string;
+    organizationId: string;
     isOwner: boolean;
 }
 
@@ -47,7 +48,8 @@ export function useAllUserBoards(): UseAllUserBoardsReturn {
                 return boards.map(board => ({
                     ...board,
                     workspaceName: workspace.name,
-                    workspaceId: workspace.id
+                    workspaceId: workspace.id,
+                    organizationId: workspace.organizationId
                 }));
             });
 
@@ -63,9 +65,10 @@ export function useAllUserBoards(): UseAllUserBoardsReturn {
         id: board.id,
         name: board.name,
         icon: board.icon,
-        href: `/board/${board.id}`,
+        href: `/organization/${board.organizationId}/workspace/${board.workspaceId}/board/${board.id}`,
         workspaceId: board.workspaceId,
         workspaceName: board.workspaceName,
+        organizationId: board.organizationId,
         isOwner: board.ownerId === user?.id
     }));
 

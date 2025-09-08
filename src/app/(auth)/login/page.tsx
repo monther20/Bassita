@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/buttoon";
+import Button from "@/components/buttoon";
 import { FaMicrosoft, FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { useRouter } from "next/navigation";

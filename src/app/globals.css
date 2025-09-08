@@ -325,6 +325,27 @@
     min-width: 44px;
   }
 
+  /* Mobile board optimizations */
+  @media (max-width: 767px) {
+    .mobile-board-scroll {
+      scrollbar-width: thin;
+      scrollbar-color: var(--color-spotlight-purple) transparent;
+    }
+    
+    .mobile-board-scroll::-webkit-scrollbar {
+      height: 6px;
+    }
+    
+    .mobile-board-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    .mobile-board-scroll::-webkit-scrollbar-thumb {
+      background: var(--color-spotlight-purple);
+      border-radius: 3px;
+    }
+  }
+
   /* Responsive icon sizing */
   .icon-xs {
     width: 1rem;

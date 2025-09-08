@@ -19,7 +19,10 @@
       "Bash(rm:*)",
       "Bash(npm run validate-templates:*)",
       "Bash(npx ts-node:*)",
-      "Bash(npm run test-firebase-config:*)"
+      "Bash(npm run test-firebase-config:*)",
+      "Bash(grep:*)",
+      "Bash(rg:*)",
+      "Bash(gh pr diff:*)"
     ],
     "deny": []
   }

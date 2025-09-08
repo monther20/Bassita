@@ -2,28 +2,27 @@
 
 import { useState, useEffect, useRef } from "react";
 import { FiX, FiUsers } from "react-icons/fi";
-import { useCreateWorkspace } from "@/hooks/useFirestore";
+import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
+import { FirestoreService } from '@/lib/firestore';
 import { useAuth } from "@/hooks/useAuth";
-import { useRouter } from "next/navigation";
 
-interface CreateWorkspaceModalProps {
+interface CreateOrganizationModalProps {
     isOpen: boolean;
     onClose: () => void;
-    organizationId?: string;
 }
 
-export default function CreateWorkspaceModal({
+export default function CreateOrganizationModal({
     isOpen,
-    onClose,
-    organizationId
-}: CreateWorkspaceModalProps) {
+    onClose
+}: CreateOrganizationModalProps) {
     const [name, setName] = useState("");
     const [error, setError] = useState("");
-    
+    const [loading, setLoading] = useState(false);
     const modalRef = useRef<HTMLDivElement>(null);
-    const router = useRouter();
     const { user } = useAuth();
-    const createWorkspaceMutation = useCreateWorkspace();
+    const router = useRouter();
+    const queryClient = useQueryClient();
 
     // Reset form when modal opens/closes
     useEffect(() => {
@@ -60,52 +59,53 @@ export default function CreateWorkspaceModal({
 
     const handleCreate = async () => {
         if (!name.trim()) {
-            setError("Workspace name is required");
+            setError("Organization name is required");
             return;
         }
-
         if (!user?.id) {
             setError("User not authenticated");
             return;
         }
-
         setError("");
-
+        setLoading(true);
         try {
-            const workspaceData = {
+            const orgData = {
                 name: name.trim(),
-                organizationId: organizationId || '',
                 ownerId: user.id,
                 members: [{
                     userId: user.id,
                     role: 'owner' as const,
                     joinedAt: new Date()
-                }]
+                }],
+                memberUserIds: [user.id],
+                workspaces: [],
+                settings: {
+                    allowMemberInvites: true,
+                    allowWorkspaceCreation: true
+                }
             };
-
-            const newWorkspaceId = await createWorkspaceMutation.mutateAsync(workspaceData);
-            onClose();
+            const newOrgId = await FirestoreService.createOrganization(orgData);
             
-            // Navigate to nested route if organizationId is available
-            if (organizationId) {
-                router.push(`/organization/${organizationId}/workspace/${newWorkspaceId}`);
-            } else {
-                // Fallback to old route for backward compatibility
-                router.push(`/workspace/${newWorkspaceId}`);
-            }
+            // Invalidate organizations query to fetch the new organization
+            await queryClient.invalidateQueries({ queryKey: ['user-organizations', user.id] });
+            
+            setLoading(false);
+            onClose();
+            router.push(`/organization/${newOrgId}`);
         } catch (error: any) {
-            setError(error.message || "Failed to create workspace");
+            setLoading(false);
+            setError(error.message || "Failed to create organization");
         }
     };
 
     if (!isOpen) return null;
 
     return (
-        <div 
+        <div
             className="fixed inset-0 modal-backdrop-dark flex items-center justify-center z-40 p-4"
             onClick={handleBackdropClick}
         >
-            <div 
+            <div
                 ref={modalRef}
                 className="bg-background-primary rounded-2xl w-full max-w-md overflow-hidden modal-enter shadow-2xl"
                 onClick={(e) => e.stopPropagation()}
@@ -118,10 +118,10 @@ export default function CreateWorkspaceModal({
                         </div>
                         <div>
                             <h2 className="text-text-primary font-display font-semibold text-lg">
-                                Create New Workspace
+                                Create New Organization
                             </h2>
                             <p className="text-text-secondary text-sm">
-                                Create a new workspace for your team
+                                Create a new organization for your company or group
                             </p>
                         </div>
                     </div>
@@ -143,16 +143,16 @@ export default function CreateWorkspaceModal({
                             </div>
                         )}
 
-                        {/* Workspace Name */}
+                        {/* Organization Name */}
                         <div>
                             <label className="block text-text-primary font-medium mb-2 text-sm">
-                                Workspace Name *
+                                Organization Name *
                             </label>
                             <input
                                 type="text"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                placeholder="Enter workspace name..."
+                                placeholder="Enter organization name..."
                                 className="w-full px-4 py-3 bg-background-secondary text-text-primary placeholder-text-secondary rounded-lg border border-background-tertiary focus:outline-none focus:border-spotlight-purple focus:ring-2 focus:ring-spotlight-purple/20 transition-all duration-200"
                                 autoFocus
                                 onKeyPress={(e) => {
@@ -162,7 +162,7 @@ export default function CreateWorkspaceModal({
                                 }}
                             />
                             <p className="text-text-secondary text-xs mt-2">
-                                This will be the main workspace where you can organize your boards and collaborate with your team.
+                                This will be the main organization for your company or group.
                             </p>
                         </div>
                     </div>
@@ -177,14 +177,14 @@ export default function CreateWorkspaceModal({
                         </button>
                         <button
                             onClick={handleCreate}
-                            disabled={!name.trim() || createWorkspaceMutation.isPending}
-                            className="flex-1 px-4 py-3 bg-spotlight-purple text-text-primary rounded-lg hover:bg-spotlight-purple/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium"
+                            disabled={!name.trim() || loading}
+                            className="flex-1 px-4 py-3 bg-spotlight-purple text-text-primary rounded-lg hover:bg-spotlight-purple/90 hover:shadow-glow-purple disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium"
                         >
-                            {createWorkspaceMutation.isPending ? "Creating..." : "Create Workspace"}
+                            {loading ? "Creating..." : "Create Organization"}
                         </button>
                     </div>
                 </div>
             </div>
         </div>
     );
-}
+} 

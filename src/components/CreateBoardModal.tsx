@@ -7,7 +7,7 @@ import IconPicker from "./board/IconPicker";
 import { useCreateBoard, useUserWorkspaces } from "@/hooks/useFirestore";
 import { useAuth } from "@/hooks/useAuth";
 import { FirestoreWorkspace } from "@/types/firestore";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 
 interface CreateBoardModalProps {
     isOpen: boolean;
@@ -29,6 +29,7 @@ export default function CreateBoardModal({
     const modalRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
     const { user } = useAuth();
+    const { organizationId, workspaceId: paramWorkspaceId } = useParams();
     const { data: workspaces = [], isLoading: workspacesLoading } = useUserWorkspaces();
     const createBoardMutation = useCreateBoard();
 
@@ -112,7 +113,7 @@ export default function CreateBoardModal({
 
             const newBoardId = await createBoardMutation.mutateAsync(boardData);
             onClose();
-            router.push(`/board/${newBoardId}`);
+            router.push(`/organization/${organizationId}/workspace/${paramWorkspaceId}/board/${newBoardId}`);
         } catch (error: any) {
             setError(error.message || "Failed to create board");
         }

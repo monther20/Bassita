@@ -31,7 +31,7 @@ const sizeClasses = {
 
 
 
-export const Button = ({
+export default function Button({
   label,
   onClick,
   size = "md",
@@ -46,7 +46,7 @@ export const Button = ({
   fullWidth = false,
   mobileSize,
   hover = "hover:shadow-glow-purple",
-}: ButtonProps) => {
+}: ButtonProps) {
 
   const variantClasses = {
     primary: `${backgroundColor} ${textColor} ${hover}`,
@@ -70,13 +70,14 @@ export const Button = ({
     >
       <div className="flex items-center justify-center responsive-gap-xs">
         {icon && iconPosition === "left" && (
-          <span className="icon-sm">{icon}</span>
+          <span className="icon-sm flex items-center justify-center">{icon}</span>
         )}
         <span>{label}</span>
         {icon && iconPosition === "right" && (
-          <span className="icon-sm">{icon}</span>
+          <span className="icon-sm flex items-center justify-center">{icon}</span>
         )}
       </div>
     </button>
   );
 };
+

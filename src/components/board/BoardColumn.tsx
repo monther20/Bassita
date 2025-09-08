@@ -99,7 +99,7 @@ export default function BoardColumn({
 
   return (
     <div 
-      className={`flex flex-col h-fit min-w-[280px] w-80 ${
+      className={`flex flex-col h-fit min-w-[260px] w-[260px] md:min-w-[280px] md:w-80 ${
         isDragOver ? 'ring-2 ring-spotlight-purple ring-opacity-50' : ''
       }`}
       onDragOver={handleDragOver}
@@ -108,30 +108,31 @@ export default function BoardColumn({
       onDrop={handleDrop}
     >
       {/* Column Header */}
-      <div className="relative flex w-full items-center gap-3 mb-2 bg-background-secondary p-3 rounded-lg group">
+      <div className="relative flex w-full items-center gap-2 md:gap-3 mb-2 bg-background-secondary p-2 md:p-3 rounded-lg group">
         {/* Clickable header area */}
         <button
           onClick={onColumnClick}
-          className="flex items-center gap-3 flex-1 text-left hover:bg-background-tertiary/50 rounded-md p-1 -m-1 transition-all duration-200"
+          className="flex items-center gap-2 md:gap-3 flex-1 text-left hover:bg-background-tertiary/50 rounded-md p-1 -m-1 transition-all duration-200"
         >
-          <div className={`w-3 h-3 rounded-full ${badgeColor} shadow-sm`} />
-          <h2 className="text-text-primary font-display font-medium text-base">
+          <div className={`w-2.5 h-2.5 md:w-3 md:h-3 rounded-full ${badgeColor} shadow-sm`} />
+          <h2 className="text-text-primary font-display font-medium text-sm md:text-base">
             {title}
           </h2>
         </button>
         
         {/* Add Task Button */}
         <button 
-          className="bg-spotlight-purple/20 p-1.5 rounded-full cursor-pointer text-text-tertiary hover:bg-spotlight-purple hover:text-text-primary transition-all duration-200 opacity-70 group-hover:opacity-100" 
+          className="bg-spotlight-purple/20 p-1 md:p-1.5 rounded-full cursor-pointer text-text-tertiary hover:bg-spotlight-purple hover:text-text-primary transition-all duration-200 opacity-70 group-hover:opacity-100 touch-target" 
           onClick={onAddTask}
           title="Add Task"
         >
-          <FiPlus size={14} />
+          <FiPlus size={12} className="md:hidden" />
+          <FiPlus size={14} className="hidden md:block" />
         </button>
       </div>
 
       {/* Tasks Container */}
-      <div className={`flex-1 space-y-3 pr-1 pt-2 min-h-[200px] rounded-lg transition-colors duration-200 ${
+      <div className={`flex-1 space-y-2 md:space-y-3 pr-1 pt-2 min-h-[150px] md:min-h-[200px] rounded-lg transition-colors duration-200 ${
         isDragOver ? 'bg-background-secondary/30' : ''
       }`}>
         {tasks.map((task) => (
@@ -160,12 +161,13 @@ export default function BoardColumn({
       </div>
 
       {/* Add Task Button */}
-      <div className="mt-6">
+      <div className="mt-4 md:mt-6">
         <button
           onClick={onAddTask}
-          className="w-full p-1 rounded-xl bg-background-secondary/50 hover:bg-background-secondary border-2 border-dashed border-text-tertiary hover:border-spotlight-purple text-text-secondary hover:text-text-primary transition-all duration-200 cursor-pointer font-display font-medium text-sm flex items-center justify-center gap-2"
+          className="w-full p-1 md:p-2 rounded-xl bg-background-secondary/50 hover:bg-background-secondary border-2 border-dashed border-text-tertiary hover:border-spotlight-purple text-text-secondary hover:text-text-primary transition-all duration-200 cursor-pointer font-display font-medium text-xs md:text-sm flex items-center justify-center gap-1 md:gap-2 touch-target"
         >
-          <FiPlus size={16} />
+          <FiPlus size={14} className="md:hidden" />
+          <FiPlus size={16} className="hidden md:block" />
           Add Task
         </button>
       </div>

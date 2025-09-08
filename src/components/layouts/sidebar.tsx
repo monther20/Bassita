@@ -1,11 +1,12 @@
 import { FiFolder, FiSettings, FiChevronDown, FiArrowUp, FiX } from "react-icons/fi";
 import React, { useState, useRef, useEffect } from "react";
 import SidebarButton from "../sidebarButton";
-import WorkspaceSwitcher from "../WorkspaceSwitcher";
+import OrganizationSwitcher from "../OrganizationSwitcher";
 import { useTemplates, useAllUserBoards, useCurrentWorkspace } from "@/hooks";
 import { FirestoreTemplate } from "@/types/firestore";
 import { useModal } from "@/contexts/ModalContext";
 import * as Icons from "react-icons/fi";
+import Link from "next/link";
 
 interface SidebarProps {
     height?: string;
@@ -146,7 +147,7 @@ export default function Sidebar({ height = "h-screen", onClose }: SidebarProps) 
                                                 isCollapsed={isCollapsed}
                                             />
                                         ) : (
-                                            <a
+                                            <Link
                                                 href={board.href}
                                                 className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors hover:bg-background-secondary"
                                             >
@@ -157,19 +158,10 @@ export default function Sidebar({ height = "h-screen", onClose }: SidebarProps) 
                                                     <div className="text-text-primary font-display text-sm font-medium truncate">
                                                         {board.name}
                                                     </div>
-                                                    <div className="flex items-center gap-1">
 
-                                                        {board.workspaceId === currentWorkspaceId && (
-                                                            <div className="w-1.5 h-1.5 bg-spotlight-purple rounded-full flex-shrink-0" title="Current workspace" />
-                                                        )}
-                                                    </div>
                                                 </div>
-                                                {board.isOwner && (
-                                                    <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                                        <div className="w-2 h-2 bg-spotlight-purple rounded-full" title="Owner" />
-                                                    </div>
-                                                )}
-                                            </a>
+
+                                            </Link>
                                         )}
                                     </div>
                                 ))}
@@ -247,37 +239,20 @@ export default function Sidebar({ height = "h-screen", onClose }: SidebarProps) 
                     </div>
                 </div>
 
-                {/* Workspaces Section */}
+                {/* Organizations Section */}
                 <div className="space-y-3">
                     {!isCollapsed && (
                         <div className="flex items-center gap-2 px-2">
                             <FiFolder className="text-spotlight-blue text-base" />
-                            <span className="text-text-primary font-display font-medium">Workspaces</span>
+                            <span className="text-text-primary font-display font-medium">Organizations</span>
                         </div>
                     )}
                     <div className={`${isCollapsed ? '' : 'ml-2'}`}>
-                        <WorkspaceSwitcher isCollapsed={isCollapsed} />
+                        <OrganizationSwitcher isCollapsed={isCollapsed} />
                     </div>
                 </div>
             </div>
 
-            {/* Upgrade Plan Button */}
-            <div className={isCollapsed ? 'p-2' : 'p-4'}>
-                {isCollapsed ? (
-                    <SidebarButton
-                        label="Upgrade Plan"
-                        icon={<FiArrowUp className="text-spotlight-purple" />}
-                        isCollapsed={isCollapsed}
-                    />
-                ) : (
-                    <button className="w-full border border-spotlight-purple rounded-lg p-3 flex items-center gap-3 hover:bg-spotlight-purple/50 transition-colors cursor-pointer">
-                        <div className="bg-spotlight-purple rounded-full p-1.5">
-                            <FiArrowUp className="text-text-primary text-sm" />
-                        </div>
-                        <span className="text-text-primary font-display font-medium">Upgrade Plan</span>
-                    </button>
-                )}
-            </div>
 
             {/* Resize Handle - Only on desktop */}
             <div

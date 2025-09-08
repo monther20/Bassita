@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/buttoon";
+import Button from "@/components/buttoon";
 import { useState } from "react";
 import { FaEye, FaEyeSlash, FaCheck, FaTimes } from "react-icons/fa";
 import Link from "next/link";
