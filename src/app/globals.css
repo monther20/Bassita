@@ -1,20 +1,26 @@
 @import "tailwindcss";
 
 @theme {
-  /* Colors */
-  --color-background-primary: #1a1b26;
-  --color-background-secondary: #24253a;
-  --color-background-tertiary: #2e2f48;
-  --color-background-floating: #16171f;
-  --color-background-member: #404258;
-
+  /* Spotlight colors - consistent across themes */
   --color-spotlight-purple: #7c3aed;
   --color-spotlight-pink: #ec4899;
   --color-spotlight-blue: #5865F2;
   --color-spotlight-green: #10b981;
   --color-spotlight-yellow: #f59e0b;
   --color-spotlight-red: #ef4444;
+}
 
+/* Dark theme colors (default) */
+:root,
+[data-theme="dark"] {
+  /* Background colors */
+  --color-background-primary: #1a1b26;
+  --color-background-secondary: #24253a;
+  --color-background-tertiary: #2e2f48;
+  --color-background-floating: #16171f;
+  --color-background-member: #404258;
+
+  /* Text colors */
   --color-text-primary: #ffffff;
   --color-text-secondary: #9ca3af;
   --color-text-tertiary: #6b7280;
@@ -28,7 +34,35 @@
   --shadow-glow-black: 0 0 20px rgb(0 0 0 / 0.4);
 }
 
+/* Light theme colors */
+[data-theme="light"] {
+  /* Background colors */
+  --color-background-primary: #ffffff;
+  --color-background-secondary: #f8fafc;
+  --color-background-tertiary: #f1f5f9;
+  --color-background-floating: #ffffff;
+  --color-background-member: #e2e8f0;
+
+  /* Text colors */
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-tertiary: #64748b;
+  --color-text-dark: #1f2937;
+
+  /* Shadows - adjusted for light theme */
+  --shadow-glow-purple: 0 0 20px rgb(124 58 237 / 0.3);
+  --shadow-glow-pink: 0 0 20px rgb(236 72 153 / 0.3);
+  --shadow-glow-blue: 0 0 20px rgb(88 101 242 / 0.3);
+  --shadow-glow-white: 0 0 20px rgb(0 0 0 / 0.1);
+  --shadow-glow-black: 0 0 20px rgb(0 0 0 / 0.15);
+}
+
 @layer base {
+  /* Smooth theme transitions */
+  * {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
   body {
     background: var(--color-background-primary);
     color: var(--color-text-primary);
@@ -456,9 +490,17 @@
   }
 
   .modal-backdrop-dark {
-    background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+  }
+
+  /* Theme-specific modal backdrops */
+  [data-theme="dark"] .modal-backdrop-dark {
+    background: rgba(0, 0, 0, 0.6);
+  }
+
+  [data-theme="light"] .modal-backdrop-dark {
+    background: rgba(0, 0, 0, 0.4);
   }
 
   /* Modal animations */

@@ -4,6 +4,7 @@ import { UserMenu } from "../userMenu";
 import SearchInput from "../searchInput";
 import SearchModal from "../searchModal";
 import CreateDropdown from "../CreateDropdown";
+import ThemeToggle from "../ThemeToggle";
 import { useModal } from "@/contexts/ModalContext";
 import { FiMenu, FiSearch } from "react-icons/fi";
 import Link from "next/link";
@@ -119,6 +120,9 @@ export default function Header({
                                 variant="icon"
                             />
                         </div>
+
+                        {/* Theme toggle */}
+                        <ThemeToggle size="sm" />
 
                         {/* User menu */}
                         <UserMenu />
