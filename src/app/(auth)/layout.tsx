@@ -1,15 +1,29 @@
+"use client";
+
 import React from "react";
 import AnimatedBackground from "@/components/auth/AnimatedBackground";
 import Card from "@/components/card";
 import Image from "next/image";
+import ThemeToggle from "@/components/ThemeToggle";
+import { useTheme } from "@/contexts/ThemeContext";
+import { themeMetadata } from "@/stores/theme";
 
 export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { theme } = useTheme();
+  const isLightTheme = themeMetadata[theme].category === 'light';
+  const logoSrc = isLightTheme ? '/logo-light.png' : '/logo.png';
+
   return (
     <div className="relative flex items-center min-h-screen bg-background-primary">
+      {/* Theme Toggle - Top Right Corner */}
+      <div className="absolute top-4 right-4 lg:top-6 lg:right-6 z-50">
+        <ThemeToggle size="sm" variant="selector" />
+      </div>
+
       <div className="flex flex-col lg:flex-row justify-between w-full px-4 md:px-8 lg:px-22 py-4 lg:py-0 items-center z-1">
         <div className="hidden lg:flex flex-col gap-6 lg:gap-10 items-center z-1">
           <div className="flex flex-col gap-6 lg:gap-10 w-full">
@@ -49,11 +63,12 @@ export default function AuthLayout({
           </div>
           <div className="flex flex-col gap-6 lg:gap-10">
             <Image
-              src="/logo.png"
-              alt="logo"
+              src={logoSrc}
+              alt="Bassita Logo"
               width={280}
               height={68}
               className="lg:w-[350px] lg:h-[85px]"
+              priority
             />
           </div>
         </div>

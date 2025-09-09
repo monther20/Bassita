@@ -6,6 +6,8 @@ import SearchModal from "../searchModal";
 import CreateDropdown from "../CreateDropdown";
 import ThemeToggle from "../ThemeToggle";
 import { useModal } from "@/contexts/ModalContext";
+import { useTheme } from "@/contexts/ThemeContext";
+import { themeMetadata } from "@/stores/theme";
 import { FiMenu, FiSearch } from "react-icons/fi";
 import Link from "next/link";
 
@@ -28,6 +30,11 @@ export default function Header({
 }: HeaderProps) {
     const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
     const { openCreateBoardModal, openCreateWorkspaceModal, openCreateOrganizationModal } = useModal();
+    const { theme } = useTheme();
+    
+    // Dynamic logo selection based on theme category
+    const isLightTheme = themeMetadata[theme].category === 'light';
+    const logoSrc = isLightTheme ? '/logo-light.png' : '/logo.png';
 
     const handleCreateBoard = () => {
         openCreateBoardModal(workspaceId);
@@ -69,11 +76,11 @@ export default function Header({
                         {/* Logo */}
                         <Link href="/organization" className="flex-shrink-0">
                             <Image
-                                src="/logo.png"
-                                alt="Company logo"
+                                src={logoSrc}
+                                alt="Bassita Logo"
                                 width={170}
                                 height={50}
-                                className=" w-auto md:h-12"
+                                className="w-auto md:h-12"
                                 priority
                             />
                         </Link>

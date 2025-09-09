@@ -141,14 +141,14 @@ export default function ForgotPasswordPage() {
           {/* Reset Password Button */}
           <Button
             label={isLoading ? "Sending..." : "Send Reset Link"}
-            onclick={() => handleSubmit(e)}
-            backgroundColor="bg-gradient-to-r from-spotlight-purple to-spotlight-pink"
-            hover="hover:shadow-glow-purple"
-            borderColor="border-background-primary"
-            textStyle="text-text-primary text-sm lg:text-lg"
-            className="w-full h-full"
-            width="100%"
-            height="50px"
+            onClick={() => {
+              const fakeEvent = { preventDefault: () => {} } as React.FormEvent;
+              handleSubmit(fakeEvent);
+            }}
+            variant="primary"
+            size="lg"
+            fullWidth={true}
+            className="bg-gradient-to-r from-spotlight-purple to-spotlight-pink hover:shadow-glow-purple"
           />
         </form>
 
