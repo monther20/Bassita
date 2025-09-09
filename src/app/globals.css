@@ -1,20 +1,26 @@
 @import "tailwindcss";
 
 @theme {
-  /* Colors */
-  --color-background-primary: #1a1b26;
-  --color-background-secondary: #24253a;
-  --color-background-tertiary: #2e2f48;
-  --color-background-floating: #16171f;
-  --color-background-member: #404258;
-
+  /* Spotlight colors - consistent across themes */
   --color-spotlight-purple: #7c3aed;
   --color-spotlight-pink: #ec4899;
   --color-spotlight-blue: #5865F2;
   --color-spotlight-green: #10b981;
   --color-spotlight-yellow: #f59e0b;
   --color-spotlight-red: #ef4444;
+}
 
+/* Dark theme colors (default) */
+:root,
+[data-theme="dark"] {
+  /* Background colors */
+  --color-background-primary: #1a1b26;
+  --color-background-secondary: #24253a;
+  --color-background-tertiary: #2e2f48;
+  --color-background-floating: #16171f;
+  --color-background-member: #404258;
+
+  /* Text colors */
   --color-text-primary: #ffffff;
   --color-text-secondary: #9ca3af;
   --color-text-tertiary: #6b7280;
@@ -28,7 +34,128 @@
   --shadow-glow-black: 0 0 20px rgb(0 0 0 / 0.4);
 }
 
+/* Light theme colors */
+[data-theme="light"] {
+  /* Background colors */
+  --color-background-primary: #fdfdfd;
+  --color-background-secondary: #f8fafc;
+  --color-background-tertiary: #f1f5f9;
+  --color-background-floating: #fdfdfd;
+  --color-background-member: #e2e8f0;
+
+  /* Text colors */
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-tertiary: #64748b;
+  --color-text-dark: #1f2937;
+
+  /* Shadows - adjusted for light theme */
+  --shadow-glow-purple: 0 0 20px rgb(124 58 237 / 0.3);
+  --shadow-glow-pink: 0 0 20px rgb(236 72 153 / 0.3);
+  --shadow-glow-blue: 0 0 20px rgb(88 101 242 / 0.3);
+  --shadow-glow-white: 0 0 20px rgb(0 0 0 / 0.1);
+  --shadow-glow-black: 0 0 20px rgb(0 0 0 / 0.15);
+}
+
+/* Neon City theme - Enhanced cyberpunk */
+[data-theme="neon"] {
+  /* Background colors */
+  --color-background-primary: #0a0a0f;
+  --color-background-secondary: #141420;
+  --color-background-tertiary: #1a1a2e;
+  --color-background-floating: #0a0a0f;
+  --color-background-member: #16213e;
+
+  /* Text colors */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #b8c5ff;
+  --color-text-tertiary: #8892b0;
+  --color-text-dark: #1f2937;
+
+  /* Enhanced shadows for neon effect */
+  --shadow-glow-purple: 0 0 25px rgb(124 58 237 / 0.5);
+  --shadow-glow-pink: 0 0 25px rgb(236 72 153 / 0.5);
+  --shadow-glow-blue: 0 0 25px rgb(88 101 242 / 0.5);
+  --shadow-glow-white: 0 0 20px rgb(255 255 255 / 0.5);
+  --shadow-glow-black: 0 0 20px rgb(0 0 0 / 0.6);
+}
+
+/* Pastel Dreams theme - Soft pastels */
+[data-theme="pastel"] {
+  /* Background colors */
+  --color-background-primary: #fefefe;
+  --color-background-secondary: #f8f9ff;
+  --color-background-tertiary: #f2f4ff;
+  --color-background-floating: #fefefe;
+  --color-background-member: #e8ebff;
+
+  /* Text colors */
+  --color-text-primary: #2d3748;
+  --color-text-secondary: #4a5568;
+  --color-text-tertiary: #718096;
+  --color-text-dark: #1f2937;
+
+  /* Softer shadows */
+  --shadow-glow-purple: 0 0 15px rgb(124 58 237 / 0.2);
+  --shadow-glow-pink: 0 0 15px rgb(236 72 153 / 0.2);
+  --shadow-glow-blue: 0 0 15px rgb(88 101 242 / 0.2);
+  --shadow-glow-white: 0 0 10px rgb(0 0 0 / 0.05);
+  --shadow-glow-black: 0 0 10px rgb(0 0 0 / 0.1);
+}
+
+
+/* Cool Mint theme - Fresh and professional */
+[data-theme="mint"] {
+  /* Background colors */
+  --color-background-primary: #f8fffe;
+  --color-background-secondary: #f0fdf9;
+  --color-background-tertiary: #e6f7f1;
+  --color-background-floating: #f8fffe;
+  --color-background-member: #d1f2e6;
+
+  /* Text colors */
+  --color-text-primary: #1a2e27;
+  --color-text-secondary: #2d5a47;
+  --color-text-tertiary: #4a7c69;
+  --color-text-dark: #1f2937;
+
+  /* Cool-tinted shadows */
+  --shadow-glow-purple: 0 0 20px rgb(124 58 237 / 0.3);
+  --shadow-glow-pink: 0 0 20px rgb(236 72 153 / 0.3);
+  --shadow-glow-blue: 0 0 20px rgb(88 101 242 / 0.3);
+  --shadow-glow-white: 0 0 15px rgb(16 185 129 / 0.1);
+  --shadow-glow-black: 0 0 15px rgb(26 46 39 / 0.15);
+}
+
+/* Slate Professional theme - Modern dark */
+[data-theme="slate"] {
+  /* Background colors */
+  --color-background-primary: #0f172a;
+  --color-background-secondary: #1e293b;
+  --color-background-tertiary: #334155;
+  --color-background-floating: #0f172a;
+  --color-background-member: #475569;
+
+  /* Text colors */
+  --color-text-primary: #f8fafc;
+  --color-text-secondary: #cbd5e1;
+  --color-text-tertiary: #94a3b8;
+  --color-text-dark: #1f2937;
+
+  /* Sharp, modern shadows */
+  --shadow-glow-purple: 0 0 20px rgb(124 58 237 / 0.4);
+  --shadow-glow-pink: 0 0 20px rgb(236 72 153 / 0.4);
+  --shadow-glow-blue: 0 0 20px rgb(88 101 242 / 0.4);
+  --shadow-glow-white: 0 0 20px rgb(248 250 252 / 0.3);
+  --shadow-glow-black: 0 0 20px rgb(15 23 42 / 0.5);
+}
+
 @layer base {
+  /* Smooth theme transitions */
+  * {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
   body {
     background: var(--color-background-primary);
     color: var(--color-text-primary);
@@ -456,9 +583,29 @@
   }
 
   .modal-backdrop-dark {
-    background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+  }
+
+  /* Theme-specific modal backdrops */
+  [data-theme="dark"] .modal-backdrop-dark {
+    background: rgba(0, 0, 0, 0.6);
+  }
+
+  [data-theme="light"] .modal-backdrop-dark {
+    background: rgba(0, 0, 0, 0.4);
+  }
+
+  [data-theme="neon"] .modal-backdrop-dark {
+    background: rgba(0, 0, 0, 0.7);
+  }
+
+  [data-theme="pastel"] .modal-backdrop-dark {
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  [data-theme="slate"] .modal-backdrop-dark {
+    background: rgba(0, 0, 0, 0.6);
   }
 
   /* Modal animations */
