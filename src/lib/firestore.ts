@@ -508,4 +508,156 @@ export class FirestoreService {
         });
         return orgRef.id;
     }
+
+    // ===============================
+    // SEARCH OPERATIONS
+    // ===============================
+
+    static async searchBoards(userId: string, searchTerm: string, limit: number = 3): Promise<FirestoreBoard[]> {
+        if (!searchTerm.trim()) return [];
+
+        try {
+            // Get all user workspaces first
+            const workspaces = await this.getUserWorkspaces(userId);
+            const workspaceIds = workspaces.map(w => w.id);
+
+            if (workspaceIds.length === 0) return [];
+
+            // Search boards in user's workspaces
+            const boardsRef = collection(db, BOARDS);
+            
+            // Firestore doesn't support case-insensitive search directly,
+            // so we'll fetch boards and filter client-side for now
+            const allBoardsPromises = workspaceIds.map(async (workspaceId) => {
+                const q = query(boardsRef, where('workspaceId', '==', workspaceId));
+                const querySnapshot = await getDocs(q);
+                return querySnapshot.docs.map(doc => ({
+                    ...doc.data(),
+                    id: doc.id,
+                    createdAt: doc.data().createdAt?.toDate(),
+                    updatedAt: doc.data().updatedAt?.toDate()
+                })) as FirestoreBoard[];
+            });
+
+            const allBoards = (await Promise.all(allBoardsPromises)).flat();
+            
+            // Filter by search term (case-insensitive)
+            const searchTermLower = searchTerm.toLowerCase();
+            const filteredBoards = allBoards.filter(board =>
+                board.name.toLowerCase().includes(searchTermLower)
+            );
+
+            // Sort by relevance (exact matches first, then partial matches)
+            const sortedBoards = filteredBoards.sort((a, b) => {
+                const aExact = a.name.toLowerCase() === searchTermLower ? 1 : 0;
+                const bExact = b.name.toLowerCase() === searchTermLower ? 1 : 0;
+                if (aExact !== bExact) return bExact - aExact;
+                
+                const aStarts = a.name.toLowerCase().startsWith(searchTermLower) ? 1 : 0;
+                const bStarts = b.name.toLowerCase().startsWith(searchTermLower) ? 1 : 0;
+                if (aStarts !== bStarts) return bStarts - aStarts;
+                
+                return a.name.localeCompare(b.name);
+            });
+
+            return sortedBoards.slice(0, limit);
+        } catch (error) {
+            console.error('❌ Error in searchBoards:', error);
+            return [];
+        }
+    }
+
+    static async searchWorkspaces(userId: string, searchTerm: string, limit: number = 3): Promise<FirestoreWorkspace[]> {
+        if (!searchTerm.trim()) return [];
+
+        try {
+            const workspaces = await this.getUserWorkspaces(userId);
+            
+            // Filter by search term (case-insensitive)
+            const searchTermLower = searchTerm.toLowerCase();
+            const filteredWorkspaces = workspaces.filter(workspace =>
+                workspace.name.toLowerCase().includes(searchTermLower)
+            );
+
+            // Sort by relevance
+            const sortedWorkspaces = filteredWorkspaces.sort((a, b) => {
+                const aExact = a.name.toLowerCase() === searchTermLower ? 1 : 0;
+                const bExact = b.name.toLowerCase() === searchTermLower ? 1 : 0;
+                if (aExact !== bExact) return bExact - aExact;
+                
+                const aStarts = a.name.toLowerCase().startsWith(searchTermLower) ? 1 : 0;
+                const bStarts = b.name.toLowerCase().startsWith(searchTermLower) ? 1 : 0;
+                if (aStarts !== bStarts) return bStarts - aStarts;
+                
+                return a.name.localeCompare(b.name);
+            });
+
+            return sortedWorkspaces.slice(0, limit);
+        } catch (error) {
+            console.error('❌ Error in searchWorkspaces:', error);
+            return [];
+        }
+    }
+
+    static async searchOrganizations(userId: string, searchTerm: string, limit: number = 3): Promise<FirestoreOrganization[]> {
+        if (!searchTerm.trim()) return [];
+
+        try {
+            const organizations = await this.getUserOrganizations(userId);
+            
+            // Filter by search term (case-insensitive)
+            const searchTermLower = searchTerm.toLowerCase();
+            const filteredOrganizations = organizations.filter(org =>
+                org.name.toLowerCase().includes(searchTermLower)
+            );
+
+            // Sort by relevance
+            const sortedOrganizations = filteredOrganizations.sort((a, b) => {
+                const aExact = a.name.toLowerCase() === searchTermLower ? 1 : 0;
+                const bExact = b.name.toLowerCase() === searchTermLower ? 1 : 0;
+                if (aExact !== bExact) return bExact - aExact;
+                
+                const aStarts = a.name.toLowerCase().startsWith(searchTermLower) ? 1 : 0;
+                const bStarts = b.name.toLowerCase().startsWith(searchTermLower) ? 1 : 0;
+                if (aStarts !== bStarts) return bStarts - aStarts;
+                
+                return a.name.localeCompare(b.name);
+            });
+
+            return sortedOrganizations.slice(0, limit);
+        } catch (error) {
+            console.error('❌ Error in searchOrganizations:', error);
+            return [];
+        }
+    }
+
+    static async searchAll(userId: string, searchTerm: string): Promise<{
+        boards: FirestoreBoard[];
+        workspaces: FirestoreWorkspace[];
+        organizations: FirestoreOrganization[];
+        total: number;
+    }> {
+        if (!searchTerm.trim()) {
+            return { boards: [], workspaces: [], organizations: [], total: 0 };
+        }
+
+        try {
+            // Perform searches in parallel
+            const [boards, workspaces, organizations] = await Promise.all([
+                this.searchBoards(userId, searchTerm, 3),
+                this.searchWorkspaces(userId, searchTerm, 3),
+                this.searchOrganizations(userId, searchTerm, 3)
+            ]);
+
+            return {
+                boards,
+                workspaces,
+                organizations,
+                total: boards.length + workspaces.length + organizations.length
+            };
+        } catch (error) {
+            console.error('❌ Error in searchAll:', error);
+            return { boards: [], workspaces: [], organizations: [], total: 0 };
+        }
+    }
 }

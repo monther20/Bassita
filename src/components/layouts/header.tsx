@@ -1,10 +1,11 @@
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { UserMenu } from "../userMenu";
-import SearchInput from "../searchInput";
+import SearchInputWithDropdown from "../SearchInputWithDropdown";
 import SearchModal from "../searchModal";
 import CreateDropdown from "../CreateDropdown";
 import ThemeToggle from "../ThemeToggle";
+import { SearchResult } from "../SearchDropdown";
 import { useModal } from "@/contexts/ModalContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { themeMetadata } from "@/stores/theme";
@@ -35,6 +36,12 @@ export default function Header({
     // Dynamic logo selection based on theme category
     const isLightTheme = themeMetadata[theme].category === 'light';
     const logoSrc = isLightTheme ? '/logo-light.png' : '/logo.png';
+
+    // Search functionality
+    const handleSearchItemSelect = useCallback((item: SearchResult) => {
+        console.log('Selected search item:', item);
+        // Navigation will be handled by SearchDropdown component
+    }, []);
 
     const handleCreateBoard = () => {
         openCreateBoardModal(workspaceId);
@@ -88,12 +95,12 @@ export default function Header({
 
                     {/* Center section - Search (hidden on mobile) */}
                     <div className="hidden md:flex items-center gap-4 flex-1 max-w-lg mx-6 lg:mx-8">
-                        <SearchInput
-                            placeholder="Search boards and workspaces..."
+                        <SearchInputWithDropdown
+                            placeholder="Search boards, workspaces, and organizations..."
                             width="w-full"
                             height="h-8 md:h-10"
                             className="border border-spotlight-purple"
-                            onClick={() => setIsSearchModalOpen(true)}
+                            onItemSelect={handleSearchItemSelect}
                         />
                         <div className="hidden sm:block">
                             <CreateDropdown

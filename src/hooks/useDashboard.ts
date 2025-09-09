@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { FirestoreService } from '@/lib/firestore';
 import { FirestoreBoard, FirestoreWorkspace } from '@/types/firestore';
 import { useAuth } from './useAuth';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 
 // Dashboard-specific interfaces for UI
 export interface DashboardBoard {
@@ -219,8 +219,90 @@ export function useDashboardData(organizationId?: string) {
   };
 }
 
-// Search hook
+// Enhanced search hook using FirestoreService
 export function useSearch(query: string) {
+  const { user } = useAuth();
+  const [searchResults, setSearchResults] = useState({
+    boards: [] as DashboardBoard[],
+    workspaces: [] as DashboardWorkspace[],
+    organizations: [] as any[],
+    total: 0
+  });
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const performSearch = async () => {
+      if (!query.trim() || !user?.id) {
+        setSearchResults({ boards: [], workspaces: [], organizations: [], total: 0 });
+        return;
+      }
+
+      setIsLoading(true);
+      try {
+        // Use FirestoreService search methods
+        const results = await FirestoreService.searchAll(user.id, query);
+
+        // Create workspace lookup map for proper workspace name mapping
+        const workspaceLookup = new Map(
+          results.workspaces.map(workspace => [workspace.id, workspace.name])
+        );
+
+        // Transform the results to match the UI interface
+        const transformedBoards: DashboardBoard[] = results.boards.map(board => ({
+          id: board.id,
+          name: board.name,
+          icon: board.icon,
+          workspaceId: board.workspaceId,
+          workspaceName: workspaceLookup.get(board.workspaceId) || 'Unknown workspace',
+          lastUpdated: board.updatedAt?.toISOString() || new Date().toISOString(),
+          members: board.members?.map(m => ({
+            name: m.userId.substring(0, 2).toUpperCase(),
+            color: 'spotlight-purple'
+          })) || [],
+          isOwner: board.ownerId === user.id
+        }));
+
+        const transformedWorkspaces: DashboardWorkspace[] = results.workspaces.map(workspace => ({
+          id: workspace.id,
+          name: workspace.name,
+          boardCount: 0, // We'll need to calculate this
+          memberCount: workspace.members?.length || 0,
+          isOwner: workspace.ownerId === user.id,
+          lastActivity: workspace.updatedAt?.toISOString() || new Date().toISOString(),
+          boards: [] // Empty for search results
+        }));
+
+        const transformedOrganizations = results.organizations.map(org => ({
+          id: org.id,
+          name: org.name,
+          type: 'organization' as const,
+          memberCount: org.memberUserIds?.length || 0,
+          boardCount: org.workspaces?.length || 0,
+          isOwner: org.ownerId === user.id
+        }));
+
+        setSearchResults({
+          boards: transformedBoards,
+          workspaces: transformedWorkspaces,
+          organizations: transformedOrganizations,
+          total: transformedBoards.length + transformedWorkspaces.length + transformedOrganizations.length
+        });
+      } catch (error) {
+        console.error('Search error:', error);
+        setSearchResults({ boards: [], workspaces: [], organizations: [], total: 0 });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    performSearch();
+  }, [query, user?.id]);
+
+  return { ...searchResults, isLoading };
+}
+
+// Legacy search hook for backward compatibility
+export function useLegacySearch(query: string) {
   const { allBoards, myWorkspaces, guestWorkspaces } = useDashboardData();
 
   const searchResults = useMemo(() => {
