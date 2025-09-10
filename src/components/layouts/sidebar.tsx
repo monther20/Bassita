@@ -245,7 +245,7 @@ export default function Sidebar({ height = "h-screen", onClose }: SidebarProps) 
                 </div>
 
                 {/* Organizations Section - Hidden when on organization pages */}
-                {isOnOrganizationPage && (
+                {!isOnOrganizationPage && (
                     <div className="space-y-3">
                         {!isCollapsed && (
                             <div className="flex items-center gap-2 px-2">
