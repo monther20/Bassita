@@ -52,13 +52,13 @@ export default function ThemeToggle({
           rounded-lg
           bg-background-secondary
           hover:bg-background-tertiary
-          border border-background-tertiary
           hover:border-spotlight-purple
           transition-all
           duration-300
           hover:shadow-glow-purple
           flex
           items-center
+          justify-center
           responsive-gap-xs
           cursor-pointer
           group

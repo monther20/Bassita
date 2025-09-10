@@ -73,14 +73,14 @@ export default function BoardColumn({
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragOver(false);
-    
+
     // Clear drag state immediately when drop happens
     onDragEnd();
-    
+
     try {
       const dragData = JSON.parse(e.dataTransfer.getData("application/json"));
       const { taskId, sourceColumnId } = dragData;
-      
+
       if (sourceColumnId !== columnId) {
         onTaskMove(taskId, sourceColumnId, columnId);
       }
@@ -98,10 +98,9 @@ export default function BoardColumn({
   };
 
   return (
-    <div 
-      className={`flex flex-col h-fit min-w-[260px] w-[260px] md:min-w-[280px] md:w-80 ${
-        isDragOver ? 'ring-2 ring-spotlight-purple ring-opacity-50' : ''
-      }`}
+    <div
+      className={`flex flex-col h-fit min-w-[260px] w-[260px] md:min-w-[280px] md:w-80 ${isDragOver ? 'ring-2 ring-spotlight-purple ring-opacity-50' : ''
+        }`}
       onDragOver={handleDragOver}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
@@ -119,22 +118,20 @@ export default function BoardColumn({
             {title}
           </h2>
         </button>
-        
+
         {/* Add Task Button */}
-        <button 
-          className="bg-spotlight-purple/20 p-1 md:p-1.5 rounded-full cursor-pointer text-text-tertiary hover:bg-spotlight-purple hover:text-text-primary transition-all duration-200 opacity-70 group-hover:opacity-100 touch-target" 
+        <button
+          className="flex items-center justify-center bg-spotlight-purple/20 rounded-full cursor-pointer text-text-tertiary hover:bg-spotlight-purple hover:text-text-primary transition-all duration-200 opacity-70 group-hover:opacity-100 hover:shadow-glow-purple hover:text-text-primary touch-target group"
           onClick={onAddTask}
           title="Add Task"
         >
-          <FiPlus size={12} className="md:hidden" />
-          <FiPlus size={14} className="hidden md:block" />
+          <FiPlus size={12} />
         </button>
       </div>
 
       {/* Tasks Container */}
-      <div className={`flex-1 space-y-2 md:space-y-3 pr-1 pt-2 min-h-[150px] md:min-h-[200px] rounded-lg transition-colors duration-200 ${
-        isDragOver ? 'bg-background-secondary/30' : ''
-      }`}>
+      <div className={`flex-1 space-y-2 md:space-y-3 pr-1 pt-2 min-h-[150px] md:min-h-[200px] rounded-lg transition-colors duration-200 ${isDragOver ? 'bg-background-secondary/30' : ''
+        }`}>
         {tasks.map((task) => (
           <TaskCard
             key={task.id}
@@ -144,14 +141,13 @@ export default function BoardColumn({
             onDragStart={handleTaskDragStart}
             onDragEnd={handleTaskDragEnd}
             isDragging={draggedTask === task.id}
-            className={`${Math.random() > 0.5 ? 'rotate-slight hover:rotate-1' : 'rotate-slight-reverse hover:-rotate-1'} transition-transform duration-200 border-2 ${
-              ['border-spotlight-purple', 'border-spotlight-pink', 'border-spotlight-blue', 'border-spotlight-green'][
-                Math.floor(Math.random() * 4)
-              ]
-            }`}
+            className={`${Math.random() > 0.5 ? 'rotate-slight hover:rotate-1' : 'rotate-slight-reverse hover:-rotate-1'} transition-transform duration-200 border-2 ${['border-spotlight-purple', 'border-spotlight-pink', 'border-spotlight-blue', 'border-spotlight-green'][
+              Math.floor(Math.random() * 4)
+            ]
+              }`}
           />
         ))}
-        
+
         {/* Drop zone indicator when dragging */}
         {isDragOver && tasks.length === 0 && (
           <div className="flex items-center justify-center h-32 border-2 border-dashed border-spotlight-purple rounded-lg text-text-secondary">
@@ -164,11 +160,12 @@ export default function BoardColumn({
       <div className="mt-4 md:mt-6">
         <button
           onClick={onAddTask}
-          className="w-full p-1 md:p-2 rounded-xl bg-background-secondary/50 hover:bg-background-secondary border-2 border-dashed border-text-tertiary hover:border-spotlight-purple text-text-secondary hover:text-text-primary transition-all duration-200 cursor-pointer font-display font-medium text-xs md:text-sm flex items-center justify-center gap-1 md:gap-2 touch-target"
+          className="w-full p-1 rounded-xl bg-background-secondary/50 hover:bg-background-secondary border-2 border-dashed border-text-tertiary hover:border-spotlight-purple text-text-secondary hover:text-text-primary transition-all duration-200 cursor-pointer font-display font-medium text-xs md:text-sm flex items-center justify-center gap-1 md:gap-2  touch-target group"
         >
-          <FiPlus size={14} className="md:hidden" />
-          <FiPlus size={16} className="hidden md:block" />
-          Add Task
+          <FiPlus size={16} className="group-hover:text-spotlight-purple" />
+          <span className="group-hover:text-spotlight-purple">
+            Add Task
+          </span>
         </button>
       </div>
     </div>

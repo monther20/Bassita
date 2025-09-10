@@ -96,7 +96,7 @@ export default function Organization() {
                         <h2 className="text-text-primary text-xl font-display font-semibold">
                             Your Organizations ({organizations.length})
                         </h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-fade-in">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 animate-fade-in">
                             {organizations.map((org, index) => {
                                 const spotlightColors = [
                                     "border-spotlight-purple",
@@ -112,18 +112,18 @@ export default function Organization() {
                                 return (
                                     <div
                                         key={org.id}
-                                        className={`bg-background-secondary rounded-lg p-6 border-2 ${randomColor} ${rotationClass} cursor-pointer transition-all duration-200 hover:scale-105 group`}
+                                        className={`bg-background-secondary rounded-lg p-4 border-2 ${randomColor} ${rotationClass} cursor-pointer transition-all duration-200 hover:scale-105 group`}
                                         onClick={() => handleOrganizationClick(org.id)}
                                     >
                                         <div className="space-y-4">
                                             {/* Organization Header */}
                                             <div className="flex items-start justify-between">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-12 h-12 bg-spotlight-purple/20 rounded-lg flex items-center justify-center group-hover:bg-spotlight-purple/30 transition-colors">
+                                                    <div className="w-10 h-10 bg-spotlight-purple/20 rounded-lg flex items-center justify-center group-hover:bg-spotlight-purple/30 transition-colors">
                                                         <FiUsers className="text-spotlight-purple text-xl" />
                                                     </div>
                                                     <div>
-                                                        <h3 className="text-text-primary font-display font-semibold text-lg truncate max-w-[140px]">
+                                                        <h3 className="text-text-primary font-display font-semibold text-base truncate max-w-[140px]">
                                                             {org.name}
                                                         </h3>
                                                         <p className="text-text-secondary text-sm">
@@ -138,7 +138,7 @@ export default function Organization() {
                                                 <div className="space-y-1">
                                                     <div className="flex items-center gap-2">
                                                         <FiFolder className="text-spotlight-blue text-sm" />
-                                                        <span className="text-text-primary font-display font-bold text-lg">
+                                                        <span className="text-text-primary font-display font-bold text-base">
                                                             {org.workspaceCount}
                                                         </span>
                                                     </div>
@@ -149,7 +149,7 @@ export default function Organization() {
                                                 <div className="space-y-1">
                                                     <div className="flex items-center gap-2">
                                                         <FiUsers className="text-spotlight-green text-sm" />
-                                                        <span className="text-text-primary font-display font-bold text-lg">
+                                                        <span className="text-text-primary font-display font-bold text-base">
                                                             {org.memberCount}
                                                         </span>
                                                     </div>
