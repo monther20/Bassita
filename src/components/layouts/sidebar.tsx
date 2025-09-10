@@ -1,5 +1,6 @@
 import { FiFolder, FiSettings, FiChevronDown, FiArrowUp, FiX } from "react-icons/fi";
 import React, { useState, useRef, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import SidebarButton from "../sidebarButton";
 import OrganizationSwitcher from "../OrganizationSwitcher";
 import { useTemplates, useAllUserBoards, useCurrentWorkspace } from "@/hooks";
@@ -22,10 +23,14 @@ export default function Sidebar({ height = "h-screen", onClose }: SidebarProps) 
     const isCollapsed = sidebarWidth <= 80;
 
     // Hooks
+    const pathname = usePathname();
     const { openTemplatePreviewModal } = useModal();
     const currentWorkspaceId = useCurrentWorkspace();
     const { templates, loading: templatesLoading } = useTemplates();
     const { boards, loading: boardsLoading } = useAllUserBoards();
+
+    // Check if user is on organization pages
+    const isOnOrganizationPage = pathname.startsWith('/organization/');
 
     // Load width from localStorage on mount
     useEffect(() => {
@@ -239,18 +244,20 @@ export default function Sidebar({ height = "h-screen", onClose }: SidebarProps) 
                     </div>
                 </div>
 
-                {/* Organizations Section */}
-                <div className="space-y-3">
-                    {!isCollapsed && (
-                        <div className="flex items-center gap-2 px-2">
-                            <FiFolder className="text-spotlight-blue text-base" />
-                            <span className="text-text-primary font-display font-medium">Organizations</span>
+                {/* Organizations Section - Hidden when on organization pages */}
+                {isOnOrganizationPage && (
+                    <div className="space-y-3">
+                        {!isCollapsed && (
+                            <div className="flex items-center gap-2 px-2">
+                                <FiFolder className="text-spotlight-blue text-base" />
+                                <span className="text-text-primary font-display font-medium">Organizations</span>
+                            </div>
+                        )}
+                        <div className={`${isCollapsed ? '' : 'ml-2'}`}>
+                            <OrganizationSwitcher isCollapsed={isCollapsed} />
                         </div>
-                    )}
-                    <div className={`${isCollapsed ? '' : 'ml-2'}`}>
-                        <OrganizationSwitcher isCollapsed={isCollapsed} />
                     </div>
-                </div>
+                )}
             </div>
 
 
