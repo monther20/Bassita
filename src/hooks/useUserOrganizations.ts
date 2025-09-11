@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { FirestoreOrganization } from '@/types/firestore';
 import { FirestoreService } from '@/lib/firestore';
 import { useAuth } from './useAuth';
+import { queryKeys, invalidationPatterns } from '@/lib/query-keys';
 
 interface UserOrganization {
     id: string;
@@ -25,10 +26,11 @@ interface UseUserOrganizationsReturn {
 
 export function useUserOrganizations(): UseUserOrganizationsReturn {
     const { user } = useAuth();
+    const queryClient = useQueryClient();
     const [currentOrganizationId, setCurrentOrganizationId] = useState<string | null>(null);
 
     const { data: organizations = [], isLoading, error, refetch } = useQuery({
-        queryKey: ['user-organizations', user?.id],
+        queryKey: queryKeys.organizations.byUser(user?.id || ''),
         queryFn: async () => {
             if (!user?.id) {
                 return [];
@@ -70,6 +72,7 @@ export function useUserOrganizations(): UseUserOrganizationsReturn {
     const currentOrganization = organizations.find(org => org.id === currentOrganizationId) || null;
 
     const switchOrganization = (organizationId: string) => {
+        const previousOrganizationId = currentOrganizationId;
         setCurrentOrganizationId(organizationId);
         localStorage.setItem('current-organization-id', organizationId);
 
@@ -78,6 +81,32 @@ export function useUserOrganizations(): UseUserOrganizationsReturn {
         const organizationExists = organizations.some(org => org.id === organizationId);
         if (!organizationExists) {
             refetch();
+        }
+
+        // Invalidate organization-dependent caches when switching
+        if (user?.id && previousOrganizationId !== organizationId) {
+            // Invalidate all organization-dependent queries
+            invalidationPatterns.organizationSwitch(user.id, organizationId).forEach(pattern => {
+                if ('exact' in pattern && !pattern.exact) {
+                    // Invalidate queries that start with the pattern
+                    queryClient.invalidateQueries({ 
+                        queryKey: pattern.queryKey,
+                        exact: false 
+                    });
+                } else {
+                    // Invalidate exact query key matches
+                    queryClient.invalidateQueries({ 
+                        queryKey: Array.isArray(pattern) ? pattern : pattern.queryKey 
+                    });
+                }
+            });
+
+            // Remove stale data for the previous organization
+            if (previousOrganizationId) {
+                invalidationPatterns.userOrganizationData(user.id, previousOrganizationId).forEach(queryKey => {
+                    queryClient.removeQueries({ queryKey });
+                });
+            }
         }
     };
 

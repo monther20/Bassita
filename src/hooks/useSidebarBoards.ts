@@ -3,12 +3,16 @@ import { useQuery } from '@tanstack/react-query';
 import { FirestoreBoard } from '@/types/firestore';
 import { FirestoreService } from '@/lib/firestore';
 import { useAuth } from './useAuth';
+import { useCurrentOrganization } from './useUserOrganizations';
+import { queryKeys } from '@/lib/query-keys';
 
 interface SidebarBoard {
     id: string;
     name: string;
     icon: string;
     href: string;
+    workspaceId: string;
+    organizationId: string;
     isOwner: boolean;
 }
 
@@ -19,21 +23,35 @@ interface UseSidebarBoardsReturn {
     refetch: () => void;
 }
 
-export function useSidebarBoards(currentWorkspaceId?: string): UseSidebarBoardsReturn {
+export function useSidebarBoards(currentWorkspaceId?: string, organizationId?: string): UseSidebarBoardsReturn {
     const { user } = useAuth();
+    const currentOrganizationId = useCurrentOrganization();
+    
+    // Use provided organizationId or fall back to current organization
+    const effectiveOrganizationId = organizationId || currentOrganizationId;
 
     const { data: boards = [], isLoading, error, refetch } = useQuery({
-        queryKey: ['sidebar-boards', currentWorkspaceId, user?.id],
+        queryKey: queryKeys.boards.sidebar(user?.id || '', effectiveOrganizationId || ''),
         queryFn: async () => {
-            console.log("workspaceId", currentWorkspaceId);
-            if (!currentWorkspaceId || !user?.id) {
+            if (!user?.id || !effectiveOrganizationId) {
                 return [];
             }
 
-            const firestoreBoards = await FirestoreService.getWorkspaceBoards(currentWorkspaceId);
-            return firestoreBoards;
+            // If specific workspace is provided, get boards for that workspace
+            if (currentWorkspaceId) {
+                const firestoreBoards = await FirestoreService.getWorkspaceBoards(currentWorkspaceId);
+                return firestoreBoards;
+            }
+
+            // Otherwise, get all boards for the current organization
+            const orgWorkspaces = await FirestoreService.getOrganizationWorkspaces(effectiveOrganizationId, user.id);
+            const allBoardsPromises = orgWorkspaces.map(workspace => 
+                FirestoreService.getWorkspaceBoards(workspace.id)
+            );
+            const allBoardsArrays = await Promise.all(allBoardsPromises);
+            return allBoardsArrays.flat();
         },
-        enabled: !!(currentWorkspaceId && user?.id),
+        enabled: !!(user?.id && effectiveOrganizationId),
         staleTime: 1000 * 60 * 5, // Cache for 5 minutes
     });
 
@@ -42,7 +60,9 @@ export function useSidebarBoards(currentWorkspaceId?: string): UseSidebarBoardsR
         id: board.id,
         name: board.name,
         icon: board.icon,
-        href: `/board/${board.id}`,
+        href: `/organization/${effectiveOrganizationId}/workspace/${board.workspaceId}/board/${board.id}`,
+        workspaceId: board.workspaceId,
+        organizationId: effectiveOrganizationId || '',
         isOwner: board.ownerId === user?.id
     }));
 
