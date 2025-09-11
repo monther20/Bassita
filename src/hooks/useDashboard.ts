@@ -2,6 +2,8 @@ import { useQuery } from '@tanstack/react-query';
 import { FirestoreService } from '@/lib/firestore';
 import { FirestoreBoard, FirestoreWorkspace } from '@/types/firestore';
 import { useAuth } from './useAuth';
+import { useCurrentOrganization } from './useUserOrganizations';
+import { queryKeys } from '@/lib/query-keys';
 import { useState, useMemo, useEffect } from 'react';
 
 // Dashboard-specific interfaces for UI
@@ -65,17 +67,21 @@ export function useRecentlyViewed() {
 export function useDashboardData(organizationId?: string) {
   const { user } = useAuth();
   const { recentItems } = useRecentlyViewed();
+  const currentOrganizationId = useCurrentOrganization();
+  
+  // Use provided organizationId or fall back to current organization
+  const effectiveOrganizationId = organizationId || currentOrganizationId;
 
   // Fetch user workspaces (organization-specific or all)
   const workspacesQuery = useQuery({
-    queryKey: ['dashboard-workspaces', user?.id, organizationId],
+    queryKey: queryKeys.dashboard.workspaces(user?.id || '', effectiveOrganizationId || ''),
     queryFn: async () => {
       if (!user?.id) {
         return [];
       }
       // Use organization-specific method if organizationId is provided
-      if (organizationId) {
-        const result = await FirestoreService.getOrganizationWorkspaces(organizationId, user.id);
+      if (effectiveOrganizationId) {
+        const result = await FirestoreService.getOrganizationWorkspaces(effectiveOrganizationId, user.id);
         return result;
       } else {
         // Fall back to getting all user workspaces (for backward compatibility)
@@ -84,14 +90,13 @@ export function useDashboardData(organizationId?: string) {
       }
     },
     enabled: !!user?.id,
-    staleTime: 0, // Always refetch for debugging
-    gcTime: 0, // No caching for debugging
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
     retry: 1,
   });
 
   // Fetch all boards for the user
   const boardsQuery = useQuery({
-    queryKey: ['dashboard-boards', user?.id, organizationId],
+    queryKey: queryKeys.dashboard.boards(user?.id || '', effectiveOrganizationId || ''),
     queryFn: async () => {
       if (!user?.id || !workspacesQuery.data) {
         return [];
@@ -111,10 +116,8 @@ export function useDashboardData(organizationId?: string) {
       return flatBoards;
     },
     enabled: !!user?.id && !!workspacesQuery.data,
-    staleTime: 0, // Always refetch for debugging
-    gcTime: 0, // No caching for debugging
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
     retry: 1,
-
   });
 
   // Transform data for dashboard UI
@@ -220,8 +223,11 @@ export function useDashboardData(organizationId?: string) {
 }
 
 // Enhanced search hook using FirestoreService
-export function useSearch(query: string) {
+export function useSearch(query: string, organizationId?: string) {
   const { user } = useAuth();
+  const currentOrganizationId = useCurrentOrganization();
+  const effectiveOrganizationId = organizationId || currentOrganizationId;
+  
   const [searchResults, setSearchResults] = useState({
     boards: [] as DashboardBoard[],
     workspaces: [] as DashboardWorkspace[],
@@ -239,8 +245,10 @@ export function useSearch(query: string) {
 
       setIsLoading(true);
       try {
-        // Use FirestoreService search methods
-        const results = await FirestoreService.searchAll(user.id, query);
+        // Use FirestoreService search methods with organization context
+        const results = effectiveOrganizationId 
+          ? await FirestoreService.searchInOrganization(user.id, effectiveOrganizationId, query)
+          : await FirestoreService.searchAll(user.id, query);
 
         // Create workspace lookup map for proper workspace name mapping
         const workspaceLookup = new Map(
@@ -296,7 +304,7 @@ export function useSearch(query: string) {
     };
 
     performSearch();
-  }, [query, user?.id]);
+  }, [query, user?.id, effectiveOrganizationId]);
 
   return { ...searchResults, isLoading };
 }

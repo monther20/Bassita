@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { FirestoreService } from '@/lib/firestore';
 import { FirestoreBoard, FirestoreTask, FirestoreWorkspace } from '@/types/firestore';
 import { useAuth } from './useAuth';
+import { queryKeys, invalidationPatterns } from '@/lib/query-keys';
 
 // Workspace Hooks
 export function useUserWorkspaces() {
@@ -79,8 +80,9 @@ export function useCreateTask() {
             });
         },
         onSuccess: (_, variables) => {
-            // Invalidate tasks query to refetch
-            queryClient.invalidateQueries({ queryKey: ['tasks', variables.boardId] });
+            // Invalidate tasks query using new query keys
+            queryClient.invalidateQueries({ queryKey: queryKeys.tasks.byBoard(variables.boardId) });
+            queryClient.invalidateQueries({ queryKey: queryKeys.boards.detail(variables.boardId) });
         }
     });
 }
@@ -89,33 +91,36 @@ export function useUpdateTask() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: ({ taskId, updates }: { taskId: string; updates: Partial<FirestoreTask> }) => {
+        mutationFn: ({ taskId, boardId, updates }: { taskId: string; boardId: string; updates: Partial<FirestoreTask> }) => {
             return FirestoreService.updateTask(taskId, updates);
         },
-        onMutate: async ({ taskId, updates }) => {
+        onMutate: async ({ taskId, boardId, updates }) => {
             // Optimistic update
-            await queryClient.cancelQueries({ queryKey: ['tasks'] });
+            const tasksQueryKey = queryKeys.tasks.byBoard(boardId);
+            await queryClient.cancelQueries({ queryKey: tasksQueryKey });
 
-            const previousTasks = queryClient.getQueryData(['tasks']);
+            const previousTasks = queryClient.getQueryData(tasksQueryKey);
 
             // Update the specific task in cache
-            queryClient.setQueryData(['tasks'], (old: any) => {
+            queryClient.setQueryData(tasksQueryKey, (old: any) => {
                 if (!old) return old;
                 return old.map((task: FirestoreTask) =>
                     task.id === taskId ? { ...task, ...updates } : task
                 );
             });
 
-            return { previousTasks };
+            return { previousTasks, boardId };
         },
         onError: (err, variables, context) => {
             // Rollback on error
-            if (context?.previousTasks) {
-                queryClient.setQueryData(['tasks'], context.previousTasks);
+            if (context?.previousTasks && context?.boardId) {
+                const tasksQueryKey = queryKeys.tasks.byBoard(context.boardId);
+                queryClient.setQueryData(tasksQueryKey, context.previousTasks);
             }
         },
-        onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: ['tasks'] });
+        onSettled: (_, __, variables) => {
+            queryClient.invalidateQueries({ queryKey: queryKeys.tasks.byBoard(variables.boardId) });
+            queryClient.invalidateQueries({ queryKey: queryKeys.boards.detail(variables.boardId) });
         }
     });
 }
@@ -124,11 +129,12 @@ export function useMoveTask() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: ({ taskId, columnId, position }: { taskId: string; columnId: string; position: number }) => {
+        mutationFn: ({ taskId, boardId, columnId, position }: { taskId: string; boardId: string; columnId: string; position: number }) => {
             return FirestoreService.moveTask(taskId, columnId, position);
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['tasks'] });
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: queryKeys.tasks.byBoard(variables.boardId) });
+            queryClient.invalidateQueries({ queryKey: queryKeys.boards.detail(variables.boardId) });
         }
     });
 }
@@ -137,11 +143,12 @@ export function useDeleteTask() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (taskId: string) => {
+        mutationFn: ({ taskId, boardId }: { taskId: string; boardId: string }) => {
             return FirestoreService.deleteTask(taskId);
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['tasks'] });
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: queryKeys.tasks.byBoard(variables.boardId) });
+            queryClient.invalidateQueries({ queryKey: queryKeys.boards.detail(variables.boardId) });
         }
     });
 }
@@ -150,17 +157,23 @@ export function useUpdateBoard() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: ({ boardId, updates }: { boardId: string; updates: Partial<FirestoreBoard> }) => {
+        mutationFn: ({ boardId, workspaceId, organizationId, updates }: { 
+            boardId: string; 
+            workspaceId: string;
+            organizationId: string;
+            updates: Partial<FirestoreBoard> 
+        }) => {
             return FirestoreService.updateBoard(boardId, updates);
         },
         onMutate: async ({ boardId, updates }) => {
             // Optimistic update
-            await queryClient.cancelQueries({ queryKey: ['board', boardId] });
+            const boardQueryKey = queryKeys.boards.detail(boardId);
+            await queryClient.cancelQueries({ queryKey: boardQueryKey });
 
-            const previousBoard = queryClient.getQueryData(['board', boardId]);
+            const previousBoard = queryClient.getQueryData(boardQueryKey);
 
             // Update the board in cache
-            queryClient.setQueryData(['board', boardId], (old: any) => {
+            queryClient.setQueryData(boardQueryKey, (old: any) => {
                 if (!old) return old;
                 return { ...old, ...updates };
             });
@@ -170,11 +183,14 @@ export function useUpdateBoard() {
         onError: (err, variables, context) => {
             // Rollback on error
             if (context?.previousBoard) {
-                queryClient.setQueryData(['board', variables.boardId], context.previousBoard);
+                queryClient.setQueryData(queryKeys.boards.detail(variables.boardId), context.previousBoard);
             }
         },
         onSettled: (_, __, variables) => {
-            queryClient.invalidateQueries({ queryKey: ['board', variables.boardId] });
+            // Invalidate all related queries
+            invalidationPatterns.board(variables.boardId, variables.workspaceId, variables.organizationId).forEach(queryKey => {
+                queryClient.invalidateQueries({ queryKey });
+            });
         }
     });
 }
@@ -183,11 +199,15 @@ export function useReorderTasks() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (taskUpdates: Array<{ id: string; position: number; columnId?: string }>) => {
+        mutationFn: ({ boardId, taskUpdates }: { 
+            boardId: string; 
+            taskUpdates: Array<{ id: string; position: number; columnId?: string }> 
+        }) => {
             return FirestoreService.reorderTasks(taskUpdates);
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['tasks'] });
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: queryKeys.tasks.byBoard(variables.boardId) });
+            queryClient.invalidateQueries({ queryKey: queryKeys.boards.detail(variables.boardId) });
         }
     });
 }
@@ -201,8 +221,18 @@ export function useCreateWorkspace() {
         mutationFn: (workspaceData: Omit<FirestoreWorkspace, 'id' | 'createdAt' | 'updatedAt'>) => {
             return FirestoreService.createWorkspace(workspaceData);
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['workspaces', user?.id] });
+        onSuccess: (_, variables) => {
+            // Invalidate organization-specific workspace queries
+            if (user?.id && variables.organizationId) {
+                invalidationPatterns.workspace(variables.id || '', variables.organizationId).forEach(queryKey => {
+                    queryClient.invalidateQueries({ queryKey });
+                });
+                
+                // Invalidate user organization data
+                invalidationPatterns.userOrganizationData(user.id, variables.organizationId).forEach(queryKey => {
+                    queryClient.invalidateQueries({ queryKey });
+                });
+            }
         }
     });
 }
@@ -215,10 +245,21 @@ export function useCreateBoard() {
         mutationFn: (boardData: Omit<FirestoreBoard, 'id' | 'createdAt' | 'updatedAt'>) => {
             return FirestoreService.createBoard(boardData);
         },
-        onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({ queryKey: ['workspace-boards', variables.workspaceId] });
-            queryClient.invalidateQueries({ queryKey: ['user-boards', user?.id] });
-            queryClient.invalidateQueries({ queryKey: ['workspaces', user?.id] });
+        onSuccess: (createdBoard, variables) => {
+            if (user?.id) {
+                // Invalidate workspace boards
+                queryClient.invalidateQueries({ queryKey: queryKeys.workspaces.boards(variables.workspaceId) });
+                
+                // Invalidate user boards for organization context
+                queryClient.invalidateQueries({ queryKey: queryKeys.boards.byUser(user.id) });
+                
+                // Invalidate dashboard data
+                queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+                
+                // Invalidate sidebar data
+                queryClient.invalidateQueries({ queryKey: ['boards', 'sidebar'] });
+                queryClient.invalidateQueries({ queryKey: ['workspaces', 'sidebar'] });
+            }
         }
     });
 }

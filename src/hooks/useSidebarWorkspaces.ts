@@ -3,6 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { FirestoreWorkspace } from '@/types/firestore';
 import { FirestoreService } from '@/lib/firestore';
 import { useAuth } from './useAuth';
+import { useCurrentOrganization } from './useUserOrganizations';
+import { queryKeys } from '@/lib/query-keys';
 
 interface SidebarWorkspace {
     id: string;
@@ -24,19 +26,30 @@ interface UseSidebarWorkspacesReturn {
 // Note: For now, we're managing workspace state locally in each hook
 // In a full implementation, this would be moved to a proper React Context Provider
 
-export function useSidebarWorkspaces(): UseSidebarWorkspacesReturn {
+export function useSidebarWorkspaces(organizationId?: string): UseSidebarWorkspacesReturn {
     const { user } = useAuth();
+    const currentOrganizationId = useCurrentOrganization();
     const [currentWorkspaceId, setCurrentWorkspaceId] = useState<string | null>(null);
     
+    // Use provided organizationId or fall back to current organization
+    const effectiveOrganizationId = organizationId || currentOrganizationId;
+    
     const { data: workspaces = [], isLoading, error, refetch } = useQuery({
-        queryKey: ['sidebar-workspaces', user?.id],
+        queryKey: queryKeys.workspaces.sidebar(user?.id || '', effectiveOrganizationId || ''),
         queryFn: async () => {
             if (!user?.id) {
                 return [];
             }
             
-            const firestoreWorkspaces = await FirestoreService.getUserWorkspaces(user.id);
-            return firestoreWorkspaces;
+            // Fetch organization-specific workspaces if organizationId is provided
+            if (effectiveOrganizationId) {
+                const firestoreWorkspaces = await FirestoreService.getOrganizationWorkspaces(effectiveOrganizationId, user.id);
+                return firestoreWorkspaces;
+            } else {
+                // Fall back to all user workspaces for backward compatibility
+                const firestoreWorkspaces = await FirestoreService.getUserWorkspaces(user.id);
+                return firestoreWorkspaces;
+            }
         },
         enabled: !!user?.id,
         staleTime: 1000 * 60 * 5, // Cache for 5 minutes
@@ -45,8 +58,9 @@ export function useSidebarWorkspaces(): UseSidebarWorkspacesReturn {
     // Set initial workspace when workspaces load
     useEffect(() => {
         if (workspaces.length > 0 && !currentWorkspaceId) {
-            // Try to get from localStorage first
-            const savedWorkspaceId = localStorage.getItem('current-workspace-id');
+            // Try to get from localStorage first, scoped by organization
+            const storageKey = `current-workspace-id-${effectiveOrganizationId || 'default'}`;
+            const savedWorkspaceId = localStorage.getItem(storageKey);
             const validWorkspace = workspaces.find(w => w.id === savedWorkspaceId);
             
             if (validWorkspace) {
@@ -54,10 +68,10 @@ export function useSidebarWorkspaces(): UseSidebarWorkspacesReturn {
             } else {
                 // Default to first workspace (usually the user's own workspace)
                 setCurrentWorkspaceId(workspaces[0].id);
-                localStorage.setItem('current-workspace-id', workspaces[0].id);
+                localStorage.setItem(storageKey, workspaces[0].id);
             }
         }
-    }, [workspaces, currentWorkspaceId]);
+    }, [workspaces, currentWorkspaceId, effectiveOrganizationId]);
 
     // Get board counts for each workspace (could be optimized with a single query)
     const sidebarWorkspaces: SidebarWorkspace[] = workspaces.map(workspace => ({
@@ -72,7 +86,9 @@ export function useSidebarWorkspaces(): UseSidebarWorkspacesReturn {
 
     const switchWorkspace = (workspaceId: string) => {
         setCurrentWorkspaceId(workspaceId);
-        localStorage.setItem('current-workspace-id', workspaceId);
+        // Store workspace selection scoped by organization
+        const storageKey = `current-workspace-id-${effectiveOrganizationId || 'default'}`;
+        localStorage.setItem(storageKey, workspaceId);
     };
 
     return {

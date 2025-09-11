@@ -3,7 +3,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import SidebarButton from "../sidebarButton";
 import OrganizationSwitcher from "../OrganizationSwitcher";
-import { useTemplates, useAllUserBoards, useCurrentWorkspace } from "@/hooks";
+import { useTemplates, useCurrentWorkspace } from "@/hooks";
+import { useRecentSidebarBoards, useAllBoardsCount } from "@/hooks/useRecentSidebarBoards";
 import { FirestoreTemplate } from "@/types/firestore";
 import { useModal } from "@/contexts/ModalContext";
 import * as Icons from "react-icons/fi";
@@ -27,7 +28,8 @@ export default function Sidebar({ height = "h-screen", onClose }: SidebarProps) 
     const { openTemplatePreviewModal } = useModal();
     const currentWorkspaceId = useCurrentWorkspace();
     const { templates, loading: templatesLoading } = useTemplates();
-    const { boards, loading: boardsLoading } = useAllUserBoards();
+    const { boards: recentBoards, loading: boardsLoading } = useRecentSidebarBoards();
+    const totalBoardsCount = useAllBoardsCount();
 
     // Check if user is on organization pages
     const isOnOrganizationPage = pathname.startsWith('/organization/');
@@ -90,20 +92,8 @@ export default function Sidebar({ height = "h-screen", onClose }: SidebarProps) 
         openTemplatePreviewModal(template);
     };
 
-    // Sort boards to prioritize current workspace, then by name
-    const sortedBoards = boards.sort((a, b) => {
-        // Prioritize current workspace boards
-        if (currentWorkspaceId) {
-            if (a.workspaceId === currentWorkspaceId && b.workspaceId !== currentWorkspaceId) {
-                return -1;
-            }
-            if (b.workspaceId === currentWorkspaceId && a.workspaceId !== currentWorkspaceId) {
-                return 1;
-            }
-        }
-        // Then sort alphabetically
-        return a.name.localeCompare(b.name);
-    });
+    // Recent boards are already sorted by the hook, no need to re-sort
+    const sortedBoards = recentBoards;
 
     return (
         <aside
@@ -170,12 +160,12 @@ export default function Sidebar({ height = "h-screen", onClose }: SidebarProps) 
                                         )}
                                     </div>
                                 ))}
-                                {!isCollapsed && sortedBoards.length > 5 && (
+                                {!isCollapsed && totalBoardsCount > 5 && (
                                     <button
                                         onClick={() => setShowAllBoards(true)}
                                         className="w-full text-text-secondary text-sm font-display px-3 py-1 hover:text-text-primary transition-colors bg-background-tertiary/50 rounded-lg border-2 border-dashed border-spotlight-purple/50 hover:bg-background-tertiary hover:border-spotlight-purple cursor-pointer"
                                     >
-                                        View all boards ({sortedBoards.length})
+                                        View all boards ({totalBoardsCount})
                                     </button>
                                 )}
                             </>
@@ -245,7 +235,7 @@ export default function Sidebar({ height = "h-screen", onClose }: SidebarProps) 
                 </div>
 
                 {/* Organizations Section - Hidden when on organization pages */}
-                {!isOnOrganizationPage && (
+                {isOnOrganizationPage && (
                     <div className="space-y-3">
                         {!isCollapsed && (
                             <div className="flex items-center gap-2 px-2">

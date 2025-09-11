@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { FirestoreService } from '@/lib/firestore';
 import { useAuth } from './useAuth';
-import { useCurrentOrganization } from './useUserOrganizations';
 import { queryKeys } from '@/lib/query-keys';
 
 interface UserBoard {
@@ -15,47 +14,43 @@ interface UserBoard {
     isOwner: boolean;
 }
 
-interface UseAllUserBoardsReturn {
+interface UseAllUserBoardsGlobalReturn {
     boards: UserBoard[];
     loading: boolean;
     error: string | null;
     refetch: () => void;
 }
 
-export function useAllUserBoards(organizationId?: string): UseAllUserBoardsReturn {
+/**
+ * Hook to fetch ALL user boards across ALL organizations and workspaces
+ * This hook does NOT filter by current organization context
+ * Use this when you need truly global access to all user boards
+ */
+export function useAllUserBoardsGlobal(): UseAllUserBoardsGlobalReturn {
     const { user } = useAuth();
-    const currentOrganizationId = useCurrentOrganization();
-    
-    // Use provided organizationId or fall back to current organization
-    const effectiveOrganizationId = organizationId || currentOrganizationId;
     
     const workspacesQuery = useQuery({
-        queryKey: queryKeys.workspaces.byUser(user?.id || '', effectiveOrganizationId),
+        queryKey: queryKeys.workspaces.byUser(user?.id || '', 'all'),
         queryFn: async () => {
             if (!user?.id) {
                 return [];
             }
             
-            // Fetch organization-specific workspaces if organizationId is provided
-            if (effectiveOrganizationId) {
-                return await FirestoreService.getOrganizationWorkspaces(effectiveOrganizationId, user.id);
-            } else {
-                // Fall back to all user workspaces for backward compatibility
-                return await FirestoreService.getUserWorkspaces(user.id);
-            }
+            // Get ALL user workspaces across all organizations
+            return await FirestoreService.getUserWorkspaces(user.id);
         },
         enabled: !!user?.id,
         staleTime: 1000 * 60 * 5, // Cache for 5 minutes
     });
 
     const boardsQuery = useQuery({
-        queryKey: queryKeys.boards.byUser(user?.id || '', effectiveOrganizationId),
+        queryKey: queryKeys.boards.byUser(user?.id || '', 'all'),
         queryFn: async () => {
             if (!user?.id || !workspacesQuery.data) {
                 return [];
             }
             
-            // Fetch boards from all user workspaces (now filtered by organization)
+            // Fetch boards from ALL user workspaces (no organization filtering)
             const allBoardsPromises = workspacesQuery.data.map(async (workspace) => {
                 const boards = await FirestoreService.getWorkspaceBoards(workspace.id);
                 return boards.map(board => ({
@@ -96,4 +91,12 @@ export function useAllUserBoards(organizationId?: string): UseAllUserBoardsRetur
             boardsQuery.refetch();
         }
     };
+}
+
+/**
+ * Hook to get the total count of ALL user boards across all organizations
+ */
+export function useAllUserBoardsGlobalCount(): number {
+    const { boards } = useAllUserBoardsGlobal();
+    return boards.length;
 }

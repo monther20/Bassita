@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { FiChevronDown, FiCheck, FiUsers, FiHome, } from "react-icons/fi";
 import { BsBuilding } from "react-icons/bs";
+import { useRouter } from "next/navigation";
 import { useUserOrganizations } from "@/hooks/useUserOrganizations";
 
 interface OrganizationSwitcherProps {
@@ -12,6 +13,7 @@ interface OrganizationSwitcherProps {
 export default function OrganizationSwitcher({ isCollapsed = false }: OrganizationSwitcherProps) {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const router = useRouter();
     const { organizations, currentOrganization, switchOrganization, loading } = useUserOrganizations();
 
     // Close dropdown when clicking outside
@@ -34,6 +36,8 @@ export default function OrganizationSwitcher({ isCollapsed = false }: Organizati
     const handleOrganizationSelect = (organizationId: string) => {
         switchOrganization(organizationId);
         setIsOpen(false);
+        // Navigate to the selected organization
+        router.push(`/organization/${organizationId}`);
     };
 
     if (loading || !currentOrganization) {
