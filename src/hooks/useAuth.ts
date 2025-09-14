@@ -166,7 +166,7 @@ export function useRequireAuth(redirectTo: string = '/login') {
   return { isAuthenticated, isLoading, isInitialized };
 }
 
-export function useRedirectIfAuthenticated(redirectTo: string = '/dashboard') {
+export function useRedirectIfAuthenticated(redirectTo: string = '/organization') {
   const { isAuthenticated, isLoading, isInitialized } = useAuth();
   const router = useRouter();
 

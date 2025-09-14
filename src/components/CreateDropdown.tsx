@@ -98,13 +98,13 @@ export default function CreateDropdown({
         </button>
 
         {isOpen && (
-          <div className="absolute right-0 top-full mt-2 w-56 bg-background-secondary border border-background-tertiary rounded-lg shadow-lg z-50">
+          <div className="absolute right-0 top-full mt-2 w-56 bg-background-secondary border border-background-tertiary rounded-lg shadow-lg z-50 overflow-hidden">
             <div className="py-2">
               <button
                 onClick={handleCreateBoard}
-                className="w-full flex items-center gap-3 px-4 py-3 text-text-primary hover:bg-background-tertiary transition-colors text-left"
+                className="w-full flex items-center gap-3 px-4 py-3 text-text-primary hover:bg-spotlight-purple/10 hover:scale-[1.02] transition-all duration-200 text-left group"
               >
-                <div className="w-8 h-8 bg-spotlight-purple/20 rounded-md flex items-center justify-center">
+                <div className="w-8 h-8 bg-spotlight-purple/20 rounded-md flex items-center justify-center group-hover:bg-spotlight-purple/30 transition-colors">
                   <FiLayout className="w-4 h-4 text-spotlight-purple" />
                 </div>
                 <div>
@@ -115,9 +115,9 @@ export default function CreateDropdown({
 
               <button
                 onClick={handleCreateWorkspace}
-                className="w-full flex items-center gap-3 px-4 py-3 text-text-primary hover:bg-background-tertiary transition-colors text-left"
+                className="w-full flex items-center gap-3 px-4 py-3 text-text-primary hover:bg-spotlight-pink/10 hover:scale-[1.02] transition-all duration-200 text-left group"
               >
-                <div className="w-8 h-8 bg-spotlight-pink/20 rounded-md flex items-center justify-center">
+                <div className="w-8 h-8 bg-spotlight-pink/20 rounded-md flex items-center justify-center group-hover:bg-spotlight-pink/30 transition-colors">
                   <FiFolder className="w-4 h-4 text-spotlight-pink" />
                 </div>
                 <div>
@@ -128,9 +128,9 @@ export default function CreateDropdown({
 
               <button
                 onClick={handleCreateOrganization}
-                className="w-full flex items-center gap-3 px-4 py-3 text-text-primary hover:bg-background-tertiary transition-colors text-left"
+                className="w-full flex items-center gap-3 px-4 py-3 text-text-primary hover:bg-spotlight-green/10 hover:scale-[1.02] transition-all duration-200 text-left group"
               >
-                <div className="w-8 h-8 bg-spotlight-green/20 rounded-md flex items-center justify-center">
+                <div className="w-8 h-8 bg-spotlight-green/20 rounded-md flex items-center justify-center group-hover:bg-spotlight-green/30 transition-colors">
                   <FiUsers className="w-4 h-4 text-spotlight-green" />
                 </div>
                 <div>
@@ -161,13 +161,13 @@ export default function CreateDropdown({
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-58 bg-background-secondary border border-background-tertiary rounded-lg shadow-lg z-50">
+        <div className="absolute right-0 top-full mt-2 w-58 bg-background-secondary border border-background-tertiary rounded-lg shadow-lg z-50 overflow-hidden">
           <div className="py-2">
             <button
               onClick={handleCreateBoard}
-              className="w-full flex items-center gap-3 px-4 py-3 text-text-primary hover:bg-background-tertiary transition-colors text-left"
+              className="w-full flex items-center gap-3 px-4 py-3 text-text-primary hover:bg-spotlight-purple/10 hover:scale-[1.02] transition-all duration-200 text-left group"
             >
-              <div className="w-8 h-8 bg-spotlight-purple/20 rounded-md flex items-center justify-center">
+              <div className="w-8 h-8 bg-spotlight-purple/20 rounded-md flex items-center justify-center group-hover:bg-spotlight-purple/30 transition-colors">
                 <FiLayout className="w-4 h-4 text-spotlight-purple" />
               </div>
               <div>
@@ -178,9 +178,9 @@ export default function CreateDropdown({
 
             <button
               onClick={handleCreateWorkspace}
-              className="w-full flex items-center gap-3 px-4 py-3 text-text-primary hover:bg-background-tertiary transition-colors text-left"
+              className="w-full flex items-center gap-3 px-4 py-3 text-text-primary hover:bg-spotlight-pink/10 hover:scale-[1.02] transition-all duration-200 text-left group"
             >
-              <div className="w-8 h-8 bg-spotlight-pink/20 rounded-md flex items-center justify-center">
+              <div className="w-8 h-8 bg-spotlight-pink/20 rounded-md flex items-center justify-center group-hover:bg-spotlight-pink/30 transition-colors">
                 <FiFolder className="w-4 h-4 text-spotlight-pink" />
               </div>
               <div>
@@ -191,9 +191,9 @@ export default function CreateDropdown({
 
             <button
               onClick={handleCreateOrganization}
-              className="w-full flex items-center gap-3 px-4 py-3 text-text-primary hover:bg-background-tertiary transition-colors text-left"
+              className="w-full flex items-center gap-3 px-4 py-3 text-text-primary hover:bg-spotlight-green/10 hover:scale-[1.02] transition-all duration-200 text-left group"
             >
-              <div className="w-8 h-8 bg-spotlight-green/20 rounded-md flex items-center justify-center">
+              <div className="w-8 h-8 bg-spotlight-green/20 rounded-md flex items-center justify-center group-hover:bg-spotlight-green/30 transition-colors">
                 <FiUsers className="w-4 h-4 text-spotlight-green" />
               </div>
               <div>

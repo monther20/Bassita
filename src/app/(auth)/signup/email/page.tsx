@@ -93,7 +93,7 @@ export default function EmailSignupPage() {
 
     try {
       await signUp(formData.email, formData.password, formData.fullName);
-      const redirectTo = new URLSearchParams(window.location.search).get('redirect') || '/dashboard';
+      const redirectTo = new URLSearchParams(window.location.search).get('redirect') || '/organization';
       router.push(redirectTo);
     } catch (error) {
       console.error('Sign up failed:', error);
@@ -266,17 +266,13 @@ export default function EmailSignupPage() {
           </div>
 
           {/* Sign Up Button */}
-          <Button
-            label={authLoading ? "Creating Account..." : "Create Account"}
-            onclick={() => handleSubmit(e)}
-            backgroundColor="bg-gradient-to-r from-spotlight-purple to-spotlight-pink"
-            hover="hover:shadow-glow-purple"
-            borderColor="border-background-primary"
-            textStyle="text-text-primary text-sm lg:text-lg"
-            className="w-full h-full"
-            width="100%"
-            height="50px"
-          />
+          <button
+            type="submit"
+            disabled={authLoading}
+            className="w-full h-[50px] px-6 bg-gradient-to-r from-spotlight-purple to-spotlight-pink text-text-primary text-sm lg:text-lg font-display font-medium rounded-full hover:shadow-glow-purple transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed touch-target"
+          >
+            {authLoading ? "Creating Account..." : "Create Account"}
+          </button>
         </form>
 
         {/* Sign In Link */}

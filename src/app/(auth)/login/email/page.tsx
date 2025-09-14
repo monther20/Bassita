@@ -46,7 +46,7 @@ export default function EmailLoginPage() {
 
     try {
       await login(formData.email, formData.password);
-      const redirectTo = new URLSearchParams(window.location.search).get('redirect') || '/dashboard';
+      const redirectTo = new URLSearchParams(window.location.search).get('redirect') || '/organization';
       router.push(redirectTo);
     } catch (error) {
       console.error('Login failed:', error);
@@ -128,18 +128,13 @@ export default function EmailLoginPage() {
           </div>
 
           {/* Login Button */}
-          <Button
-            label={authLoading ? "Signing In..." : "Sign In"}
-            onclick={handleSubmit}
-            backgroundColor="bg-gradient-to-r from-spotlight-purple to-spotlight-pink"
-            hover="hover:shadow-glow-purple"
-            borderColor="border-background-primary"
-            textStyle="text-text-primary text-sm lg:text-lg"
-            className="w-full h-full"
-            width="100%"
-            height="50px"
+          <button
+            type="submit"
             disabled={authLoading}
-          />
+            className="w-full h-12 px-6 bg-gradient-to-r from-spotlight-purple to-spotlight-pink text-text-primary text-sm lg:text-lg font-display font-medium rounded-full hover:shadow-glow-purple transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed touch-target"
+          >
+            {authLoading ? "Signing In..." : "Sign In"}
+          </button>
         </form>
 
         {/* Sign Up Link */}
