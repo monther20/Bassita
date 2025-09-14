@@ -26,7 +26,7 @@ export function useAllUserBoards(organizationId?: string): UseAllUserBoardsRetur
     const { user } = useAuth();
     const currentOrganizationId = useCurrentOrganization();
     
-    // Use provided organizationId or fall back to current organization
+    // Use provided organizationId or  back to current organization
     const effectiveOrganizationId = organizationId || currentOrganizationId;
     
     const workspacesQuery = useQuery({
@@ -36,7 +36,6 @@ export function useAllUserBoards(organizationId?: string): UseAllUserBoardsRetur
                 return [];
             }
             
-            // Fetch organization-specific workspaces if organizationId is provided
             if (effectiveOrganizationId) {
                 return await FirestoreService.getOrganizationWorkspaces(effectiveOrganizationId, user.id);
             } else {

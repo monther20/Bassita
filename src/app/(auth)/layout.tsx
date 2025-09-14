@@ -30,35 +30,47 @@ export default function AuthLayout({
             <div
               className={`w-3/4 h-26 bg-gradient-to-br from-spotlight-purple to-spotlight-pink rounded-lg p-0.5 rotate-slight-reverse card-right`}
             >
-              <Card
-                width=""
-                height=""
-                title="✨ Welcome Task"
-                description="Get ready to dance!"
-                members={["✔"]}
-              />
+              <div className="relative flex flex-col text-left w-full h-full rounded-lg pl-2.5 pt-1 bg-background-tertiary font-display overflow-hidden">
+                <div className="flex flex-col gap-1 relative z-10">
+                  <h1 className="text-sm text-text-primary">📋 Project Planning</h1>
+                  <p className="text-xs text-text-tertiary">Organize your tasks efficiently</p>
+                </div>
+                <div className="absolute bottom-2 right-2 flex flex-row gap-1 z-10">
+                  <div className="w-6 h-6 rounded-full text-[10px] bg-spotlight-green text-text-primary flex items-center justify-center">
+                    ✓
+                  </div>
+                </div>
+              </div>
             </div>
             <div
               className={`w-3/4 h-26 bg-gradient-to-br from-spotlight-purple to-spotlight-pink rounded-lg p-0.5 rotate-slight card-left`}
             >
-              <Card
-                width="200"
-                height="120"
-                title="🎯 Login Flow"
-                description="Simple and secure"
-                members={["🔥"]}
-              />
+              <div className="relative flex flex-col text-left w-full h-full rounded-lg pl-2.5 pt-1 bg-background-tertiary font-display overflow-hidden">
+                <div className="flex flex-col gap-1 relative z-10">
+                  <h1 className="text-sm text-text-primary">👥 Team Collaboration</h1>
+                  <p className="text-xs text-text-tertiary">Work together seamlessly</p>
+                </div>
+                <div className="absolute bottom-2 right-2 flex flex-row gap-1 z-10">
+                  <div className="w-6 h-6 rounded-full text-[10px] bg-spotlight-red text-text-primary flex items-center justify-center">
+                    🤝
+                  </div>
+                </div>
+              </div>
             </div>
             <div
               className={`w-3/4 h-26 bg-gradient-to-br from-spotlight-purple to-spotlight-pink rounded-lg p-0.5 rotate-slight-reverse card-right`}
             >
-              <Card
-                width="200"
-                height="120"
-                title="🚀 Get Started"
-                description="Create your profile and explore"
-                members={["→"]}
-              />
+              <div className="relative flex flex-col text-left w-full h-full rounded-lg pl-2.5 pt-1 bg-background-tertiary font-display overflow-hidden">
+                <div className="flex flex-col gap-1 relative z-10">
+                  <h1 className="text-sm text-text-primary">🎯 Track Progress</h1>
+                  <p className="text-xs text-text-tertiary">Monitor deadlines and milestones</p>
+                </div>
+                <div className="absolute bottom-2 right-2 flex flex-row gap-1 z-10">
+                  <div className="w-6 h-6 rounded-full text-[10px] bg-spotlight-blue text-text-primary flex items-center justify-center">
+                    📊
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <div className="flex flex-col gap-6 lg:gap-10">

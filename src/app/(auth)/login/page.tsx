@@ -1,7 +1,6 @@
 "use client";
 
 import Button from "@/components/buttoon";
-import { FaMicrosoft, FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks";
@@ -9,7 +8,7 @@ import { GuestGuard } from "@/components";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { loginWithGoogle, loginWithGithub, loginWithMicrosoft, isLoading } = useAuth();
+  const { loginWithGoogle, isLoading } = useAuth();
 
   return (
     <GuestGuard>
@@ -30,7 +29,7 @@ export default function LoginPage() {
                 await loginWithGoogle();
                 const redirectTo =
                   new URLSearchParams(window.location.search).get("redirect") ||
-                  "/dashboard";
+                  "/organization";
                 router.push(redirectTo);
               } catch (error) {
                 console.error("Google login failed:", error);
@@ -43,45 +42,6 @@ export default function LoginPage() {
             height="h-[50px]"
           />
 
-          <Button
-            label="Continue with GitHub"
-            onClick={async () => {
-              try {
-                await loginWithGithub();
-                const redirectTo =
-                  new URLSearchParams(window.location.search).get("redirect") ||
-                  "/dashboard";
-                router.push(redirectTo);
-              } catch (error) {
-                console.error("GitHub login failed:", error);
-              }
-            }}
-            backgroundColor="bg-spotlight-blue"
-            textColor="text-text-primary"
-            icon={<FaGithub size={20} className="lg:w-[25px] lg:h-[25px]" />}
-            fullWidth={true}
-            height="h-[50px]"
-          />
-
-          <Button
-            label="Continue with Microsoft"
-            onClick={async () => {
-              try {
-                await loginWithMicrosoft();
-                const redirectTo =
-                  new URLSearchParams(window.location.search).get("redirect") ||
-                  "/dashboard";
-                router.push(redirectTo);
-              } catch (error) {
-                console.error("Microsoft login failed:", error);
-              }
-            }}
-            backgroundColor="bg-background-primary"
-            textColor="text-text-primary"
-            icon={<FaMicrosoft size={20} className="lg:w-[25px] lg:h-[25px]" />}
-            fullWidth={true}
-            height="h-[50px]"
-          />
         </div>
         <div className="flex flex-col gap-3 lg:gap-4 w-full">
           <div className="flex items-center justify-center relative">

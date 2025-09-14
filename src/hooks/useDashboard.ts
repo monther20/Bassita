@@ -245,10 +245,26 @@ export function useSearch(query: string, organizationId?: string) {
 
       setIsLoading(true);
       try {
-        // Use FirestoreService search methods with organization context
-        const results = effectiveOrganizationId 
-          ? await FirestoreService.searchInOrganization(user.id, effectiveOrganizationId, query)
-          : await FirestoreService.searchAll(user.id, query);
+        // Use FirestoreService search methods
+        const results = await FirestoreService.searchAll(user.id, query);
+
+        // Filter results by organization if specified
+        if (effectiveOrganizationId) {
+          // Get organization workspaces to filter boards
+          const orgWorkspaces = await FirestoreService.getOrganizationWorkspaces(effectiveOrganizationId, user.id);
+          const orgWorkspaceIds = new Set(orgWorkspaces.map(w => w.id));
+
+          // Filter boards to only include those in organization workspaces
+          results.boards = results.boards.filter(board => orgWorkspaceIds.has(board.workspaceId));
+          
+          // Filter workspaces to only include organization workspaces
+          results.workspaces = results.workspaces.filter(workspace => 
+            workspace.organizationId === effectiveOrganizationId
+          );
+
+          // Filter organizations to only include the current organization
+          results.organizations = results.organizations.filter(org => org.id === effectiveOrganizationId);
+        }
 
         // Create workspace lookup map for proper workspace name mapping
         const workspaceLookup = new Map(

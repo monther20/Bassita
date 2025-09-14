@@ -116,24 +116,27 @@ export default function SearchDropdown({
     }
   };
 
-  const getItemIcon = (item: SearchResult) => {
+  const getItemIcon = (item: SearchResult, isSelected: boolean = false) => {
+    const baseClasses = "w-8 h-8 rounded-md flex items-center justify-center transition-all duration-200";
+    const iconClasses = "w-4 h-4 transition-all duration-200";
+
     switch (item.type) {
       case 'board':
         return (
-          <div className="w-8 h-8 bg-spotlight-purple/20 rounded-md flex items-center justify-center">
-            <FiLayout className="w-4 h-4 text-spotlight-purple" />
+          <div className={`${baseClasses} ${isSelected ? 'bg-spotlight-purple/30 scale-105' : 'bg-spotlight-purple/20 group-hover:bg-spotlight-purple/25 group-hover:scale-105'}`}>
+            <FiLayout className={`${iconClasses} text-spotlight-purple`} />
           </div>
         );
       case 'workspace':
         return (
-          <div className="w-8 h-8 bg-spotlight-pink/20 rounded-md flex items-center justify-center">
-            <FiFolder className="w-4 h-4 text-spotlight-pink" />
+          <div className={`${baseClasses} ${isSelected ? 'bg-spotlight-pink/30 scale-105' : 'bg-spotlight-pink/20 group-hover:bg-spotlight-pink/25 group-hover:scale-105'}`}>
+            <FiFolder className={`${iconClasses} text-spotlight-pink`} />
           </div>
         );
       case 'organization':
         return (
-          <div className="w-8 h-8 bg-spotlight-blue/20 rounded-md flex items-center justify-center">
-            <FiUsers className="w-4 h-4 text-spotlight-blue" />
+          <div className={`${baseClasses} ${isSelected ? 'bg-spotlight-blue/30 scale-105' : 'bg-spotlight-blue/20 group-hover:bg-spotlight-blue/25 group-hover:scale-105'}`}>
+            <FiUsers className={`${iconClasses} text-spotlight-blue`} />
           </div>
         );
     }
@@ -170,18 +173,21 @@ export default function SearchDropdown({
               <button
                 key={item.id}
                 onClick={() => handleItemClick(item)}
-                className={`w-full text-left px-3 py-2 transition-colors text-text-primary font-display flex items-center gap-3 ${isSelected ? 'bg-background-tertiary' : 'hover:bg-background-tertiary'
+                className={`group w-full text-left px-3 py-2 transition-all duration-200 text-text-primary font-display flex items-center gap-3 ${
+                  isSelected 
+                    ? 'bg-background-tertiary shadow-sm' 
+                    : 'hover:bg-background-secondary hover:shadow-sm'
                   }`}
               >
-                {getItemIcon(item)}
+                {getItemIcon(item, isSelected)}
                 <div className="flex-1 min-w-0">
-                  <div className="font-medium truncate">{item.name}</div>
-                  <div className="text-xs text-text-secondary truncate">
+                  <div className={`font-medium truncate transition-colors duration-200 ${isSelected ? 'text-text-primary' : 'group-hover:text-text-primary'}`}>{item.name}</div>
+                  <div className={`text-xs truncate transition-colors duration-200 ${isSelected ? 'text-text-secondary' : 'text-text-secondary group-hover:text-text-primary/80'}`}>
                     {getItemDetails(item)}
                   </div>
                 </div>
                 {isSelected && (
-                  <FiArrowRight className="w-4 h-4 text-text-secondary flex-shrink-0" />
+                  <FiArrowRight className="w-4 h-4 text-text-secondary flex-shrink-0 transition-transform duration-200 group-hover:translate-x-1" />
                 )}
               </button>
             );
