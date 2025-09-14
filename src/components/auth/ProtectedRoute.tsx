@@ -79,7 +79,10 @@ export function ProtectedRoute({
         const loginUrl = `${redirectTo}?redirect=${encodeURIComponent(currentPath)}`;
         router.push(loginUrl);
       } else if (!requireAuth && isAuthenticated) {
-        router.push('/organization');
+        // Respect redirect query parameter, fallback to /organization
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectPath = urlParams.get('redirect') || '/organization';
+        router.push(redirectPath);
       }
     }
   }, [isAuthenticated, isLoading, router, requireAuth, redirectTo]);

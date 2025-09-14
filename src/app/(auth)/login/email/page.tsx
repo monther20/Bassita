@@ -44,8 +44,7 @@ export default function EmailLoginPage() {
 
     try {
       await login(formData.email, formData.password);
-      const redirectTo = new URLSearchParams(window.location.search).get('redirect') || '/organization';
-      router.push(redirectTo);
+      // No manual redirect - let GuestGuard handle it automatically
     } catch (error) {
       console.error('Login failed:', error);
     }

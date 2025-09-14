@@ -92,8 +92,7 @@ export default function EmailSignupPage() {
 
     try {
       await signUp(formData.email, formData.password, formData.fullName);
-      const redirectTo = new URLSearchParams(window.location.search).get('redirect') || '/organization';
-      router.push(redirectTo);
+      // No manual redirect - let GuestGuard handle it automatically
     } catch (error) {
       console.error('Sign up failed:', error);
     }

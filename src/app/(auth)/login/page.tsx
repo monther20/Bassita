@@ -3,12 +3,15 @@
 import Button from "@/components/buttoon";
 import { FcGoogle } from "react-icons/fc";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/hooks";
+import { useAuth, useRedirectIfAuthenticated } from "@/hooks";
 import { GuestGuard } from "@/components";
 
 export default function LoginPage() {
   const router = useRouter();
   const { loginWithGoogle } = useAuth();
+
+  // Hook automatically redirects if authenticated - backup safety
+  useRedirectIfAuthenticated("/organization");
 
   return (
     <GuestGuard>
@@ -27,10 +30,7 @@ export default function LoginPage() {
             onClick={async () => {
               try {
                 await loginWithGoogle();
-                const redirectTo =
-                  new URLSearchParams(window.location.search).get("redirect") ||
-                  "/organization";
-                router.push(redirectTo);
+                // No manual redirect - let GuestGuard handle it automatically
               } catch (error) {
                 console.error("Google login failed:", error);
               }
