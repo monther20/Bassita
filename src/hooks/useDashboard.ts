@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { FirestoreService } from '@/lib/firestore';
-import { FirestoreBoard, FirestoreWorkspace } from '@/types/firestore';
+import { FirestoreBoard, FirestoreWorkspace, FirestoreOrganization } from '@/types/firestore';
 import { useAuth } from './useAuth';
 import { useCurrentOrganization } from './useUserOrganizations';
 import { queryKeys } from '@/lib/query-keys';
@@ -231,7 +231,7 @@ export function useSearch(query: string, organizationId?: string) {
   const [searchResults, setSearchResults] = useState({
     boards: [] as DashboardBoard[],
     workspaces: [] as DashboardWorkspace[],
-    organizations: [] as any[],
+    organizations: [] as FirestoreOrganization[],
     total: 0
   });
   const [isLoading, setIsLoading] = useState(false);

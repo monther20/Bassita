@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 import { useUserOrganizations } from '@/hooks/useUserOrganizations';
 import DashboardSection from '@/components/dashboard/dashboardSection';
 import ProtectedLayout from '@/components/layouts/ProtectedLayout';
@@ -10,7 +9,7 @@ import { useDashboardData, useRecentlyViewed } from '@/hooks/useDashboard';
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { currentOrganization, loading: orgLoading } = useUserOrganizations();
+  const { currentOrganization } = useUserOrganizations();
   const { addRecentItem } = useRecentlyViewed();
   const {
     myWorkspaces,
@@ -36,16 +35,16 @@ export default function DashboardPage() {
     router.push(`/board/${board.id}`);
   };
 
-  const handleWorkspaceClick = (workspace: { id: string; name: string }) => {
-    // Add to recently viewed
-    addRecentItem({
-      id: workspace.id,
-      name: workspace.name,
-      type: 'workspace'
-    });
+  // const handleWorkspaceClick = (workspace: { id: string; name: string }) => {
+  //   // Add to recently viewed
+  //   addRecentItem({
+  //     id: workspace.id,
+  //     name: workspace.name,
+  //     type: 'workspace'
+  //   });
 
-    router.push(`/workspace/${workspace.id}`);
-  };
+  //   router.push(`/workspace/${workspace.id}`);
+  // };
 
   // Show error state
   if (error) {

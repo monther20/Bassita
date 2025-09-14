@@ -88,8 +88,8 @@ export default function TemplatePreviewModal({
 
             onClose();
             router.push(`/organization/${currentWorkspace.organizationId}/workspace/${currentWorkspaceId}/board/${newBoardId}`);
-        } catch (error: any) {
-            setError(error.message || "Failed to create board from template");
+        } catch (error: unknown) {
+            setError(error instanceof Error ? error.message : "Failed to create board from template");
         } finally {
             setIsCreating(false);
         }

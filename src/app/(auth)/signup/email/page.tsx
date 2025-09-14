@@ -1,8 +1,7 @@
 "use client";
 
-import Button from "@/components/buttoon";
 import { useState } from "react";
-import { FaEye, FaEyeSlash, FaCheck, FaTimes } from "react-icons/fa";
+import { FaCheck, FaTimes } from "react-icons/fa";
 import Link from "next/link";
 import InputField from "@/components/inputField";
 import { useAuth } from "@/hooks";
@@ -20,8 +19,8 @@ export default function EmailSignupPage() {
     confirmPassword: "",
     agreeToTerms: false,
   });
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showPassword] = useState(false);
+  const [showConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const getPasswordStrength = (password: string) => {

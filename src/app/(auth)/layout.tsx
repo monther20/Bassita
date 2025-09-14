@@ -2,7 +2,6 @@
 
 import React from "react";
 import AnimatedBackground from "@/components/auth/AnimatedBackground";
-import Card from "@/components/card";
 import Image from "next/image";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useTheme } from "@/contexts/ThemeContext";

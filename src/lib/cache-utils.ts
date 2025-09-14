@@ -5,6 +5,7 @@
 
 import { QueryClient } from '@tanstack/react-query';
 import { queryKeys, invalidationPatterns } from './query-keys';
+import { FirestoreOrganization } from '@/types/firestore';
 
 export interface CacheManagerOptions {
   queryClient: QueryClient;
@@ -155,14 +156,14 @@ export class CacheManager {
   /**
    * Optimistic cache update for organization switching
    */
-  updateOrganizationCache(organizationId: string, organizationData: any): void {
+  updateOrganizationCache(organizationId: string, organizationData: Partial<FirestoreOrganization>): void {
     // Update the current organization in the organizations list
     const organizationsQueryKey = queryKeys.organizations.byUser(this.userId);
     
-    this.queryClient.setQueryData(organizationsQueryKey, (old: any) => {
+    this.queryClient.setQueryData(organizationsQueryKey, (old: FirestoreOrganization[] | undefined) => {
       if (!old) return old;
       
-      return old.map((org: any) => 
+      return old.map((org: FirestoreOrganization) => 
         org.id === organizationId 
           ? { ...org, ...organizationData }
           : org
@@ -193,7 +194,7 @@ export const cacheUtils = {
   /**
    * Creates a cache key with fallbacks
    */
-  createSafeQueryKey: (keyFactory: (...args: any[]) => readonly string[], ...args: any[]) => {
+  createSafeQueryKey: (keyFactory: (...args: unknown[]) => readonly string[], ...args: unknown[]) => {
     try {
       return keyFactory(...args);
     } catch (error) {
@@ -212,7 +213,7 @@ export const cacheUtils = {
   /**
    * Logs cache operations for debugging
    */
-  logCacheOperation: (operation: string, queryKey: readonly string[], details?: any) => {
+  logCacheOperation: (operation: string, queryKey: readonly string[], details?: unknown) => {
     if (process.env.NODE_ENV === 'development') {
       console.log(`🗄️ Cache ${operation}:`, queryKey, details);
     }

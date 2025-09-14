@@ -351,7 +351,7 @@ export class FirestoreService {
 
         taskUpdates.forEach(({ id, position, columnId }) => {
             const taskRef = doc(db, TASKS, id);
-            const updateData: any = {
+            const updateData: Record<string, unknown> = {
                 position,
                 updatedAt: serverTimestamp()
             };

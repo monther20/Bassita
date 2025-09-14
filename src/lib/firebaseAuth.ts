@@ -57,8 +57,8 @@ export class FirebaseAuthService {
       this.setTokenCookie(token);
       
       return { user, token };
-    } catch (error: any) {
-      throw new Error(this.getErrorMessage(error.code));
+    } catch (error: unknown) {
+      throw new Error(this.getErrorMessage((error as { code?: string }).code || 'unknown'));
     }
   }
 
@@ -78,8 +78,8 @@ export class FirebaseAuthService {
       this.setTokenCookie(token);
       
       return { user, token };
-    } catch (error: any) {
-      throw new Error(this.getErrorMessage(error.code));
+    } catch (error: unknown) {
+      throw new Error(this.getErrorMessage((error as { code?: string }).code || 'unknown'));
     }
   }
 
@@ -111,8 +111,8 @@ export class FirebaseAuthService {
       this.setTokenCookie(token);
       
       return { user, token };
-    } catch (error: any) {
-      throw new Error(this.getErrorMessage(error.code));
+    } catch (error: unknown) {
+      throw new Error(this.getErrorMessage((error as { code?: string }).code || 'unknown'));
     }
   }
 
@@ -129,8 +129,8 @@ export class FirebaseAuthService {
       this.setTokenCookie(token);
       
       return { user, token };
-    } catch (error: any) {
-      throw new Error(this.getErrorMessage(error.code));
+    } catch (error: unknown) {
+      throw new Error(this.getErrorMessage((error as { code?: string }).code || 'unknown'));
     }
   }
 
@@ -148,8 +148,8 @@ export class FirebaseAuthService {
       this.setTokenCookie(token);
       
       return { user, token };
-    } catch (error: any) {
-      throw new Error(this.getErrorMessage(error.code));
+    } catch (error: unknown) {
+      throw new Error(this.getErrorMessage((error as { code?: string }).code || 'unknown'));
     }
   }
 
@@ -184,8 +184,8 @@ export class FirebaseAuthService {
         return { user, token };
       }
       return null;
-    } catch (error: any) {
-      throw new Error(this.getErrorMessage(error.code));
+    } catch (error: unknown) {
+      throw new Error(this.getErrorMessage((error as { code?: string }).code || 'unknown'));
     }
   }
 
@@ -193,8 +193,8 @@ export class FirebaseAuthService {
   static async sendPasswordReset(email: string): Promise<void> {
     try {
       await sendPasswordResetEmail(auth, email);
-    } catch (error: any) {
-      throw new Error(this.getErrorMessage(error.code));
+    } catch (error: unknown) {
+      throw new Error(this.getErrorMessage((error as { code?: string }).code || 'unknown'));
     }
   }
 
@@ -203,9 +203,9 @@ export class FirebaseAuthService {
     try {
       await signOut(auth);
       this.removeTokenCookie();
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.removeTokenCookie(); // Remove cookie even if signOut fails
-      throw new Error(this.getErrorMessage(error.code));
+      throw new Error(this.getErrorMessage((error as { code?: string }).code || 'unknown'));
     }
   }
 

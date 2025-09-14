@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from './useAuth';
+import { User } from '@/stores';
 
 interface UseAuthGuardOptions {
   requireAuth?: boolean;
@@ -11,7 +12,7 @@ interface UseAuthGuardOptions {
 interface UseAuthGuardReturn {
   isAuthorized: boolean;
   isLoading: boolean;
-  user: any;
+  user: User | null;
 }
 
 export function useAuthGuard(options: UseAuthGuardOptions = {}): UseAuthGuardReturn {
@@ -72,7 +73,7 @@ export function useRequireRole(requiredRoles: string | string[], redirectTo?: st
       return;
     }
 
-    const userRoles = (user as any).roles || [];
+    const userRoles = (user as User & { roles?: string[] }).roles || [];
     const roles = Array.isArray(requiredRoles) ? requiredRoles : [requiredRoles];
     const hasRole = roles.some(role => userRoles.includes(role));
     
@@ -97,6 +98,6 @@ export function usePermission(permission: string) {
     return false;
   }
 
-  const userPermissions = (user as any).permissions || [];
+  const userPermissions = (user as User & { permissions?: string[] }).permissions || [];
   return userPermissions.includes(permission);
 }

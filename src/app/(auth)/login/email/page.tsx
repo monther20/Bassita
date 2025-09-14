@@ -1,8 +1,6 @@
 "use client";
 
-import Button from "@/components/buttoon";
 import { useState } from "react";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Link from "next/link";
 import InputField from "@/components/inputField";
 import { useAuth } from "@/hooks";
@@ -18,7 +16,7 @@ export default function EmailLoginPage() {
     password: "",
     rememberMe: false,
   });
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const validateForm = () => {
@@ -139,7 +137,7 @@ export default function EmailLoginPage() {
 
         {/* Sign Up Link */}
         <div className="text-center">
-          <span className="text-gray-400 text-sm">Don't have an account? </span>
+          <span className="text-gray-400 text-sm">Don&apos;t have an account? </span>
           <Link
             href="/signup/email"
             className="text-spotlight-purple hover:text-spotlight-pink transition-colors text-sm font-medium"

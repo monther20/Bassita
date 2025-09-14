@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores';
 import { FirebaseAuthService } from '@/lib/firebaseAuth';
 import { FirestoreService } from '@/lib/firestore';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface FirebaseAuthContextType {
   // This context doesn't need to expose anything directly
   // The auth state is managed by Zustand store
@@ -20,7 +21,7 @@ export function FirebaseAuthProvider({ children }: FirebaseAuthProviderProps) {
   const { setUser, setLoading, setInitialized } = useAuthStore();
 
   // Handle new user setup (create user document and default workspace)
-  const handleNewUser = async (user: any) => {
+  const handleNewUser = async (user: unknown) => {
     try {
 
       // Validate user object - check both id (from mapped User) and uid (from Firebase User)

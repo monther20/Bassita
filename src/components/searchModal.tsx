@@ -170,7 +170,7 @@ export default function SearchModal({
           ) : (
             <div className="responsive-px-sm py-4">
               <div className="text-text-secondary text-sm font-display mb-3">
-                Search results for "{query}" ({searchResults.total} found)
+                Search results for &quot;{query}&quot; ({searchResults.total} found)
               </div>
               
               {searchResults.total === 0 ? (

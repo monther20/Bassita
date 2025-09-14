@@ -1,11 +1,10 @@
 "use client";
 
 import { useRouter } from 'next/navigation';
-import { FiUsers, FiPlus, FiFolder, FiActivity } from 'react-icons/fi';
+import { FiUsers, FiPlus, FiFolder } from 'react-icons/fi';
 import { useUserOrganizations } from '@/hooks/useUserOrganizations';
 import { useModal } from '@/contexts/ModalContext';
 import ProtectedLayout from "@/components/layouts/ProtectedLayout";
-import Card from '@/components/card';
 import DashboardSectionSkeleton from '@/components/skeletons/DashboardSectionSkeleton';
 import Button from '@/components/buttoon';
 

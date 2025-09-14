@@ -114,13 +114,13 @@ export default function CreateBoardModal({
             const newBoardId = await createBoardMutation.mutateAsync(boardData);
             onClose();
             router.push(`/organization/${organizationId}/workspace/${paramWorkspaceId}/board/${newBoardId}`);
-        } catch (error: any) {
-            setError(error.message || "Failed to create board");
+        } catch (error: unknown) {
+            setError(error instanceof Error ? error.message : "Failed to create board");
         }
     };
 
     const renderSelectedIcon = () => {
-        const IconComponent = (Icons as any)[selectedIcon];
+        const IconComponent = (Icons as Record<string, React.ComponentType<{ size?: number }>>)[selectedIcon];
         return IconComponent ? <IconComponent size={20} /> : null;
     };
 

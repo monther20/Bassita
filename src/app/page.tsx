@@ -8,7 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 export default function HomePage() {
     const router = useRouter();
     const { user, loading: authLoading } = useAuth();
-    const { currentOrganization, loading: orgLoading } = useUserOrganizations();
+    const { currentOrganization } = useUserOrganizations();
 
     useEffect(() => {
         if (!authLoading && !user) {

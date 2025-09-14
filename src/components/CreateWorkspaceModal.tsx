@@ -93,8 +93,8 @@ export default function CreateWorkspaceModal({
                 // Fallback to old route for backward compatibility
                 router.push(`/workspace/${newWorkspaceId}`);
             }
-        } catch (error: any) {
-            setError(error.message || "Failed to create workspace");
+        } catch (error: unknown) {
+            setError(error instanceof Error ? error.message : "Failed to create workspace");
         }
     };
 

@@ -12,6 +12,12 @@ import { v4 as uuidv4 } from "uuid";
 
 
 // UI-compatible interfaces (matches useRealTimeBoard output)
+// Column type for board columns (matches useRealTimeBoard output)
+type BoardColumn = {
+  id: string;
+  title: string;
+  badgeColor: string;
+};
 interface Label {
   id: string;
   name: string;
@@ -54,7 +60,7 @@ export default function BoardPage({ params }: BoardPageProps) {
   const deleteTaskMutation = useDeleteTask();
 
   // Mutation states for loading/error handling
-  const isAnyMutationLoading =
+  // const isAnyMutationLoading =
     moveTaskMutation.isPending ||
     createTaskMutation.isPending ||
     updateTaskMutation.isPending ||
@@ -205,9 +211,9 @@ export default function BoardPage({ params }: BoardPageProps) {
     });
   };
 
-  const handleSaveTask = (taskData: Omit<Task, 'id'> | Task) => {
+  const handleSaveTask = (taskData: Partial<FirestoreTask>) => {
     // Data validation
-    if (!taskData.title.trim()) {
+    if (!taskData.title || !taskData.title.trim()) {
       setMutationError('Task title is required');
       return;
     }
@@ -271,16 +277,16 @@ export default function BoardPage({ params }: BoardPageProps) {
     }
   };
 
-  const handleSaveColumn = (columnData: { title: string; badgeColor: string } | { id: string; title: string; badgeColor: string }) => {
+  const handleSaveColumn = (columnData: Partial<BoardColumn>) => {
     // Data validation
-    if (!columnData.title.trim()) {
+    if (!columnData.title || !columnData.title.trim()) {
       setMutationError('Column title is required');
       return;
     }
 
     // Check for duplicate column names (excluding the current column being edited)
     const existingColumn = boardData.columns.find(col =>
-      col.title.toLowerCase() === columnData.title.trim().toLowerCase() &&
+      col.title.toLowerCase() === columnData.title?.trim().toLowerCase() &&
       ('id' in columnData ? col.id !== columnData.id : true)
     );
 

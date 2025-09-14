@@ -1,13 +1,13 @@
 "use client";
 
 import Button from "@/components/buttoon";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { FaEye, FaEyeSlash, FaCheck } from "react-icons/fa";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import InputField from "@/components/inputField";
 
-export default function ResetPasswordPage() {
+function ResetPasswordPageContent() {
   const [formData, setFormData] = useState({
     password: "",
     confirmPassword: "",
@@ -150,14 +150,13 @@ export default function ResetPasswordPage() {
 
           <Button
             label="Sign In"
-            onclick={() => router.push("/login/email")}
+            onClick={() => router.push("/login/email")}
             backgroundColor="bg-gradient-to-r from-spotlight-purple to-spotlight-pink"
             hover="hover:shadow-glow-purple"
-            borderColor="border-background-primary"
-            textStyle="text-text-primary text-sm lg:text-lg"
-            className="w-full h-full"
-            width="100%"
+            textColor="text-text-primary"
+            className="w-full text-sm lg:text-lg"
             height="50px"
+            fullWidth={true}
           />
         </div>
       </>
@@ -264,14 +263,13 @@ export default function ResetPasswordPage() {
           {/* Reset Button */}
           <Button
             label={isLoading ? "Resetting..." : "Reset Password"}
-            onclick={() => handleSubmit(e)}
+            onClick={() => { const fakeEvent = { preventDefault: () => {} } as React.FormEvent; handleSubmit(fakeEvent); }}
             backgroundColor="bg-gradient-to-r from-spotlight-purple to-spotlight-pink"
             hover="hover:shadow-glow-purple"
-            borderColor="border-background-primary"
-            textStyle="text-text-primary text-sm lg:text-lg"
-            className="w-full h-full"
-            width="100%"
+            textColor="text-text-primary"
+            className="w-full text-sm lg:text-lg"
             height="50px"
+            fullWidth={true}
           />
         </form>
 
@@ -286,5 +284,13 @@ export default function ResetPasswordPage() {
         </div>
       </div>
     </>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPasswordPageContent />
+    </Suspense>
   );
 }

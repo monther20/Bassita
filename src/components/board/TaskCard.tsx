@@ -188,7 +188,7 @@ export default function TaskCard({
           {/* Task header with icon and title */}
           <div className="flex items-start gap-2">
             {task.icon && (() => {
-              const IconComponent = (Icons as any)[task.icon];
+              const IconComponent = (Icons as Record<string, React.ComponentType<{ className?: string }>>)[task.icon];
               return IconComponent ? (
                 <IconComponent className="text-lg flex-shrink-0 text-text-secondary" />
               ) : null;

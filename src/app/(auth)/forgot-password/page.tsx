@@ -72,7 +72,7 @@ export default function ForgotPasswordPage() {
                 Check your email
               </span>
               <span className="text-gray-400 font-display text-xs lg:text-sm">
-                We've sent a password reset link to
+                We&apos;ve sent a password reset link to
               </span>
               <span className="text-spotlight-purple font-display text-sm lg:text-base">
                 {formData.email}
@@ -82,7 +82,7 @@ export default function ForgotPasswordPage() {
 
           <div className="flex flex-col gap-4 w-full">
             <p className="text-gray-400 text-sm text-center">
-              Didn't receive the email? Check your spam folder or try again.
+              Didn&apos;t receive the email? Check your spam folder or try again.
             </p>
 
             <Button
@@ -116,7 +116,7 @@ export default function ForgotPasswordPage() {
             Forgot Password?
           </span>
           <span className="text-gray-400 font-display text-xs lg:text-sm">
-            Enter your email address and we'll send you a link to reset your
+            Enter your email address and we&apos;ll send you a link to reset your
             password.
           </span>
         </div>

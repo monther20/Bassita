@@ -8,7 +8,7 @@ import { GuestGuard } from "@/components";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { loginWithGoogle, isLoading } = useAuth();
+  const { loginWithGoogle } = useAuth();
 
   return (
     <GuestGuard>

@@ -92,9 +92,9 @@ export default function CreateOrganizationModal({
             setLoading(false);
             onClose();
             router.push(`/organization/${newOrgId}`);
-        } catch (error: any) {
+        } catch (error: unknown) {
             setLoading(false);
-            setError(error.message || "Failed to create organization");
+            setError(error instanceof Error ? error.message : "Failed to create organization");
         }
     };
 

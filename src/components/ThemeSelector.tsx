@@ -1,7 +1,7 @@
 'use client';
 
 import { useTheme } from '@/contexts/ThemeContext';
-import { Theme, themeMetadata } from '@/stores/theme';
+import { Theme, ThemeMetadata, themeMetadata } from '@/stores/theme';
 import { FiCheck, FiSettings, FiX } from 'react-icons/fi';
 import { useState } from 'react';
 
@@ -94,7 +94,7 @@ export default function ThemeSelector({ isOpen, onClose }: ThemeSelectorProps) {
 
 interface ThemePreviewCardProps {
   theme: Theme;
-  metadata: any;
+  metadata: ThemeMetadata;
   isSelected: boolean;
   onSelect: (theme: Theme) => void;
 }

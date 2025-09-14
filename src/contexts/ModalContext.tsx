@@ -1,7 +1,21 @@
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { FirestoreTemplate } from '@/types/firestore';
+import { FirestoreTemplate, FirestoreTask } from '@/types/firestore';
+
+// Column type for board columns
+type BoardColumn = {
+  id: string;
+  title: string;
+  badgeColor: string;
+};
+
+// Label type for task labels
+type TaskLabel = {
+  id: string;
+  name: string;
+  color: string;
+};
 
 // Modal state interfaces
 interface TemplatePreviewModalState {
@@ -11,17 +25,17 @@ interface TemplatePreviewModalState {
 
 interface TaskModalState {
   isOpen: boolean;
-  task?: any | null;
-  availableLabels: any[];
+  task?: FirestoreTask | null;
+  availableLabels: TaskLabel[];
   members: Array<{ name: string; color: string }>;
-  onSave: (task: any) => void;
+  onSave: (task: Partial<FirestoreTask>) => void;
   onDelete?: (taskId: string) => void;
 }
 
 interface ColumnModalState {
   isOpen: boolean;
-  column?: any | null;
-  onSave: (column: any) => void;
+  column?: BoardColumn | null;
+  onSave: (column: Partial<BoardColumn>) => void;
 }
 
 interface CreateBoardModalState {
@@ -48,10 +62,10 @@ interface ModalContextType {
   // Task Modal
   taskModal: TaskModalState;
   openTaskModal: (params: {
-    task?: any | null;
-    availableLabels: any[];
+    task?: FirestoreTask | null;
+    availableLabels: TaskLabel[];
     members: Array<{ name: string; color: string }>;
-    onSave: (task: any) => void;
+    onSave: (task: Partial<FirestoreTask>) => void;
     onDelete?: (taskId: string) => void;
   }) => void;
   closeTaskModal: () => void;
@@ -59,8 +73,8 @@ interface ModalContextType {
   // Column Modal
   columnModal: ColumnModalState;
   openColumnModal: (params: {
-    column?: any | null;
-    onSave: (column: any) => void;
+    column?: BoardColumn | null;
+    onSave: (column: Partial<BoardColumn>) => void;
   }) => void;
   closeColumnModal: () => void;
 
@@ -127,10 +141,10 @@ export function ModalProvider({ children }: { children: ReactNode }) {
 
   // Task Modal handlers
   const openTaskModal = (params: {
-    task?: any | null;
-    availableLabels: any[];
+    task?: FirestoreTask | null;
+    availableLabels: TaskLabel[];
     members: Array<{ name: string; color: string }>;
-    onSave: (task: any) => void;
+    onSave: (task: Partial<FirestoreTask>) => void;
     onDelete?: (taskId: string) => void;
   }) => {
     setTaskModal({
@@ -145,15 +159,15 @@ export function ModalProvider({ children }: { children: ReactNode }) {
       task: null,
       availableLabels: [],
       members: [],
-      onSave: () => { },
+      onSave: () => {},
       onDelete: undefined,
     });
   };
 
   // Column Modal handlers
   const openColumnModal = (params: {
-    column?: any | null;
-    onSave: (column: any) => void;
+    column?: BoardColumn | null;
+    onSave: (column: Partial<BoardColumn>) => void;
   }) => {
     setColumnModal({
       isOpen: true,
@@ -165,7 +179,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     setColumnModal({
       isOpen: false,
       column: null,
-      onSave: () => { },
+      onSave: () => {},
     });
   };
 

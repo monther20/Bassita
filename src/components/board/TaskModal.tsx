@@ -133,7 +133,7 @@ export default function TaskModal({
   };
 
   const renderSelectedIcon = () => {
-    const IconComponent = (Icons as any)[selectedIcon];
+    const IconComponent = (Icons as Record<string, React.ComponentType<{ size?: number }>>)[selectedIcon];
     return IconComponent ? <IconComponent size={20} /> : null;
   };
 

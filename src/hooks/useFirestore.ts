@@ -102,7 +102,7 @@ export function useUpdateTask() {
             const previousTasks = queryClient.getQueryData(tasksQueryKey);
 
             // Update the specific task in cache
-            queryClient.setQueryData(tasksQueryKey, (old: any) => {
+            queryClient.setQueryData(tasksQueryKey, (old: FirestoreTask[] | undefined) => {
                 if (!old) return old;
                 return old.map((task: FirestoreTask) =>
                     task.id === taskId ? { ...task, ...updates } : task
@@ -173,7 +173,7 @@ export function useUpdateBoard() {
             const previousBoard = queryClient.getQueryData(boardQueryKey);
 
             // Update the board in cache
-            queryClient.setQueryData(boardQueryKey, (old: any) => {
+            queryClient.setQueryData(boardQueryKey, (old: FirestoreBoard | undefined) => {
                 if (!old) return old;
                 return { ...old, ...updates };
             });
