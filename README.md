@@ -1,4 +1,4 @@
-# Bassita Frontend
+# Bassita
 
 A collaborative task management platform built with Next.js that makes teamwork simple and fun.
 
@@ -86,3 +86,4 @@ This project is part of the Bassita platform development. Follow the established
 ## 📄 License
 
 This project is part of the Bassita platform and is proprietary software.
+
